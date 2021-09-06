@@ -38,7 +38,6 @@ public class MoveSelector : MonoBehaviour
             tileHighlight.transform.position = Geometry.PointFromGrid(gridPoint);
             if (Input.GetMouseButtonDown(0))
             {
-                // Reference Point 2: check for valid move location
                 if (!moveLocations.Contains(gridPoint))
                 {
                     return;
@@ -53,7 +52,6 @@ public class MoveSelector : MonoBehaviour
                     GameManager.instance.CapturePieceAt(gridPoint);
                     GameManager.instance.Move(movingPiece, gridPoint);
                 }
-                // Reference Point 3: capture enemy piece here later
                 ExitState();
             }
         }
