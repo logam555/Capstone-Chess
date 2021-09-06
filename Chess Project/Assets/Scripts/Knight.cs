@@ -1,25 +1,29 @@
-﻿using System.Collections.Generic;
+﻿/* Written by David Corredor
+ Edited by Braden Stonehill
+ Last date edited: 09/06/2021
+ Knight.cs - child class of Piece.cs that implements move and attack using rules for the knight
+ Version 1.1: Removed dependency on game manager for determining occupied spaces as it is already 
+ handled in the game manager.*/
+
+using System.Collections.Generic;
 using UnityEngine;
 
 public class Knight : Piece
 {
+    public override void Attack(Piece enemy, Vector2Int gridPoint) {
+        throw new System.NotImplementedException();
+    }
+
     public override List<Vector2Int> LocationsAvailable(Vector2Int gridPoint)
     {
         List<Vector2Int> locations = new List<Vector2Int>();
 
-        List<Vector2Int> directions = new List<Vector2Int>(BishopDirections);
-        directions.AddRange(RookDirections);
-
-        foreach (Vector2Int dir in directions)
+        foreach (Vector2Int dir in this.directions)
         {
-            for (int i = 1; i < 5; i++)
+            for (int i = 1; i <= 4; i++)
             {
                 Vector2Int nextGridPoint = new Vector2Int(gridPoint.x + i * dir.x, gridPoint.y + i * dir.y);
                 locations.Add(nextGridPoint);
-                if (GameManager.instance.PieceAtGrid(nextGridPoint))
-                {
-                    break;
-                }
             }
         }
 
