@@ -15,16 +15,12 @@ public class Pawn : Piece
         locations.Add(forwardOne);
 
         Vector2Int forwardRight = new Vector2Int(gridPoint.x + 1, gridPoint.y + forwardDirection);
-        if (!GameManager.instance.PieceAtGrid(forwardRight))
-        {
-            locations.Add(forwardRight);
-        }
+
+        locations.Add(forwardRight);
 
         Vector2Int forwardLeft = new Vector2Int(gridPoint.x - 1, gridPoint.y + forwardDirection);
-        if (!GameManager.instance.PieceAtGrid(forwardLeft))
-        {
-            locations.Add(forwardLeft);
-        }
+
+        locations.Add(forwardLeft);
 
         return locations;
     }
