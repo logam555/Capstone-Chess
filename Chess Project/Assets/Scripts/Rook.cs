@@ -3,6 +3,8 @@ using UnityEngine;
 
 public class Rook : Piece
 {
+ 
+
     public override List<Vector2Int> LocationsAvailable(Vector2Int gridPoint)
     {
         List<Vector2Int> locations = new List<Vector2Int>();
