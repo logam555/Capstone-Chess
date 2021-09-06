@@ -1,6 +1,6 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!1 &1000013277376148
+--- !u!1 &1000012089885188
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -8,46 +8,46 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
-  - component: {fileID: 4000012297859478}
-  - component: {fileID: 33000012760542366}
-  - component: {fileID: 23000012148006776}
-  - component: {fileID: 4895949759147974993}
+  - component: {fileID: 4000013312474350}
+  - component: {fileID: 33000013246153070}
+  - component: {fileID: 23000011383343684}
+  - component: {fileID: 5268481121093234670}
   m_Layer: 0
-  m_Name: Chess Pawn White
+  m_Name: Chess Rook White
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!4 &4000012297859478
+--- !u!4 &4000013312474350
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1000013277376148}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_GameObject: {fileID: 1000012089885188}
+  m_LocalRotation: {x: -0.7071068, y: 0, z: 0, w: 0.7071068}
   m_LocalPosition: {x: -0, y: 0, z: 0}
-  m_LocalScale: {x: 1.8, y: 1.8, z: 1.8}
+  m_LocalScale: {x: 27, y: 27, z: 27}
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 0
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!33 &33000012760542366
+  m_LocalEulerAnglesHint: {x: -90, y: 0, z: 0}
+--- !u!33 &33000013246153070
 MeshFilter:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1000013277376148}
-  m_Mesh: {fileID: 4300000, guid: dc780bbe80163bc46883e8c2d96af493, type: 3}
---- !u!23 &23000012148006776
+  m_GameObject: {fileID: 1000012089885188}
+  m_Mesh: {fileID: 4300000, guid: b66f4744e8bb24a448fcfa81a1781df5, type: 3}
+--- !u!23 &23000011383343684
 MeshRenderer:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1000013277376148}
+  m_GameObject: {fileID: 1000012089885188}
   m_Enabled: 1
   m_CastShadows: 1
   m_ReceiveShadows: 1
@@ -82,17 +82,16 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!114 &4895949759147974993
+--- !u!114 &5268481121093234670
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1000013277376148}
+  m_GameObject: {fileID: 1000012089885188}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ab8d0ddcf90504e8d9c1f00e2ba3f94c, type: 3}
+  m_Script: {fileID: 11500000, guid: 3a80239f8d0914c9cb07dd15d315b344, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  type: 5
   isWhite: 1
