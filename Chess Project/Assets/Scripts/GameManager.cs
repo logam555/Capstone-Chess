@@ -95,16 +95,41 @@ public class GameManager : MonoBehaviour
 
         locations.RemoveAll(gp => gp.x < 0 || gp.x > 7 || gp.y < 0 || gp.y > 7);
         locations.RemoveAll(gp => FriendlyPieceAt(gp));
-
+        if(piece.type != PieceType.Rook)
+        {
+           locations.RemoveAll(gp=>RemoveLocationsWithoutEnemy(gp, pieceObject));
+        }
         //Remove the ability for the rook to delete stuff
-        if(pieceObject.GetComponent<Piece>().type == PieceType.Rook)
+        if(piece.type == PieceType.Rook)
         {
             locations.RemoveAll(gp => RemoveEnemyPieceAt(gp));
         }
         return locations;
     }
-
-    
+    public bool RemoveLocationsWithoutEnemy(Vector2Int loc,GameObject piece)
+    {
+        if(GameManager.instance.PieceAtGrid(loc))
+        {
+            if(!IsEnemyBeside(loc, piece))
+            {
+               return true;
+            }
+        }
+        return false;
+    }
+    public bool IsEnemyBeside(Vector2Int loc,GameObject piece)
+    {
+        Vector2Int pieceLocation = GameManager.instance.GridForPiece(piece);
+        foreach (Vector2Int dir in piece.GetComponent<Piece>().AllDirections)
+        {
+            Vector2Int tempPosition = new Vector2Int(pieceLocation.x + dir.x, pieceLocation.y + dir.y);
+            if(tempPosition == loc)
+            {
+                return true;
+            }
+        }
+        return false;
+    }
     public bool RemoveEnemyPieceAt(Vector2Int gridPoint)
     {
         GameObject piece = PieceAtGrid(gridPoint);

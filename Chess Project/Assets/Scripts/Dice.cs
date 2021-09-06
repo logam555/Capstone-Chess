@@ -30,7 +30,6 @@ public class Dice : MonoBehaviour
                 if (Input.GetMouseButtonDown(0))
                 {
                     number = RollDice();
-                    Debug.Log(number);
                     // 2 = 0 0 0
                     // 6 = 90 0 0
                     // 5 = 180 0 0
