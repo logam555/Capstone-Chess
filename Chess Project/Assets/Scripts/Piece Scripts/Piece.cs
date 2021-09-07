@@ -39,7 +39,7 @@ public abstract class Piece : MonoBehaviour
 
     // Will attempt to attack enemy piece with probabilities based on fuzzy-logic table
     // returning true if attack is successful, false otherwise. 
-    public abstract bool Attack(Piece enemy);
+    public abstract bool Attack(Piece enemy, bool isMoving = false);
 
     // Determines what positions are available to move to based on pieces movement restriction
     public abstract List<Vector2Int> LocationsAvailable();

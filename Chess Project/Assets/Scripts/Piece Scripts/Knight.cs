@@ -16,9 +16,12 @@ using UnityEngine;
 
 public class Knight : Piece
 {
-    public override bool Attack(Piece enemy) {
+    public override bool Attack(Piece enemy, bool isMoving = false) {
         // Simulate dice roll
         int roll = DiceManager.Instance.RollDice();
+
+        if (isMoving)
+            roll += 1;
 
         // Assign minimum attack number needed based off of fuzzy logic table
         int mininumValue = FuzzyLogic.FindNumberKnight(enemy);

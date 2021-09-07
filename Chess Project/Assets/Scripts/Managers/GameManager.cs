@@ -73,7 +73,8 @@ public class GameManager : MonoBehaviour
         if (availableMoves[position.x, position.y]) {
             MovePiece(position);
         } else if (enemies.Contains(position)) {
-            if(SelectedPiece.Attack(Pieces[position.x,position.y])) {
+            bool attackSuccessful = SelectedPiece is Knight && (Mathf.Abs(position.sqrMagnitude - SelectedPiece.Position.sqrMagnitude) <= 2) ? SelectedPiece.Attack(Pieces[position.x, position.y]) : SelectedPiece.Attack(Pieces[position.x, position.y], true);
+            if (attackSuccessful) {
                 // Remove the captured piece and add to capture pieces
                 Piece enemy = Pieces[position.x, position.y];
                 CapturePiece(enemy);

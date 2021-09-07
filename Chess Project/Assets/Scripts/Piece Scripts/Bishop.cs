@@ -21,7 +21,7 @@ public class Bishop : Piece
     public List<Piece> subordinates = new List<Piece>(6);
     public bool usedCommand = false;
 
-    public override bool Attack(Piece enemy) {
+    public override bool Attack(Piece enemy, bool isMoving = false) {
         // Simulate dice roll
         int roll = DiceManager.Instance.RollDice();
 
