@@ -13,8 +13,6 @@ using UnityEngine;
 
 public class BoardManager : MonoBehaviour
 {
-   
-
     private const float TILE_SIZE = 1.0f;
     private const float TILE_OFFSET = 0.5f;
 
@@ -22,12 +20,18 @@ public class BoardManager : MonoBehaviour
 
     [SerializeField]
     private List<GameObject> piecePrefabs; // Not instantiated, list is filled in the editor
+    [SerializeField]
+    private List<GameObject> highlightPrefabs; // Not instantiated, list is filled in the editor
+
     private List<GameObject> activePieces;
+    private List<GameObject> highlights;
+    
 
     private GameManager gm;
 
     private void Start() {
-        gm = GameManager.instance;
+        gm = GameManager.Instance;
+        highlights = new List<GameObject>();
         SpawnAllPieces();
     }
 
@@ -38,7 +42,7 @@ public class BoardManager : MonoBehaviour
         if(Input.GetMouseButtonDown(0)) {
             if(selection.x >= 0 && selection.y >= 0) {
                 if(gm.SelectedPiece == null) {
-                    SelectPiece(selection);
+                    gm.SelectPiece(selection);
                 } else {
                     gm.MovePiece(selection);
                 }
@@ -50,15 +54,7 @@ public class BoardManager : MonoBehaviour
                                         /// INTERACTION FUNCTIONS ///
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////
     // Function to select a piece object for movement
-    private void SelectPiece(Vector2Int position) {
-        if (gm.Pieces[position.x, position.y] == null)
-            return;
-
-        if (gm.Pieces[position.x, position.y].IsWhite != GameManager.instance.IsWhiteTurn)
-            return;
-
-        gm.SelectedPiece = gm.Pieces[position.x, position.y];
-    }
+    
 
     public void MoveObject(GameObject pieceObject, Vector2Int position) {
         pieceObject.transform.position = GetTileCenter(position.x, position.y);
@@ -177,5 +173,42 @@ public class BoardManager : MonoBehaviour
                 Vector3.forward * (selection.y + 1) + Vector3.right * selection.x,
                 Vector3.forward * selection.y + Vector3.right * (selection.x + 1));
         }
+    }
+
+    // Function to highlight all tiles associated with selected piece
+    public void HighlightAllTiles(Vector2Int position, bool[,] availableMoves) {
+        HighlightSelected(position);
+        HighlightAvailableMoves(availableMoves);
+    }
+
+    // Function to highlight the tile of the selected piece
+    private void HighlightSelected(Vector2Int position) {
+        HighlightTile(0, position.x, position.y);
+    }
+
+    // Function to highlight all available moves with available highlight prefab using a boolean map of the board
+    private void HighlightAvailableMoves(bool[,] moves) {
+        for(int i = 0; i < 8; i++) {
+            for(int j = 0; j < 8; j++) {
+                if(moves[i,j]) {
+                    HighlightTile(1, i, j);
+                }
+            }
+        }
+    }
+
+    // Utility function to highlight any tile with the selected prefab at the x and y grid position
+    private void HighlightTile(int index, int x, int y) {
+        GameObject highlight = Instantiate(highlightPrefabs[index]);
+        highlights.Add(highlight);
+        highlight.transform.position = GetTileCenter(x, y);
+    }
+
+    // Utility function to destroy all highlight game objects
+    public void RemoveHighlights() {
+        foreach(GameObject highlight in highlights) {
+            Destroy(highlight);
+        }
+        highlights.Clear();
     }
 }

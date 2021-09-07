@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class GameManager : MonoBehaviour
 {
-    public static GameManager instance;
+    public static GameManager Instance { get; set; }
 
     public BoardManager board; // Not instantiated, value is filled in the editor
     public Piece[,] Pieces { get; set; }
@@ -14,7 +14,7 @@ public class GameManager : MonoBehaviour
     public bool IsWhiteTurn { get; set; }
 
     private void Awake() {
-        instance = this;
+        Instance = this;
     }
 
     private void Start() {
@@ -22,21 +22,47 @@ public class GameManager : MonoBehaviour
         Pieces = new Piece[8, 8];
     }
 
+    public void SelectPiece(Vector2Int position) {
+        if (Pieces[position.x, position.y] == null)
+            return;
+
+        if (Pieces[position.x, position.y].IsWhite != IsWhiteTurn)
+            return;
+
+        SelectedPiece = Pieces[position.x, position.y];
+        board.HighlightAllTiles(position, AvailableMoves(SelectedPiece));
+    }
+
     public void MovePiece(Vector2Int position) {
-        if(SelectedPiece.LocationsAvailable(position).Count > 0) {
-            
-            // Move piece to new position
-            Pieces[SelectedPiece.Position.x, SelectedPiece.Position.y] = null;
-            Pieces[position.x, position.y] = SelectedPiece;
-            SelectedPiece.Position = position;
+        List<Vector2Int> availableMoves = SelectedPiece.LocationsAvailable();
+        if(availableMoves.Count > 0) {
+            if (availableMoves.Contains(position)) {
+                // Move piece to new position
+                Pieces[SelectedPiece.Position.x, SelectedPiece.Position.y] = null;
+                Pieces[position.x, position.y] = SelectedPiece;
+                SelectedPiece.Position = position;
 
-            // Call function in board to move the piece game object
-            board.MoveObject(SelectedPiece.gameObject, position);
+                // Call function in board to move the piece game object
+                board.MoveObject(SelectedPiece.gameObject, position);
 
-            // Change turn order
-            IsWhiteTurn = !IsWhiteTurn;
+                // Change turn order
+                IsWhiteTurn = !IsWhiteTurn;
+            }
         }
 
         SelectedPiece = null;
+        board.RemoveHighlights();
+    }
+
+    public bool[,] AvailableMoves(Piece piece) {
+        bool[,] allowedMoves = new bool[8, 8];
+        List<Vector2Int> possibleMoves = piece.LocationsAvailable();
+        foreach(Vector2Int position in possibleMoves) {
+            if (position.x < 0 || position.x > 7 || position.y < 0 || position.y > 7)
+                continue;
+
+            allowedMoves[position.x, position.y] = true;
+        }
+        return allowedMoves;
     }
 }

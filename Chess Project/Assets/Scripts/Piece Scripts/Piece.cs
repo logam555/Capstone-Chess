@@ -4,13 +4,15 @@
  Piece.cs - abstract class for chess pieces that sets the basis for moving and attacking for each piece
 
  Version 1.1: Edited code for optimization and compatibility with Unity editor. Removed PieceType enumerator
- from abstract class to be placed in game script. Removed Rook and Bishop directions to be placed in the inherited
- child classes. Added Move function and Attack function to be implemented by child classes. Added Fuzzy logic table
- for use in Attack function implementations and directions for all pieces that can move in any direction. Added GridPoint 
- properties to be accessed when moving and selecting pieces. Added Commander and Delegated properties for use of assigning
- commanders and if a piece has been delegated by the king.*/
+ from abstract class to use type checking instead. Combined Rook and Bishop directions into a single list of cardinal directons.
+ Added Attack function to be implemented by child classes. Added Fuzzy logic table for use in Attack function 
+ implementations and directions for all pieces that can move in any direction. Added Postion 
+ property to be accessed when moving and selecting pieces. Added Commander and Delegated properties for use of assigning
+ commanders and if a piece has been delegated by the king. Added arguments to LocationsAvailable for number of moves
+ each piece has for recursively finding all possible moves to account for nonlinear movement. Added Recursive locations function.*/
 
 using System.Collections;
+using System.Linq;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -92,8 +94,23 @@ public abstract class Piece : MonoBehaviour
 
     // Will attempt to attack enemy piece with probabilities based on fuzzy-logic table
     // and will move to enemy piece's position if attack is successful 
-    public abstract void Attack(Piece enemy, Vector2Int gridPoint);
+    public abstract void Attack(Piece enemy, Vector2Int position);
 
     // Determines what positions are available to move to based on pieces movement restriction
-    public abstract List<Vector2Int> LocationsAvailable(Vector2Int position);
+    public abstract List<Vector2Int> LocationsAvailable();
+
+    // Recursive location function for pieces that move multiple tiles
+    protected List<Vector2Int> RecursiveLocations(Vector2Int position, int moves) {
+        List<Vector2Int> locations = new List<Vector2Int>();
+
+        if (moves > 0) {
+            foreach (Vector2Int dir in this.directions) {
+                Vector2Int nextTile = new Vector2Int(position.x + dir.x, position.y + dir.y);
+                locations.Add(nextTile);
+                locations = locations.Union(RecursiveLocations(nextTile, moves - 1)).ToList();
+            }
+        }
+
+        return locations;
+    }
 }

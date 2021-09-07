@@ -8,6 +8,7 @@ handled in the game manager. Added subordinates and usedCommand property as king
  if command authority has been used.*/
 
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public class King : Piece
@@ -19,20 +20,18 @@ public class King : Piece
         throw new System.NotImplementedException();
     }
 
-    public override List<Vector2Int> LocationsAvailable(Vector2Int gridPoint)
-    {
+    public override List<Vector2Int> LocationsAvailable() {
         List<Vector2Int> locations = new List<Vector2Int>();
-        int movement = this.usedCommand ? 1 : 3;
 
-        foreach (Vector2Int dir in this.directions)
-        {
-            for (int i = 1; i <= movement; i++)
-            {
-                Vector2Int nextGridPoint = new Vector2Int(gridPoint.x + i * dir.x, gridPoint.y + i * dir.y);
-                locations.Add(nextGridPoint);
-            }
+        foreach (Vector2Int dir in this.directions) {
+            Vector2Int nextTile = new Vector2Int(this.Position.x + dir.x, this.Position.y + dir.y);
+            locations.Add(nextTile);
+            if(!this.usedCommand)
+                locations = locations.Union(RecursiveLocations(nextTile, 2)).ToList();
         }
 
+        locations.Remove(this.Position);
         return locations;
     }
+
 }
