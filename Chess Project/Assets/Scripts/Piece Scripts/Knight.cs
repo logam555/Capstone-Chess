@@ -11,8 +11,30 @@ using UnityEngine;
 
 public class Knight : Piece
 {
-    public override void Attack(Piece enemy, Vector2Int gridPoint) {
-        throw new System.NotImplementedException();
+    public override bool Attack(Piece enemy) {
+        // Simulate dice roll
+        int roll = DiceManager.Instance.RollDice();
+        int mininumValue;
+
+        // Assign minimum attack number needed based off of fuzzy logic table
+        if (enemy is Pawn) {
+            mininumValue = (int)FuzzyLogic.Knight.Pawn;
+        } else if (enemy is Rook) {
+            mininumValue = (int)FuzzyLogic.Knight.Rook;
+        } else if (enemy is Knight) {
+            mininumValue = (int)FuzzyLogic.Knight.Knight;
+        } else if (enemy is Bishop) {
+            mininumValue = (int)FuzzyLogic.Knight.Bishop;
+        } else if (enemy is Queen) {
+            mininumValue = (int)FuzzyLogic.Knight.Queen;
+        } else {
+            mininumValue = (int)FuzzyLogic.Knight.King;
+        }
+
+        if (roll >= mininumValue)
+            return true;
+
+        return false;
     }
 
     public override List<Vector2Int> LocationsAvailable() {
@@ -30,6 +52,8 @@ public class Knight : Piece
     public override List<Vector2Int> EnemiesInRange() {
         List<Vector2Int> enemyPos = new List<Vector2Int>();
         List<Vector2Int> availableMoves = this.LocationsAvailable();
+
+        availableMoves.RemoveAll(pos => pos.x < 0 || pos.x > 7 || pos.y < 0 || pos.y > 7);
 
         foreach(Vector2Int pos in availableMoves) {
             if (GameManager.Instance.EnemyPieceAt(this.IsWhite, pos))

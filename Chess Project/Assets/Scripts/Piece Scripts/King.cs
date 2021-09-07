@@ -13,11 +13,33 @@ using UnityEngine;
 
 public class King : Piece
 {
-    public List<Piece> subordinates = new List<Piece>(6);
+    public List<Piece> subordinates = new List<Piece>();
     public bool usedCommand = false;
 
-    public override void Attack(Piece enemy, Vector2Int gridPoint) {
-        throw new System.NotImplementedException();
+    public override bool Attack(Piece enemy) {
+        // Simulate dice roll
+        int roll = DiceManager.Instance.RollDice();
+        int mininumValue;
+
+        // Assign minimum attack number needed based off of fuzzy logic table
+        if (enemy is Pawn) {
+            mininumValue = (int)FuzzyLogic.King.Pawn;
+        } else if (enemy is Rook) {
+            mininumValue = (int)FuzzyLogic.King.Rook;
+        } else if (enemy is Knight) {
+            mininumValue = (int)FuzzyLogic.King.Knight;
+        } else if (enemy is Bishop) {
+            mininumValue = (int)FuzzyLogic.King.Bishop;
+        } else if (enemy is Queen) {
+            mininumValue = (int)FuzzyLogic.King.Queen;
+        } else {
+            mininumValue = (int)FuzzyLogic.King.King;
+        }
+
+        if (roll >= mininumValue)
+            return true;
+
+        return false;
     }
 
     public override List<Vector2Int> LocationsAvailable() {

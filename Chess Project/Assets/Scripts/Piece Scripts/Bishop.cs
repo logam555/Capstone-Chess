@@ -17,8 +17,30 @@ public class Bishop : Piece
     public List<Piece> subordinates = new List<Piece>(6);
     public bool usedCommand = false;
 
-    public override void Attack(Piece enemy, Vector2Int gridPoint) {
-        throw new System.NotImplementedException();
+    public override bool Attack(Piece enemy) {
+        // Simulate dice roll
+        int roll = DiceManager.Instance.RollDice();
+        int mininumValue;
+
+        // Assign minimum attack number needed based off of fuzzy logic table
+        if(enemy is Pawn) {
+            mininumValue = (int) FuzzyLogic.Bishop.Pawn;
+        } else if (enemy is Rook) {
+            mininumValue = (int)FuzzyLogic.Bishop.Rook;
+        } else if (enemy is Knight) {
+            mininumValue = (int)FuzzyLogic.Bishop.Knight;
+        } else if (enemy is Bishop) {
+            mininumValue = (int)FuzzyLogic.Bishop.Bishop;
+        } else if (enemy is Queen) {
+            mininumValue = (int)FuzzyLogic.Bishop.Queen;
+        } else {
+            mininumValue = (int)FuzzyLogic.Bishop.King;
+        }
+
+        if (roll >= mininumValue)
+            return true;
+
+        return false;
     }
 
     public override List<Vector2Int> LocationsAvailable() {

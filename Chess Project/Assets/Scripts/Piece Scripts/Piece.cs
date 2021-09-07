@@ -78,7 +78,6 @@ public abstract class Piece : MonoBehaviour
 {
     [SerializeField]
     protected bool isWhite;
-    protected FuzzyLogic fl = new FuzzyLogic();
     protected Vector2Int[] directions = {new Vector2Int(0,1), new Vector2Int(1,0),
                                new Vector2Int(0,-1), new Vector2Int(-1,0),
                                new Vector2Int(1,1), new Vector2Int(1,-1),
@@ -93,8 +92,8 @@ public abstract class Piece : MonoBehaviour
     
 
     // Will attempt to attack enemy piece with probabilities based on fuzzy-logic table
-    // and will move to enemy piece's position if attack is successful 
-    public abstract void Attack(Piece enemy, Vector2Int position);
+    // returning true if attack is successful, false otherwise. 
+    public abstract bool Attack(Piece enemy);
 
     // Determines what positions are available to move to based on pieces movement restriction
     public abstract List<Vector2Int> LocationsAvailable();
@@ -116,7 +115,7 @@ public abstract class Piece : MonoBehaviour
             foreach (Vector2Int dir in this.directions) {
                 Vector2Int nextTile = new Vector2Int(position.x + dir.x, position.y + dir.y);
                 locations.Add(nextTile);
-                locations = locations.Union(RecursiveLocations(nextTile, moves - 1)).ToList();
+                locations = locations.Union(RecursiveLocations(nextTile, moves - 1, ignorePieces)).ToList();
             }
         }
 

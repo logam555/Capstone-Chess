@@ -44,7 +44,7 @@ public class BoardManager : MonoBehaviour
                 if(gm.SelectedPiece == null) {
                     gm.SelectPiece(selection);
                 } else {
-                    gm.MovePiece(selection);
+                    gm.CheckMove(selection);
                 }
             }
         }
@@ -58,6 +58,10 @@ public class BoardManager : MonoBehaviour
 
     public void MoveObject(GameObject pieceObject, Vector2Int position) {
         pieceObject.transform.position = GetTileCenter(position.x, position.y);
+    }
+
+    public void RemoveObject(GameObject pieceObject) {
+        Destroy(pieceObject);
     }
 
     // Function to determine what tile the mouse is hovering over, uses z component of raycast as the board is in the x-z plane

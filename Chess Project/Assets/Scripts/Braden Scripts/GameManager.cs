@@ -33,20 +33,25 @@ public class GameManager : MonoBehaviour
         board.HighlightAllTiles(position, AvailableMoves(SelectedPiece), SelectedPiece.EnemiesInRange());
     }
 
-    public void MovePiece(Vector2Int position) {
+    public void CheckMove(Vector2Int position) {
         bool[,] availableMoves = AvailableMoves(SelectedPiece);
+        List<Vector2Int> enemies = SelectedPiece.EnemiesInRange();
         
         if (availableMoves[position.x, position.y]) {
-            // Move piece to new position
-            Pieces[SelectedPiece.Position.x, SelectedPiece.Position.y] = null;
-            Pieces[position.x, position.y] = SelectedPiece;
-            SelectedPiece.Position = position;
+            MovePiece(position);
+        } else if (enemies.Contains(position)) {
+            if(SelectedPiece.Attack(Pieces[position.x,position.y])) {
+                // Remove the captured piece
+                Piece enemy = Pieces[position.x, position.y];
+                board.RemoveObject(enemy.gameObject);
 
-            // Call function in board to move the piece game object
-            board.MoveObject(SelectedPiece.gameObject, position);
+                // Move the selected piece
+                MovePiece(position);
 
-            // Change turn order
-            IsWhiteTurn = !IsWhiteTurn;
+            } else {
+                // Change turn even if attack is unsuccessful
+                IsWhiteTurn = !IsWhiteTurn;
+            }
         }
         
 
@@ -54,9 +59,23 @@ public class GameManager : MonoBehaviour
         board.RemoveHighlights();
     }
 
+    public void MovePiece(Vector2Int position) {
+        // Move piece to new position
+        Pieces[SelectedPiece.Position.x, SelectedPiece.Position.y] = null;
+        Pieces[position.x, position.y] = SelectedPiece;
+        SelectedPiece.Position = position;
+
+        // Call function in board to move the piece game object
+        board.MoveObject(SelectedPiece.gameObject, position);
+
+        // Change turn order
+        IsWhiteTurn = !IsWhiteTurn;
+    }
+
     public bool[,] AvailableMoves(Piece piece) {
         bool[,] allowedMoves = new bool[8, 8];
         List<Vector2Int> possibleMoves = piece.LocationsAvailable();
+
         possibleMoves.RemoveAll(pos => pos.x < 0 || pos.x > 7 || pos.y < 0 || pos.y > 7);
         possibleMoves.RemoveAll(pos => PieceAt(pos));
 
