@@ -201,7 +201,7 @@ public class BoardManager : MonoBehaviour
     private void HighlightTile(int index, int x, int y) {
         GameObject highlight = Instantiate(highlightPrefabs[index]);
         highlights.Add(highlight);
-        highlight.transform.position = GetTileCenter(x, y);
+        highlight.transform.position = GetTileCenter(x, y) + Vector3.up * 0.01f;
     }
 
     // Utility function to destroy all highlight game objects
