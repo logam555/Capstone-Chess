@@ -26,9 +26,21 @@ public class Rook : Piece
             locations = locations.Union(RecursiveLocations(nextTile, 1)).ToList();
         }
 
-        locations.Remove(this.Position);
-        locations.RemoveAll(pos => pos.x < 0 || pos.x > 7 || pos.y < 0 || pos.y > 7);
-        locations.RemoveAll(pos => FriendlyPieceAt(pos));
         return locations;
+    }
+
+    public override List<Vector2Int> EnemiesInRange() {
+        List<Vector2Int> enemyPos = new List<Vector2Int>();
+        List<Vector2Int> range = this.RecursiveLocations(this.Position, 3, true);
+
+        foreach (Vector2Int position in range) {
+            if (position.x < 0 || position.x > 7 || position.y < 0 || position.y > 7)
+                continue;
+
+            if (GameManager.Instance.EnemyPieceAt(this.IsWhite, position))
+                enemyPos.Add(position);
+        }
+
+        return enemyPos;
     }
 }

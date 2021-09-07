@@ -176,9 +176,10 @@ public class BoardManager : MonoBehaviour
     }
 
     // Function to highlight all tiles associated with selected piece
-    public void HighlightAllTiles(Vector2Int position, bool[,] availableMoves) {
+    public void HighlightAllTiles(Vector2Int position, bool[,] availableMoves, List<Vector2Int> enemies) {
         HighlightSelected(position);
         HighlightAvailableMoves(availableMoves);
+        HighlightEnemies(enemies);
     }
 
     // Function to highlight the tile of the selected piece
@@ -197,11 +198,18 @@ public class BoardManager : MonoBehaviour
         }
     }
 
+    // Function to highlight all enemies within range for attack
+    private void HighlightEnemies(List<Vector2Int> positions) {
+        foreach(Vector2Int pos in positions) {
+            HighlightTile(2, pos.x, pos.y);
+        }
+    }
+
     // Utility function to highlight any tile with the selected prefab at the x and y grid position
     private void HighlightTile(int index, int x, int y) {
         GameObject highlight = Instantiate(highlightPrefabs[index]);
         highlights.Add(highlight);
-        highlight.transform.position = GetTileCenter(x, y) + Vector3.up * 0.01f;
+        highlight.transform.position = GetTileCenter(x, y) + Vector3.up * (index != 2 ? 0.001f : 0.01f);
     }
 
     // Utility function to destroy all highlight game objects

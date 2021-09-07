@@ -30,7 +30,7 @@ public class GameManager : MonoBehaviour
             return;
 
         SelectedPiece = Pieces[position.x, position.y];
-        board.HighlightAllTiles(position, AvailableMoves(SelectedPiece));
+        board.HighlightAllTiles(position, AvailableMoves(SelectedPiece), SelectedPiece.EnemiesInRange());
     }
 
     public void MovePiece(Vector2Int position) {
@@ -57,6 +57,8 @@ public class GameManager : MonoBehaviour
     public bool[,] AvailableMoves(Piece piece) {
         bool[,] allowedMoves = new bool[8, 8];
         List<Vector2Int> possibleMoves = piece.LocationsAvailable();
+        possibleMoves.RemoveAll(pos => pos.x < 0 || pos.x > 7 || pos.y < 0 || pos.y > 7);
+        possibleMoves.RemoveAll(pos => PieceAt(pos));
 
         foreach (Vector2Int position in possibleMoves) {
             allowedMoves[position.x, position.y] = true;
@@ -64,5 +66,46 @@ public class GameManager : MonoBehaviour
         return allowedMoves;
     }
 
-   
+
+    // Function that returns true if space is occupied
+    public bool PieceAt(Vector2Int position) {
+        Piece piece = Pieces[position.x, position.y];
+
+        if (piece == null) {
+            return false;
+        }
+
+        return true;
+    }
+
+    // Function that returns true if space is occupied by a friendly piece
+    public bool FriendlyPieceAt(bool isWhite, Vector2Int position) {
+        Piece piece = Pieces[position.x, position.y];
+
+        if (piece == null) {
+            return false;
+        }
+
+        if (piece.IsWhite != isWhite) {
+            return false;
+        }
+
+        return true;
+    }
+
+    // Function that returns true if space is occupied by an enemy piece
+    public bool EnemyPieceAt(bool isWhite, Vector2Int position) {
+        Piece piece = Pieces[position.x, position.y];
+
+        if (piece == null) {
+            return false;
+        }
+
+        if (piece.IsWhite == isWhite) {
+            return false;
+        }
+
+        return true;
+    }
+
 }

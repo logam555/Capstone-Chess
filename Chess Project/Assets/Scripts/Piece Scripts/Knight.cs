@@ -24,10 +24,18 @@ public class Knight : Piece
             locations = locations.Union(RecursiveLocations(nextTile, 3)).ToList();
         }
 
-        locations.Remove(this.Position);
-        locations.RemoveAll(pos => pos.x < 0 || pos.x > 7 || pos.y < 0 || pos.y > 7);
-        locations.RemoveAll(pos => FriendlyPieceAt(pos));
         return locations;
     }
 
+    public override List<Vector2Int> EnemiesInRange() {
+        List<Vector2Int> enemyPos = new List<Vector2Int>();
+        List<Vector2Int> availableMoves = this.LocationsAvailable();
+
+        foreach(Vector2Int pos in availableMoves) {
+            if (GameManager.Instance.EnemyPieceAt(this.IsWhite, pos))
+                enemyPos.Add(pos);
+        }
+
+        return enemyPos;
+    }
 }

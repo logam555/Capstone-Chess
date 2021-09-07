@@ -99,14 +99,17 @@ public abstract class Piece : MonoBehaviour
     // Determines what positions are available to move to based on pieces movement restriction
     public abstract List<Vector2Int> LocationsAvailable();
 
+    // Function to determine if enemies are withing attacking range
+    public abstract List<Vector2Int> EnemiesInRange();
+
     // Recursive location function for pieces that move multiple tiles
-    protected List<Vector2Int> RecursiveLocations(Vector2Int position, int moves) {
+    public List<Vector2Int> RecursiveLocations(Vector2Int position, int moves, bool ignorePieces=false) {
         List<Vector2Int> locations = new List<Vector2Int>();
 
         if (position.x < 0 || position.x > 7 || position.y < 0 || position.y > 7)
             return locations;
 
-        if (FriendlyPieceAt(position))
+        if (!ignorePieces && GameManager.Instance.PieceAt(position))
             return locations;
 
         if (moves > 0) {
@@ -120,18 +123,6 @@ public abstract class Piece : MonoBehaviour
         return locations;
     }
 
-    // Function to remove spaces occupied by friendly pieces
-    public bool FriendlyPieceAt(Vector2Int position) {
-        Piece piece = GameManager.Instance.Pieces[position.x, position.y];
-
-        if (piece == null) {
-            return false;
-        }
-
-        if (piece.IsWhite != this.IsWhite) {
-            return false;
-        }
-
-        return true;
-    }
+    
+    
 }
