@@ -18,64 +18,11 @@ using UnityEngine;
 
 // Fuzzy Logic object that contains enumerator types for each attacking piece and the minimum number required
 // on a dice roll to capture a specified defending piece.
-public struct FuzzyLogic {
-    public enum Pawn : int {
-        Pawn = 4,
-        Rook = 6,
-        Bishop = 5,
-        Knight = 6,
-        Queen = 6,
-        King = 6
-    }
-
-    public enum Rook : int {
-        Pawn = 5,
-        Rook = 5,
-        Bishop = 5,
-        Knight = 4,
-        Queen = 4,
-        King = 4
-    }
-
-    public enum Bishop : int {
-        Pawn = 3,
-        Rook = 5,
-        Bishop = 4,
-        Knight = 5,
-        Queen = 5,
-        King = 5
-    }
-
-    public enum Knight : int {
-        Pawn = 2,
-        Rook = 5,
-        Bishop = 5,
-        Knight = 5,
-        Queen = 5,
-        King = 5
-    }
-
-    public enum Queen : int {
-        Pawn = 2,
-        Rook = 5,
-        Bishop = 4,
-        Knight = 4,
-        Queen = 4,
-        King = 4
-    }
-
-    public enum King : int {
-        Pawn = 1,
-        Rook = 5,
-        Bishop = 4,
-        Knight = 4,
-        Queen = 4,
-        King = 4
-    }
-}
 
 public abstract class Piece : MonoBehaviour
 {
+    [SerializeField]
+    public enum PieceType { King, Queen, Bishop, Knight, Rook, Pawn };
     [SerializeField]
     protected bool isWhite;
     protected FuzzyLogic fl = new FuzzyLogic();
@@ -90,8 +37,7 @@ public abstract class Piece : MonoBehaviour
     public Vector2Int[] Directions { get => directions; }
     public Vector2Int Position { get; set; }
     public Piece Commander { get; set; }
-    
-
+    public PieceType type { get; set; }
     // Will attempt to attack enemy piece with probabilities based on fuzzy-logic table
     // and will move to enemy piece's position if attack is successful 
     public abstract void Attack(Piece enemy, Vector2Int position);

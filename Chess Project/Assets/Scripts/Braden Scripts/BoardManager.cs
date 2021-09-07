@@ -23,12 +23,12 @@ public class BoardManager : MonoBehaviour
     [SerializeField]
     private List<GameObject> highlightPrefabs; // Not instantiated, list is filled in the editor
 
-    private List<GameObject> activePieces;
+    public List<GameObject> activePieces;
     private List<GameObject> highlights;
     
 
     private GameManager gm;
-
+    
     private void Start() {
         gm = GameManager.Instance;
         highlights = new List<GameObject>();
@@ -80,9 +80,10 @@ public class BoardManager : MonoBehaviour
                                         /// INSTANTIATION FUNCTIONS ///
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////
     // Function to spawn a piece prefab on a tile and add the object to the list of active objects
-    private void SpawnPiece(int index, Vector2Int position) {
+    private void SpawnPiece(int index, Vector2Int position,Piece.PieceType type) {
         GameObject pieceObject = Instantiate(piecePrefabs[index], GetTileCenter(position.x, position.y), Quaternion.Euler(-90, 0, 0)) as GameObject;
         pieceObject.transform.SetParent(transform);
+        pieceObject.GetComponent<Piece>().type = type;
         gm.Pieces[position.x, position.y] = pieceObject.GetComponent<Piece>();
         gm.Pieces[position.x, position.y].Position = position;
         activePieces.Add(pieceObject);
@@ -94,49 +95,49 @@ public class BoardManager : MonoBehaviour
 
         // Spawn White Pieces
         // King
-        SpawnPiece(0, new Vector2Int(4, 0));
+        SpawnPiece(0, new Vector2Int(4, 0),Piece.PieceType.King);
 
         // Queen
-        SpawnPiece(1, new Vector2Int(3, 0));
+        SpawnPiece(1, new Vector2Int(3, 0), Piece.PieceType.Queen);
 
         // Bishops
-        SpawnPiece(2, new Vector2Int(2, 0));
-        SpawnPiece(2, new Vector2Int(5, 0));
+        SpawnPiece(2, new Vector2Int(2, 0), Piece.PieceType.Bishop);
+        SpawnPiece(2, new Vector2Int(5, 0), Piece.PieceType.Bishop);
 
         // Knights
-        SpawnPiece(3, new Vector2Int(1, 0));
-        SpawnPiece(3, new Vector2Int(6, 0));
+        SpawnPiece(3, new Vector2Int(1, 0), Piece.PieceType.Knight);
+        SpawnPiece(3, new Vector2Int(6, 0), Piece.PieceType.Knight);
 
         // Rooks
-        SpawnPiece(4, new Vector2Int(0, 0));
-        SpawnPiece(4, new Vector2Int(7, 0));
+        SpawnPiece(4, new Vector2Int(0, 0), Piece.PieceType.Rook);
+        SpawnPiece(4, new Vector2Int(7, 0), Piece.PieceType.Rook);
 
         // Pawns
         for(int i = 0; i < 8; i++)
-            SpawnPiece(5, new Vector2Int(i, 1));
+            SpawnPiece(5, new Vector2Int(i, 1), Piece.PieceType.Pawn);
 
         // Spawn Black Pieces
         // King
-        SpawnPiece(6, new Vector2Int(4, 7));
+        SpawnPiece(6, new Vector2Int(4, 7), Piece.PieceType.King);
 
         // Queen
-        SpawnPiece(7, new Vector2Int(3, 7));
+        SpawnPiece(7, new Vector2Int(3, 7), Piece.PieceType.Queen);
 
         // Bishops
-        SpawnPiece(8, new Vector2Int(2, 7));
-        SpawnPiece(8, new Vector2Int(5, 7));
+        SpawnPiece(8, new Vector2Int(2, 7), Piece.PieceType.Bishop);
+        SpawnPiece(8, new Vector2Int(5, 7), Piece.PieceType.Bishop);
 
         // Knights
-        SpawnPiece(9, new Vector2Int(1, 7));
-        SpawnPiece(9, new Vector2Int(6, 7));
+        SpawnPiece(9, new Vector2Int(1, 7), Piece.PieceType.Knight);
+        SpawnPiece(9, new Vector2Int(6, 7), Piece.PieceType.Knight);
 
         // Rooks
-        SpawnPiece(10, new Vector2Int(0, 7));
-        SpawnPiece(10, new Vector2Int(7, 7));
+        SpawnPiece(10, new Vector2Int(0, 7), Piece.PieceType.Rook);
+        SpawnPiece(10, new Vector2Int(7, 7), Piece.PieceType.Rook);
 
         // Pawns
         for (int i = 0; i < 8; i++)
-            SpawnPiece(11, new Vector2Int(i, 6));
+            SpawnPiece(11, new Vector2Int(i, 6), Piece.PieceType.Pawn);
     }
 
 
@@ -176,9 +177,9 @@ public class BoardManager : MonoBehaviour
     }
 
     // Function to highlight all tiles associated with selected piece
-    public void HighlightAllTiles(Vector2Int position, bool[,] availableMoves) {
+    public void HighlightAllTiles(Vector2Int position, bool[,] availableMoves,Piece piece) {
         HighlightSelected(position);
-        HighlightAvailableMoves(availableMoves);
+        HighlightAvailableMoves(availableMoves,position,piece);
     }
 
     // Function to highlight the tile of the selected piece
@@ -187,18 +188,32 @@ public class BoardManager : MonoBehaviour
     }
 
     // Function to highlight all available moves with available highlight prefab using a boolean map of the board
-    private void HighlightAvailableMoves(bool[,] moves) {
+    private void HighlightAvailableMoves(bool[,] moves,Vector2Int position,Piece piece) {
         for(int i = 0; i < 8; i++) {
             for(int j = 0; j < 8; j++) {
                 if(moves[i,j]) {
-                    HighlightTile(1, i, j);
+                    if (gm.Pieces[i, j] != null)
+                    {
+                        if (gm.IsThereEnemy(i, j))
+                        {
+                            if (gm.IsEnemyBeside(i,j, piece))
+                            {
+                                HighlightTile(2, i, j);
+                            }
+
+                        }
+                    }
+                    else
+                    {
+                        HighlightTile(1, i, j);
+                    }
                 }
             }
         }
     }
 
     // Utility function to highlight any tile with the selected prefab at the x and y grid position
-    private void HighlightTile(int index, int x, int y) {
+    public void HighlightTile(int index, int x, int y) {
         GameObject highlight = Instantiate(highlightPrefabs[index]);
         highlights.Add(highlight);
         highlight.transform.position = GetTileCenter(x, y) + Vector3.up * 0.01f;

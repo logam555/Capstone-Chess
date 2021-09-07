@@ -16,7 +16,6 @@ public class Bishop : Piece
 {
     public List<Piece> subordinates = new List<Piece>(6);
     public bool usedCommand = false;
-
     public override void Attack(Piece enemy, Vector2Int gridPoint) {
         throw new System.NotImplementedException();
     }
