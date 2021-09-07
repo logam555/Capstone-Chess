@@ -4,7 +4,10 @@
  GameManager.cs - Manages the rules, turn order, tracking and moving pieces, and checking the state of the pieces on
  the board and the players.
 
- Version 1.2: Removed functions that dealt with board and object manipulation as that is handled in the BoardManager.
+ Version 1.2: 
+  - Added functionality for passing turn, tracking players and captured pieces, and support for three actions per turn.
+
+  - Removed functions that dealt with board and object manipulation as that is handled in the BoardManager.
  Moved attack functions to indiviudal pieces. Edited several functions to accomodate for new board system and altered
  piece scripts. Combined and simplified scripts that checked positions of all, friendly, and enemy pieces and capturing
  pieces. Removed two square movement from initial movements of pawns.*/
@@ -21,16 +24,32 @@ public class GameManager : MonoBehaviour
     public Piece[,] Pieces { get; set; }
     public Piece SelectedPiece { get; set; }
 
-    
-    public bool IsWhiteTurn { get; set; }
+
+    private Player user;
+    private Player ai;
+
+    [SerializeField]
+    public Player currentPlayer;
+
+    public bool isGameOver;
 
     private void Awake() {
         Instance = this;
     }
 
     private void Start() {
-        IsWhiteTurn = true;
+        user = new Player("Human", true);
+        ai = new Player("AI", false);
+        currentPlayer = user;
         Pieces = new Piece[8, 8];
+
+        isGameOver = false;
+    }
+
+    private void Update() {
+        if(Input.GetKeyDown(KeyCode.Space) || currentPlayer.remainingActions <= 0) {
+            PassTurn();
+        }
     }
 
     // Function that grabs a reference to the Piece object at the selected tile and
@@ -39,7 +58,7 @@ public class GameManager : MonoBehaviour
         if (Pieces[position.x, position.y] == null)
             return;
 
-        if (Pieces[position.x, position.y].IsWhite != IsWhiteTurn)
+        if (Pieces[position.x, position.y].IsWhite != currentPlayer.isWhite)
             return;
 
         SelectedPiece = Pieces[position.x, position.y];
@@ -55,16 +74,17 @@ public class GameManager : MonoBehaviour
             MovePiece(position);
         } else if (enemies.Contains(position)) {
             if(SelectedPiece.Attack(Pieces[position.x,position.y])) {
-                // Remove the captured piece
+                // Remove the captured piece and add to capture pieces
                 Piece enemy = Pieces[position.x, position.y];
+                CapturePiece(enemy);
                 board.RemoveObject(enemy.gameObject);
 
                 // Move the selected piece
                 MovePiece(position);
 
             } else {
-                // Change turn even if attack is unsuccessful
-                IsWhiteTurn = !IsWhiteTurn;
+                // Reduce number of actions remaining
+                currentPlayer.remainingActions -= 1;
             }
         }
         
@@ -83,8 +103,8 @@ public class GameManager : MonoBehaviour
         // Call function in board to move the piece game object
         board.MoveObject(SelectedPiece.gameObject, position);
 
-        // Change turn order
-        IsWhiteTurn = !IsWhiteTurn;
+        // Reduce number of actions remaining
+        currentPlayer.remainingActions -= 1;
     }
 
     // Function that returns a boolean map of the board with all positions that can be moved to by
@@ -142,6 +162,30 @@ public class GameManager : MonoBehaviour
         }
 
         return true;
+    }
+
+    // Function to pass the turn to the next player
+    private void PassTurn() {
+        currentPlayer.remainingActions = 3;
+        currentPlayer = currentPlayer == user ? ai : user;
+    }
+
+    // Function to add captured pieces to current player
+    private void CapturePiece(Piece captured) { 
+        if(captured is Pawn) {
+            currentPlayer.capturedPieces["Pawn"] += 1;
+        } else if (captured is Rook) {
+            currentPlayer.capturedPieces["Rook"] += 1;
+        } else if (captured is Knight) {
+            currentPlayer.capturedPieces["Knight"] += 1;
+        } else if (captured is Bishop) {
+            currentPlayer.capturedPieces["Bishop"] += 1;
+        } else if (captured is Queen) {
+            currentPlayer.capturedPieces["Queen"] += 1;
+        } else if (captured is King) {
+            currentPlayer.capturedPieces["King"] += 1;
+            isGameOver = true;
+        }
     }
 
 }
