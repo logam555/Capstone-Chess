@@ -1,8 +1,13 @@
 ﻿/* Written by David Corredor
  Edited by Braden Stonehill
- Last date edited: 09/06/2021
+ Last date edited: 09/07/2021
  Knight.cs - child class of Piece.cs that implements move and attack using rules for the knight
- Version 1.1: Removed dependency on game manager for determining occupied spaces as it is already 
+
+ Version 1.2:
+  - Implemented the attack function using the fuzzy logic table and the EnemiesInRange function to find all enemies within
+ movement range.
+ 
+  - Removed dependency on game manager for determining occupied spaces as it is already 
  handled in the game manager.*/
 
 using System.Collections.Generic;
@@ -14,22 +19,9 @@ public class Knight : Piece
     public override bool Attack(Piece enemy) {
         // Simulate dice roll
         int roll = DiceManager.Instance.RollDice();
-        int mininumValue;
 
         // Assign minimum attack number needed based off of fuzzy logic table
-        if (enemy is Pawn) {
-            mininumValue = (int)FuzzyLogic.Knight.Pawn;
-        } else if (enemy is Rook) {
-            mininumValue = (int)FuzzyLogic.Knight.Rook;
-        } else if (enemy is Knight) {
-            mininumValue = (int)FuzzyLogic.Knight.Knight;
-        } else if (enemy is Bishop) {
-            mininumValue = (int)FuzzyLogic.Knight.Bishop;
-        } else if (enemy is Queen) {
-            mininumValue = (int)FuzzyLogic.Knight.Queen;
-        } else {
-            mininumValue = (int)FuzzyLogic.Knight.King;
-        }
+        int mininumValue = FuzzyLogic.FindNumberKnight(enemy);
 
         if (roll >= mininumValue)
             return true;

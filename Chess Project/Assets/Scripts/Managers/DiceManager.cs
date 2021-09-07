@@ -1,3 +1,12 @@
+/* Written by David Corredor
+ Edited by Braden Stonehill
+ Last date edited: 09/07/2021
+ DiceManager.cs - Manages the random number generation and movement of the dice object.
+
+ Version 1.1: Function created to generate random number, calculate target rotation of the model based off
+ of the number, and rotate the model over time for basic animation. Removed the raycasting input for moving the
+ dice and simplified rotations.*/
+
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -13,8 +22,9 @@ public class DiceManager : MonoBehaviour
 
     private void Awake() {
         Instance = this;
-        diceObject = this.gameObject;
         isRotating = false;
+
+        diceObject = this.gameObject;
         rotationSpeed = 12.0f;
         targetRotation = Quaternion.identity;
     }
@@ -27,8 +37,9 @@ public class DiceManager : MonoBehaviour
 
     public int RollDice() {
         int number =  Random.Range(1, 7);
-        isRotating = true;
         targetRotation = CalculateRotation(number);
+
+        isRotating = true;
         return number;
     }
 

@@ -1,8 +1,13 @@
 ﻿/* Written by David Corredor
  Edited by Braden Stonehill
- Last date edited: 09/06/2021
+ Last date edited: 09/07/2021
  Queen.cs - child class of Piece.cs that implements move and attack using rules for the queen
- Version 1.1: Removed dependency on game manager for determining occupied spaces as it is already 
+
+ Version 1.2: 
+  - Implemented the attack function based on the fuzzy logic table and the EnemiesInRange function
+ to detect all attackable pieces immediately adjacent to the queen.
+
+  - Removed dependency on game manager for determining occupied spaces as it is already 
  handled in the game manager.*/
 
 using System.Collections.Generic;
@@ -14,22 +19,9 @@ public class Queen : Piece
     public override bool Attack(Piece enemy) {
         // Simulate dice roll
         int roll = DiceManager.Instance.RollDice();
-        int mininumValue;
 
         // Assign minimum attack number needed based off of fuzzy logic table
-        if (enemy is Pawn) {
-            mininumValue = (int)FuzzyLogic.Queen.Pawn;
-        } else if (enemy is Rook) {
-            mininumValue = (int)FuzzyLogic.Queen.Rook;
-        } else if (enemy is Knight) {
-            mininumValue = (int)FuzzyLogic.Queen.Knight;
-        } else if (enemy is Bishop) {
-            mininumValue = (int)FuzzyLogic.Queen.Bishop;
-        } else if (enemy is Queen) {
-            mininumValue = (int)FuzzyLogic.Queen.Queen;
-        } else {
-            mininumValue = (int)FuzzyLogic.Queen.King;
-        }
+        int mininumValue = FuzzyLogic.FindNumberQueen(enemy);
 
         if (roll >= mininumValue)
             return true;
