@@ -34,21 +34,21 @@ public class GameManager : MonoBehaviour
     }
 
     public void MovePiece(Vector2Int position) {
-        List<Vector2Int> availableMoves = SelectedPiece.LocationsAvailable();
-        if(availableMoves.Count > 0) {
-            if (availableMoves.Contains(position)) {
-                // Move piece to new position
-                Pieces[SelectedPiece.Position.x, SelectedPiece.Position.y] = null;
-                Pieces[position.x, position.y] = SelectedPiece;
-                SelectedPiece.Position = position;
+        bool[,] availableMoves = AvailableMoves(SelectedPiece);
+        
+        if (availableMoves[position.x, position.y]) {
+            // Move piece to new position
+            Pieces[SelectedPiece.Position.x, SelectedPiece.Position.y] = null;
+            Pieces[position.x, position.y] = SelectedPiece;
+            SelectedPiece.Position = position;
 
-                // Call function in board to move the piece game object
-                board.MoveObject(SelectedPiece.gameObject, position);
+            // Call function in board to move the piece game object
+            board.MoveObject(SelectedPiece.gameObject, position);
 
-                // Change turn order
-                IsWhiteTurn = !IsWhiteTurn;
-            }
+            // Change turn order
+            IsWhiteTurn = !IsWhiteTurn;
         }
+        
 
         SelectedPiece = null;
         board.RemoveHighlights();
@@ -57,12 +57,12 @@ public class GameManager : MonoBehaviour
     public bool[,] AvailableMoves(Piece piece) {
         bool[,] allowedMoves = new bool[8, 8];
         List<Vector2Int> possibleMoves = piece.LocationsAvailable();
-        foreach(Vector2Int position in possibleMoves) {
-            if (position.x < 0 || position.x > 7 || position.y < 0 || position.y > 7)
-                continue;
 
+        foreach (Vector2Int position in possibleMoves) {
             allowedMoves[position.x, position.y] = true;
         }
         return allowedMoves;
     }
+
+   
 }

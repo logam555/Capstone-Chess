@@ -27,6 +27,8 @@ public class Rook : Piece
         }
 
         locations.Remove(this.Position);
+        locations.RemoveAll(pos => pos.x < 0 || pos.x > 7 || pos.y < 0 || pos.y > 7);
+        locations.RemoveAll(pos => FriendlyPieceAt(pos));
         return locations;
     }
 }

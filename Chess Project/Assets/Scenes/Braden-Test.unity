@@ -1666,3 +1666,7 @@ MonoBehaviour:
   - {fileID: 1000010201698906, guid: edd10668f6a183d4180f8dc7b94f9e5c, type: 3}
   - {fileID: 1000013351177638, guid: 411f5295934dd1c4eb5916e3c649f0a7, type: 3}
   - {fileID: 1000014207659374, guid: 61ed95d5d9afc0842b0c4d0c96678d38, type: 3}
+  highlightPrefabs:
+  - {fileID: 1333511979136996, guid: 7cb449da071d64dd5bbb775d7a715d0b, type: 3}
+  - {fileID: 1555274435638532, guid: 2dffad96abe2048edaeed7ce746da9b4, type: 3}
+  - {fileID: 1341371675672656, guid: 47a494f88904440cbbdd71a062103351, type: 3}

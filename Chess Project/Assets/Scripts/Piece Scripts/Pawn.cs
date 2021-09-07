@@ -31,6 +31,9 @@ public class Pawn : Piece
         
         Vector2Int forwardLeft = new Vector2Int(this.Position.x - 1, this.Position.y + forwardDirection);
         locations.Add(forwardLeft);
+
+        locations.RemoveAll(pos => pos.x < 0 || pos.x > 7 || pos.y < 0 || pos.y > 7);
+        locations.RemoveAll(pos => FriendlyPieceAt(pos));
         
         return locations;
     }

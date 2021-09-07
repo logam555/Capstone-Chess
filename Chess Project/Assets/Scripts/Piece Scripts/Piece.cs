@@ -103,6 +103,12 @@ public abstract class Piece : MonoBehaviour
     protected List<Vector2Int> RecursiveLocations(Vector2Int position, int moves) {
         List<Vector2Int> locations = new List<Vector2Int>();
 
+        if (position.x < 0 || position.x > 7 || position.y < 0 || position.y > 7)
+            return locations;
+
+        if (FriendlyPieceAt(position))
+            return locations;
+
         if (moves > 0) {
             foreach (Vector2Int dir in this.directions) {
                 Vector2Int nextTile = new Vector2Int(position.x + dir.x, position.y + dir.y);
@@ -112,5 +118,20 @@ public abstract class Piece : MonoBehaviour
         }
 
         return locations;
+    }
+
+    // Function to remove spaces occupied by friendly pieces
+    public bool FriendlyPieceAt(Vector2Int position) {
+        Piece piece = GameManager.Instance.Pieces[position.x, position.y];
+
+        if (piece == null) {
+            return false;
+        }
+
+        if (piece.IsWhite != this.IsWhite) {
+            return false;
+        }
+
+        return true;
     }
 }
