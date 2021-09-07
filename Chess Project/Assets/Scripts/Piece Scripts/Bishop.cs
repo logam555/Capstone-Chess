@@ -1,9 +1,13 @@
 ﻿/* Written by David Corredor
  Edited by Braden Stonehill
- Last date edited: 09/06/2021
+ Last date edited: 09/07/2021
  Bishop.cs - child class of Piece.cs that implements move and attack using rules for the bishop
 
- Version 1.1: Removed dependency on game manager for determining occupied spaces as it is already 
+ Version 1.2: 
+  - Implemented the attack function using the fuzzy logic table. Added the EnemiesInRange
+ function to scan the immediate area for enemy pieces that can be attacked.
+
+  - Removed dependency on game manager for determining occupied spaces as it is already 
  handled in the game manager. Added subordinates and usedCommand property as bishop is a commander
  that controls other pieces and has a command authority. Changed locationsAvailable function to include
  if command authority has been used.*/
@@ -17,25 +21,12 @@ public class Bishop : Piece
     public List<Piece> subordinates = new List<Piece>(6);
     public bool usedCommand = false;
 
-    public override bool Attack(Piece enemy) {
+    public override bool Attack(Piece enemy, bool isMoving = false) {
         // Simulate dice roll
         int roll = DiceManager.Instance.RollDice();
-        int mininumValue;
 
         // Assign minimum attack number needed based off of fuzzy logic table
-        if(enemy is Pawn) {
-            mininumValue = (int) FuzzyLogic.Bishop.Pawn;
-        } else if (enemy is Rook) {
-            mininumValue = (int)FuzzyLogic.Bishop.Rook;
-        } else if (enemy is Knight) {
-            mininumValue = (int)FuzzyLogic.Bishop.Knight;
-        } else if (enemy is Bishop) {
-            mininumValue = (int)FuzzyLogic.Bishop.Bishop;
-        } else if (enemy is Queen) {
-            mininumValue = (int)FuzzyLogic.Bishop.Queen;
-        } else {
-            mininumValue = (int)FuzzyLogic.Bishop.King;
-        }
+        int mininumValue = FuzzyLogic.FindNumberBishop(enemy);
 
         if (roll >= mininumValue)
             return true;

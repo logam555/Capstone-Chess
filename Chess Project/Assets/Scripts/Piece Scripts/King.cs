@@ -1,9 +1,14 @@
 ﻿/* Written by David Corredor
  Edited by Braden Stonehill
- Last date edited: 09/06/2021
+ Last date edited: 09/07/2021
  King.cs - child class of Piece.cs that implements move and attack using rules for the King
- Version 1.1: Removed dependency on game manager for determining occupied spaces as it is already 
-handled in the game manager. Added subordinates and usedCommand property as king is a commander
+
+ Version 1.2: 
+  - Implemented the attack function using the Fuzzy Logic table and implemented the EnemiesInRange function
+ to find enemies in the immediate area that can be attacked.
+
+  - Removed dependency on game manager for determining occupied spaces as it is already 
+ handled in the game manager. Added subordinates and usedCommand property as king is a commander
  that controls other pieces and has a command authority. Changed locationsAvailable function to include
  if command authority has been used.*/
 
@@ -16,25 +21,12 @@ public class King : Piece
     public List<Piece> subordinates = new List<Piece>();
     public bool usedCommand = false;
 
-    public override bool Attack(Piece enemy) {
+    public override bool Attack(Piece enemy, bool isMoving = false) {
         // Simulate dice roll
         int roll = DiceManager.Instance.RollDice();
-        int mininumValue;
 
         // Assign minimum attack number needed based off of fuzzy logic table
-        if (enemy is Pawn) {
-            mininumValue = (int)FuzzyLogic.King.Pawn;
-        } else if (enemy is Rook) {
-            mininumValue = (int)FuzzyLogic.King.Rook;
-        } else if (enemy is Knight) {
-            mininumValue = (int)FuzzyLogic.King.Knight;
-        } else if (enemy is Bishop) {
-            mininumValue = (int)FuzzyLogic.King.Bishop;
-        } else if (enemy is Queen) {
-            mininumValue = (int)FuzzyLogic.King.Queen;
-        } else {
-            mininumValue = (int)FuzzyLogic.King.King;
-        }
+        int mininumValue = FuzzyLogic.FindNumberKing(enemy);
 
         if (roll >= mininumValue)
             return true;

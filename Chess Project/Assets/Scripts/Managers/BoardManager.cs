@@ -1,8 +1,7 @@
 /* Written by Braden Stonehill
  Edited by ___
- Last date edited: 09/06/2021
- Board.cs - Manages the instantiation, rendering, and interactions with the board.
- The Pieces property is a two-dimensional representation of the board to be used with other scripts.
+ Last date edited: 09/07/2021
+ BoardManager.cs - Manages the instantiation, rendering, and interactions with the board.
 
  Version 1: Created methods to spawn all piece models, select game objects based on interaction with the board,
  and highlight tiles on the board.*/
@@ -53,9 +52,6 @@ public class BoardManager : MonoBehaviour
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////
                                         /// INTERACTION FUNCTIONS ///
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    // Function to select a piece object for movement
-    
-
     public void MoveObject(GameObject pieceObject, Vector2Int position) {
         pieceObject.transform.position = GetTileCenter(position.x, position.y);
     }
@@ -213,7 +209,7 @@ public class BoardManager : MonoBehaviour
     private void HighlightTile(int index, int x, int y) {
         GameObject highlight = Instantiate(highlightPrefabs[index]);
         highlights.Add(highlight);
-        highlight.transform.position = GetTileCenter(x, y) + Vector3.up * (index != 2 ? 0.001f : 0.01f);
+        highlight.transform.position = GetTileCenter(x, y) + Vector3.up * (index != 2 ? -0.149f : -0.14f);
     }
 
     // Utility function to destroy all highlight game objects
