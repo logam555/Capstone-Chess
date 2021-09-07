@@ -73,7 +73,8 @@ public class GameManager : MonoBehaviour
         if (availableMoves[position.x, position.y]) {
             MovePiece(position);
         } else if (enemies.Contains(position)) {
-            bool attackSuccessful = SelectedPiece is Knight && (Mathf.Abs(position.sqrMagnitude - SelectedPiece.Position.sqrMagnitude) <= 2) ? SelectedPiece.Attack(Pieces[position.x, position.y]) : SelectedPiece.Attack(Pieces[position.x, position.y], true);
+            bool isMoving = SelectedPiece is Knight && (Mathf.Abs(position.sqrMagnitude - SelectedPiece.Position.sqrMagnitude) > 2) ? true : false;
+            bool attackSuccessful = !isMoving ? SelectedPiece.Attack(Pieces[position.x, position.y]) : SelectedPiece.Attack(Pieces[position.x, position.y], true);
             if (attackSuccessful) {
                 // Remove the captured piece and add to capture pieces
                 Piece enemy = Pieces[position.x, position.y];
@@ -84,6 +85,21 @@ public class GameManager : MonoBehaviour
                 MovePiece(position);
 
             } else {
+                if(SelectedPiece is Knight && isMoving) {
+                    List<Vector2Int> locations = SelectedPiece.LocationsAvailable();
+                    locations.RemoveAll(pos => pos.x < 0 || pos.x > 7 || pos.y < 0 || pos.y > 7);
+                    locations.RemoveAll(pos => PieceAt(pos));
+
+                    foreach(Vector2Int pos in locations) {
+                        Vector2Int diff = Vector2Int.zero;
+                        diff.x = Mathf.Abs(position.x - pos.x);
+                        diff.y = Mathf.Abs(position.y - pos.y);
+                        if (diff.sqrMagnitude <= 2 && diff.sqrMagnitude > 0) {
+                            MovePiece(pos);
+                            break;
+                        }
+                    }
+                }
                 // Reduce number of actions remaining
                 currentPlayer.remainingActions -= 1;
             }
