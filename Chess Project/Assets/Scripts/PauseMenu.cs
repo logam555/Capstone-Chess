@@ -1,5 +1,9 @@
-using System.Collections;
-using System.Collections.Generic;
+/* Written by Tommy Oh
+ Edited by ___
+ Last date edited: 09/07/2021
+ PauseMenu.cs - Manages the pause menu.
+
+ Version 1: Makes the game pause with escape key and navigation for the pause menu.*/
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
