@@ -4,7 +4,10 @@
  BoardManager.cs - Manages the instantiation, rendering, and interactions with the board.
 
  Version 1: Created methods to spawn all piece models, select game objects based on interaction with the board,
- and highlight tiles on the board.*/
+ and highlight tiles on the board.
+
+ Versions 1.1: Edited By George, 09/08/2021: Adding ...
+ */
 
 using System.Collections;
 using System.Collections.Generic;
@@ -85,6 +88,13 @@ public class BoardManager : MonoBehaviour
         pieceObject.transform.SetParent(transform);
         gm.Pieces[position.x, position.y] = pieceObject.GetComponent<Piece>();
         gm.Pieces[position.x, position.y].Position = position;
+        
+        //function to add tag to each colored set
+        if (index <= 5)
+            pieceObject.tag = "White Pieces"; 
+        else
+            pieceObject.tag = "Black Pieces";
+
         activePieces.Add(pieceObject);
     }
 
