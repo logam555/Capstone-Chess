@@ -1116,6 +1116,7 @@ GameObject:
   m_Component:
   - component: {fileID: 576608689}
   - component: {fileID: 576608690}
+  - component: {fileID: 576608691}
   m_Layer: 0
   m_Name: Settings
   m_TagString: Untagged
@@ -1155,6 +1156,18 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: c8d33a0f61cfb504e95cd701264a742f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &576608691
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 576608688}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b9342b87bde359e4ba63837e169cb163, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!1 &628776855
@@ -2312,7 +2325,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 576608690}
+      - m_Target: {fileID: 576608691}
         m_TargetAssemblyTypeName: ResolutionChange, Assembly-CSharp
         m_MethodName: FHD
         m_Mode: 1
@@ -2558,7 +2571,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 576608690}
+      - m_Target: {fileID: 576608691}
         m_TargetAssemblyTypeName: ResolutionChange, Assembly-CSharp
         m_MethodName: SD
         m_Mode: 1
@@ -2691,7 +2704,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 576608690}
+      - m_Target: {fileID: 576608691}
         m_TargetAssemblyTypeName: ResolutionChange, Assembly-CSharp
         m_MethodName: HD
         m_Mode: 1
