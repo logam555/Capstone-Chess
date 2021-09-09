@@ -9,7 +9,7 @@ public class MainMenu : MonoBehaviour
     //Starts the Game
     public void StartGame()
     {
-        SceneManager.LoadScene("SampleScene");
+        SceneManager.LoadScene("Braden-Test");
     }
 
     // Exits the Game
