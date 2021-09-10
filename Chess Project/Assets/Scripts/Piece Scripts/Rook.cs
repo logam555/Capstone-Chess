@@ -11,7 +11,6 @@ using UnityEngine;
 
 public class Rook : Piece
 {
-
     public override void Attack(Piece enemy, Vector2Int gridPoint) {
         throw new System.NotImplementedException();
     }

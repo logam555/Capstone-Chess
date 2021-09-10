@@ -9,6 +9,7 @@ public class Player:MonoBehaviour
 
     public string name;
     public int forward;
+    public int numberOfTurns;
 
     public Player(string name, bool positiveZMovement)
     {

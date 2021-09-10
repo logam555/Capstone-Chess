@@ -95,5 +95,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   isWhite: 0
+  commander: {fileID: 0}
+  commandingList: []
   subordinates: []
   usedCommand: 0

@@ -237,4 +237,279 @@ public struct FuzzyLogic
         return 0;
 
     }
+    public static void AttachCommandingPieces(GameObject piece,int index,List<GameObject> listPieces)
+    {
+        Piece p = piece.GetComponent<Piece>();
+        if (p.type == Piece.PieceType.King && p.IsWhite)
+        {
+            p.commandingList.Add(listPieces[2]);
+            p.commandingList.Add(listPieces[3]);
+            p.commandingList.Add(listPieces[11]);
+            p.commandingList.Add(listPieces[12]);
+
+        }
+        else if (p.type == Piece.PieceType.King && !p.IsWhite)
+        {
+            p.commandingList.Add(listPieces[18]);
+            p.commandingList.Add(listPieces[19]);
+            p.commandingList.Add(listPieces[27]);
+            p.commandingList.Add(listPieces[28]);
+        }
+        else if (p.type == Piece.PieceType.Queen && p.IsWhite)
+        {
+            p.commander = listPieces[0];
+            
+        }
+        else if (p.type == Piece.PieceType.Queen && !p.IsWhite)
+        {
+            p.commander = listPieces[16];
+        }
+        else if (p.type == Piece.PieceType.Bishop && p.IsWhite)
+        {
+            if (p.index == 2)
+            {
+                p.commandingList.Add(listPieces[8]);
+                p.commandingList.Add(listPieces[9]);
+                p.commandingList.Add(listPieces[10]);
+            }
+            else if (p.index == 5)
+            {
+                p.commandingList.Add(listPieces[13]);
+                p.commandingList.Add(listPieces[14]);
+                p.commandingList.Add(listPieces[15]);
+            }
+
+        }
+        else if (p.type == Piece.PieceType.Bishop && !p.IsWhite)
+        {
+            if (p.index == 2)
+            {
+                p.commandingList.Add(listPieces[24]);
+                p.commandingList.Add(listPieces[25]);
+                p.commandingList.Add(listPieces[26]);
+            }
+            else if (p.index == 5)
+            {
+                p.commandingList.Add(listPieces[29]);
+                p.commandingList.Add(listPieces[30]);
+                p.commandingList.Add(listPieces[31]);
+            }
+
+        }
+        else if (p.type == Piece.PieceType.Knight && p.IsWhite)
+        {
+            if(index == 1)
+            {
+                p.commander = listPieces[2];
+            }
+            else if(index == 6)
+            {
+                p.commander = listPieces[3];
+            }
+        }
+        else if (p.type == Piece.PieceType.Knight && !p.IsWhite)
+        {
+            if(index == 1)
+            {
+                p.commander = listPieces[18];
+            }
+            else if(index == 6)
+            {
+                p.commander = listPieces[19];
+            }
+        }
+        else if (p.type == Piece.PieceType.Pawn && p.IsWhite)
+        {
+            if(index > 0 && index < 3)
+            {
+                p.commander = listPieces[2];
+            }
+            else if(index == 3 || index == 4)
+            {
+                p.commander = listPieces[0];
+            }
+            else if(index > 4 && index <8)
+            {
+                p.commander = listPieces[3];
+            }
+        }
+        else if (p.type == Piece.PieceType.Pawn && !p.IsWhite)
+        {
+            if (index > 0 && index < 3)
+            {
+                p.commander = listPieces[18];
+            }
+            else if (index == 3 || index == 4)
+            {
+                p.commander = listPieces[16];
+            }
+            else if (index > 4 && index < 8)
+            {
+                p.commander = listPieces[19];
+            }
+        }
+        else if (p.type == Piece.PieceType.Rook && p.IsWhite)
+        {
+            if(index == 0)
+            {
+                p.commander = listPieces[2];
+            }
+            else if(index == 7)
+            {
+                p.commander = listPieces[3];
+            }
+        }
+        else if (p.type == Piece.PieceType.Rook && !p.IsWhite)
+        {
+            if (index == 0)
+            {
+                p.commander = listPieces[18];
+            }
+            else if (index == 7)
+            {
+                p.commander = listPieces[19];
+            }
+        }
+        else
+        {
+            Debug.Log("Cannot attach commanding pieces, there is no type for object!");
+        }
+    }
+    public static void AttachCommandingPieces(Piece p, int index, List<GameObject> listPieces)
+    {
+        if (p.type == Piece.PieceType.King && p.IsWhite)
+        {
+            p.commandingList.Add(listPieces[2]);
+            p.commandingList.Add(listPieces[3]);
+            p.commandingList.Add(listPieces[11]);
+            p.commandingList.Add(listPieces[12]);
+
+        }
+        else if (p.type == Piece.PieceType.King && !p.IsWhite)
+        {
+            p.commandingList.Add(listPieces[18]);
+            p.commandingList.Add(listPieces[19]);
+            p.commandingList.Add(listPieces[27]);
+            p.commandingList.Add(listPieces[28]);
+        }
+        else if (p.type == Piece.PieceType.Queen && p.IsWhite)
+        {
+            p.commander = listPieces[0];
+            
+        }
+        else if (p.type == Piece.PieceType.Queen && !p.IsWhite)
+        {
+            p.commander = listPieces[16];
+        }
+        else if (p.type == Piece.PieceType.Bishop && p.IsWhite)
+        {
+            if (p.index == 2)
+            {
+                p.commandingList.Add(listPieces[8]);
+                p.commandingList.Add(listPieces[9]);
+                p.commandingList.Add(listPieces[10]);
+            }
+            else if (p.index == 5)
+            {
+                p.commandingList.Add(listPieces[13]);
+                p.commandingList.Add(listPieces[14]);
+                p.commandingList.Add(listPieces[15]);
+            }
+
+        }
+        else if (p.type == Piece.PieceType.Bishop && !p.IsWhite)
+        {
+            if (p.index == 2)
+            {
+                p.commandingList.Add(listPieces[24]);
+                p.commandingList.Add(listPieces[25]);
+                p.commandingList.Add(listPieces[26]);
+            }
+            else if (p.index == 5)
+            {
+                p.commandingList.Add(listPieces[29]);
+                p.commandingList.Add(listPieces[30]);
+                p.commandingList.Add(listPieces[31]);
+            }
+
+        }
+        else if (p.type == Piece.PieceType.Knight && p.IsWhite)
+        {
+            if(index == 1)
+            {
+                p.commander = listPieces[2];
+            }
+            else if(index == 6)
+            {
+                p.commander = listPieces[3];
+            }
+        }
+        else if (p.type == Piece.PieceType.Knight && !p.IsWhite)
+        {
+            if(index == 1)
+            {
+                p.commander = listPieces[18];
+            }
+            else if(index == 6)
+            {
+                p.commander = listPieces[19];
+            }
+        }
+        else if (p.type == Piece.PieceType.Pawn && p.IsWhite)
+        {
+            if(index > 0 && index < 3)
+            {
+                p.commander = listPieces[2];
+            }
+            else if(index == 3 || index == 4)
+            {
+                p.commander = listPieces[0];
+            }
+            else if(index > 4 && index <8)
+            {
+                p.commander = listPieces[3];
+            }
+        }
+        else if (p.type == Piece.PieceType.Pawn && !p.IsWhite)
+        {
+            if (index > 0 && index < 3)
+            {
+                p.commander = listPieces[18];
+            }
+            else if (index == 3 || index == 4)
+            {
+                p.commander = listPieces[16];
+            }
+            else if (index > 4 && index < 8)
+            {
+                p.commander = listPieces[19];
+            }
+        }
+        else if (p.type == Piece.PieceType.Rook && p.IsWhite)
+        {
+            if(index == 0)
+            {
+                p.commander = listPieces[2];
+            }
+            else if(index == 7)
+            {
+                p.commander = listPieces[3];
+            }
+        }
+        else if (p.type == Piece.PieceType.Rook && !p.IsWhite)
+        {
+            if (index == 0)
+            {
+                p.commander = listPieces[18];
+            }
+            else if (index == 7)
+            {
+                p.commander = listPieces[19];
+            }
+        }
+        else
+        {
+            Debug.Log("Cannot attach commanding pieces, there is no type for object!");
+        }
+    }
 }

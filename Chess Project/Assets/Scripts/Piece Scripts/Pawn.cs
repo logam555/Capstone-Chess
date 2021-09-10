@@ -12,7 +12,6 @@ using UnityEngine;
 
 public class Pawn : Piece
 {
-
     public override void Attack(Piece enemy, Vector2Int gridPoint) {
         throw new System.NotImplementedException();
     }

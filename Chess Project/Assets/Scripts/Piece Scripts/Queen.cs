@@ -5,12 +5,14 @@
  Version 1.1: Removed dependency on game manager for determining occupied spaces as it is already 
  handled in the game manager.*/
 
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
 public class Queen : Piece
 {
+
     public override void Attack(Piece enemy, Vector2Int gridPoint) {
         throw new System.NotImplementedException();
     }

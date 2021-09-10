@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 4000010991507056}
   - component: {fileID: 33000011359460492}
   - component: {fileID: 23000012377736356}
-  - component: {fileID: -8419271987475674661}
+  - component: {fileID: -7670949345120859921}
   m_Layer: 0
   m_Name: Chess Queen White
   m_TagString: Untagged
@@ -82,7 +82,7 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!114 &-8419271987475674661
+--- !u!114 &-7670949345120859921
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -94,4 +94,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f31683863a35f41cf80e34dae54c1a89, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  isWhite: 1
+  isWhite: 0
+  commander: {fileID: 1000013557280178, guid: d992acfff4e84c44e97513dc227b06b7, type: 3}
+  commandingList: []

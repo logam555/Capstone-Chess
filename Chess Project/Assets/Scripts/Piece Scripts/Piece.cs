@@ -15,7 +15,7 @@ using System.Collections;
 using System.Linq;
 using System.Collections.Generic;
 using UnityEngine;
-
+using System;
 // Fuzzy Logic object that contains enumerator types for each attacking piece and the minimum number required
 // on a dice roll to capture a specified defending piece.
 
@@ -25,19 +25,23 @@ public abstract class Piece : MonoBehaviour
     public enum PieceType { King, Queen, Bishop, Knight, Rook, Pawn };
     [SerializeField]
     protected bool isWhite;
+    [SerializeField]
+    public GameObject commander;
+    [SerializeField]
+    public List<GameObject> commandingList;
+    public int index;
     protected FuzzyLogic fl = new FuzzyLogic();
     protected Vector2Int[] directions = {new Vector2Int(0,1), new Vector2Int(1,0),
                                new Vector2Int(0,-1), new Vector2Int(-1,0),
                                new Vector2Int(1,1), new Vector2Int(1,-1),
                                new Vector2Int(-1,-1), new Vector2Int(-1,1)};
-
-
     public bool IsWhite { get => isWhite; }
     public bool Delegated { get; set; }
     public Vector2Int[] Directions { get => directions; }
     public Vector2Int Position { get; set; }
-    public Piece Commander { get; set; }
+   
     public PieceType type { get; set; }
+
     // Will attempt to attack enemy piece with probabilities based on fuzzy-logic table
     // and will move to enemy piece's position if attack is successful 
     public abstract void Attack(Piece enemy, Vector2Int position);

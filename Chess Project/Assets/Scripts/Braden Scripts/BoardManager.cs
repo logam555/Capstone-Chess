@@ -1,6 +1,6 @@
 /* Written by Braden Stonehill
- Edited by ___
- Last date edited: 09/06/2021
+ Edited by David Corredor
+ Last date edited: 10/48/2021
  Board.cs - Manages the instantiation, rendering, and interactions with the board.
  The Pieces property is a two-dimensional representation of the board to be used with other scripts.
 
@@ -84,9 +84,11 @@ public class BoardManager : MonoBehaviour
         GameObject pieceObject = Instantiate(piecePrefabs[index], GetTileCenter(position.x, position.y), Quaternion.Euler(-90, 0, 0)) as GameObject;
         pieceObject.transform.SetParent(transform);
         pieceObject.GetComponent<Piece>().type = type;
+        pieceObject.GetComponent<Piece>().index = index;
         gm.Pieces[position.x, position.y] = pieceObject.GetComponent<Piece>();
         gm.Pieces[position.x, position.y].Position = position;
         activePieces.Add(pieceObject);
+        gm.Pieces[position.x, position.y].index = gm.Pieces[position.x, position.y].Position.x;
     }
 
     // Initilization function to spawn all chess pieces
@@ -138,9 +140,22 @@ public class BoardManager : MonoBehaviour
         // Pawns
         for (int i = 0; i < 8; i++)
             SpawnPiece(11, new Vector2Int(i, 6), Piece.PieceType.Pawn);
+
+        AttachCommandingPieces();
     }
 
-
+    private void AttachCommandingPieces()
+    {
+        foreach(GameObject ap in activePieces)
+        {
+            Piece tempPiece = ap.GetComponent<Piece>();
+            FuzzyLogic.AttachCommandingPieces(ap, tempPiece.index,activePieces);
+        }
+        foreach(Piece gpc in gm.Pieces)
+        {
+            FuzzyLogic.AttachCommandingPieces(gpc, gpc.index,activePieces);
+        }
+    }
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////
                                         /// RENDERING FUNCTIONS ///
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////
