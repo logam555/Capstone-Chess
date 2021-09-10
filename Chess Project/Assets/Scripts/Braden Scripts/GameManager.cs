@@ -12,15 +12,24 @@ public class GameManager : MonoBehaviour
     public Dice dice;
     
     public bool IsWhiteTurn { get; set; }
-    public bool IsAttacking { get; set; }
+    [SerializeField]
+    public GameObject playerOne;
+    [SerializeField]
+    public GameObject playerTwo;
+    [SerializeField]
+    public GameObject ai;
+    [SerializeField]
+    public GameObject currentPlayer;
+
     private void Awake() {
         Instance = this;
     }
 
     private void Start() {
         IsWhiteTurn = true;
+        playerOne.GetComponent<Player>().isWhite = true;
+        playerTwo.GetComponent<Player>().isWhite = false;
         Pieces = new Piece[8, 8];
-        IsAttacking = false;
     }
 
     public void SelectPiece(Vector2Int position) {
@@ -80,11 +89,11 @@ public class GameManager : MonoBehaviour
 
             // Call function in board to move the piece game object
             board.MoveObject(SelectedPiece.gameObject, position);
-
             // Change turn order
-            IsWhiteTurn = !IsWhiteTurn;
+            
             dice.isAttacking = false;
-        }   
+        }
+        currentPlayer.GetComponent<Player>().numberOfTurns--;
     }
     public void Move(Vector2Int position)
     {
@@ -92,7 +101,9 @@ public class GameManager : MonoBehaviour
         Pieces[position.x, position.y] = SelectedPiece;
         SelectedPiece.Position = position;
         board.MoveObject(SelectedPiece.gameObject, position);
-        IsWhiteTurn = !IsWhiteTurn;
+       
+        currentPlayer.GetComponent<Player>().numberOfTurns--;
+
     }
     public bool IsEnemyBeside(Vector2Int loc, Piece piece)
     {
@@ -166,8 +177,8 @@ public class GameManager : MonoBehaviour
         }
         else
         {
-            return false;
             Debug.Log("Piece does not have type on script!");
+            return false;   
         }
         return false;
     }

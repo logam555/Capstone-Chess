@@ -41,10 +41,37 @@ public class BoardManager : MonoBehaviour
 
         if(Input.GetMouseButtonDown(0)) {
             if(selection.x >= 0 && selection.y >= 0) {
-                if(gm.SelectedPiece == null) {
-                    gm.SelectPiece(selection);
-                } else {
-                    gm.MovePiece(selection);
+                Player currentPlayer = gm.currentPlayer.GetComponent<Player>();
+                if (gm.IsWhiteTurn == currentPlayer.isWhite)
+                {
+                    if(currentPlayer.numberOfTurns > 0)
+                    {
+                        if (gm.SelectedPiece == null)
+                        {
+                            gm.SelectPiece(selection);
+                        }
+                        else
+                        {
+                            gm.MovePiece(selection);
+                        }
+                    }
+                    else
+                    {
+                        //Switch players
+                        if (!gm.IsWhiteTurn)
+                        {
+                            gm.IsWhiteTurn = !gm.IsWhiteTurn;
+                            currentPlayer.numberOfTurns = 3;
+                            gm.currentPlayer = gm.playerOne;
+                            
+                        }
+                        else
+                        {
+                            gm.IsWhiteTurn = !gm.IsWhiteTurn;
+                            currentPlayer.numberOfTurns = 3;
+                            gm.currentPlayer = gm.playerTwo;
+                        }
+                    }
                 }
             }
         }
@@ -153,7 +180,11 @@ public class BoardManager : MonoBehaviour
         }
         foreach(Piece gpc in gm.Pieces)
         {
-            FuzzyLogic.AttachCommandingPieces(gpc, gpc.index,activePieces);
+            if(gpc != null)
+            {
+                FuzzyLogic.AttachCommandingPieces(gpc, gpc.index, activePieces);
+
+            }
         }
     }
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////
