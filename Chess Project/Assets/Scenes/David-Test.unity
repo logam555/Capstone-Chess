@@ -123,6 +123,29 @@ NavMeshSettings:
     debug:
       m_Flags: 0
   m_NavMeshData: {fileID: 0}
+--- !u!1 &50168673 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 6801955793903224657, guid: 0d2b9188252a78b4298fb8e34d9229ee, type: 3}
+  m_PrefabInstance: {fileID: 1728296978}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &50168678
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 50168673}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ea31f3daf23954afba08073f0415ed9b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  DiceObject: {fileID: 50168673}
+  number: 0
+  gameManager: {fileID: 1326303753}
+  activeCamera: {fileID: 1428868569}
+  previousState: {x: 0, y: 0, z: 0}
+  isAttacking: 0
 --- !u!1001 &153995415
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -1470,6 +1493,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   board: {fileID: 1991664890}
+  dice: {fileID: 50168678}
 --- !u!4 &1326303755
 Transform:
   m_ObjectHideFlags: 0
