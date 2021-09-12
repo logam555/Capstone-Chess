@@ -97,5 +97,8 @@ MonoBehaviour:
   isWhite: 1
   commander: {fileID: 1000013557280178, guid: d992acfff4e84c44e97513dc227b06b7, type: 3}
   commandingList: []
+  numberOfTurns: 1
+  numberOfTurnsPawn: 1
+  index: 0
   subordinates: []
   usedCommand: 0

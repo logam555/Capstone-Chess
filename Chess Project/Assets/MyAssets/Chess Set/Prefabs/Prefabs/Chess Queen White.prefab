@@ -94,6 +94,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f31683863a35f41cf80e34dae54c1a89, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  isWhite: 0
+  isWhite: 1
   commander: {fileID: 1000013557280178, guid: d992acfff4e84c44e97513dc227b06b7, type: 3}
   commandingList: []
+  numberOfTurns: 3
+  numberOfTurnsPawn: 1
+  index: 0

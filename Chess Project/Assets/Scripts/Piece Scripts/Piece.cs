@@ -29,6 +29,12 @@ public abstract class Piece : MonoBehaviour
     public GameObject commander;
     [SerializeField]
     public List<GameObject> commandingList;
+    [SerializeField]
+    public int numberOfTurns = 3;
+    [SerializeField]
+    public int numberOfTurnsPawn = 1;
+    [SerializeField]
+    public System.Guid id;
     public int index;
     protected FuzzyLogic fl = new FuzzyLogic();
     protected Vector2Int[] directions = {new Vector2Int(0,1), new Vector2Int(1,0),

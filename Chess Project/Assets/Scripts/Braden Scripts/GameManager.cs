@@ -8,10 +8,10 @@ public class GameManager : MonoBehaviour
 
     public BoardManager board; // Not instantiated, value is filled in the editor
     public Piece[,] Pieces { get; set; }
-    public Piece SelectedPiece { get; set; }
+    public Piece selectedPiece { get; set; }
     public Dice dice;
     
-    public bool IsWhiteTurn { get; set; }
+    public bool isWhiteTurn { get; set; }
     [SerializeField]
     public GameObject playerOne;
     [SerializeField]
@@ -26,7 +26,7 @@ public class GameManager : MonoBehaviour
     }
 
     private void Start() {
-        IsWhiteTurn = true;
+        isWhiteTurn = true;
         playerOne.GetComponent<Player>().isWhite = true;
         playerTwo.GetComponent<Player>().isWhite = false;
         Pieces = new Piece[8, 8];
@@ -36,38 +36,221 @@ public class GameManager : MonoBehaviour
         if (Pieces[position.x, position.y] == null)
             return;
 
-        if (Pieces[position.x, position.y].IsWhite != IsWhiteTurn)
+        if (Pieces[position.x, position.y].IsWhite != isWhiteTurn)
             return;
 
-        SelectedPiece = Pieces[position.x, position.y];
-        board.HighlightAllTiles(position, AvailableMoves(SelectedPiece),SelectedPiece);
+        selectedPiece = Pieces[position.x, position.y];
+        HighlightMoves(position, selectedPiece);
     }
+    public Piece SelectPieceFromPosition(Vector2Int position)
+    {
+        if (Pieces[position.x, position.y] == null)
+            return null;
 
+        if (Pieces[position.x, position.y].IsWhite != isWhiteTurn)
+            return null;
+        Piece tempPiece = Pieces[position.x, position.y];
+        return tempPiece;
+    }
+    public void HighlightMoves(Vector2Int position,Piece selectedPiece)
+    {
+        board.HighlightAllTiles(position, AvailableMoves(selectedPiece), selectedPiece);
+
+    }
+    public bool SubtractTurn(Piece activePiece,Piece commander)
+    {
+        Piece SuperCommander = isWhiteTurn ? board.activePieces[0].GetComponent<Piece>()
+            : board.activePieces[16].GetComponent<Piece>();
+        if (activePiece.type == Piece.PieceType.King && (activePiece.numberOfTurns > 0 && activePiece.numberOfTurnsPawn > 0))
+        {
+            return true;
+        }
+        else if (activePiece.type == Piece.PieceType.Pawn)
+        {
+
+            if (commander.type == Piece.PieceType.King & (SuperCommander.numberOfTurns > 0 && SuperCommander.numberOfTurnsPawn > 0))
+            {
+                SuperCommander.numberOfTurns--;
+                SuperCommander.numberOfTurnsPawn--;
+                return true;
+            }
+            else if (commander.type != Piece.PieceType.King && (commander.numberOfTurnsPawn > 0 && SuperCommander.numberOfTurns > 0))
+            {
+                commander.numberOfTurns--;
+                SuperCommander.numberOfTurns--;
+                return true;
+            }
+            else if (SuperCommander.numberOfTurns < 0)
+            {
+                SwitchPlayers();
+                return false;
+            }
+            else
+            {
+                return false;
+            }
+        }
+        else if (activePiece.type != Piece.PieceType.Pawn && activePiece.type != Piece.PieceType.King)
+        {
+            if (commander.type == Piece.PieceType.King && (SuperCommander.numberOfTurns > 0 && activePiece.numberOfTurns > 0))
+            {
+                SuperCommander.numberOfTurns--;
+                activePiece.numberOfTurns--;
+                return true;
+            }
+            else if (commander.type == Piece.PieceType.Queen && (SuperCommander.numberOfTurns > 0 && SuperCommander.numberOfTurnsPawn > 0))
+            {
+                SuperCommander.numberOfTurns--;
+                SuperCommander.numberOfTurnsPawn--;
+                return true;
+            }
+            else if (commander.type == Piece.PieceType.Bishop && (activePiece.numberOfTurns > 0 && SuperCommander.numberOfTurns > 0))
+            {
+                commander.numberOfTurns--;
+                SuperCommander.numberOfTurns--;
+                return true;
+            }
+            else if (commander.type != Piece.PieceType.King && (commander.numberOfTurns > 0 && SuperCommander.numberOfTurns > 0))
+            {
+                commander.numberOfTurns--;
+                SuperCommander.numberOfTurns--;
+                return true;
+            }
+            else if (SuperCommander.numberOfTurns < 0)
+            {
+                SwitchPlayers();
+                return false;
+            }
+            else
+            {
+                return false;
+            }
+        }
+        else
+        {
+            return false;
+        }
+    }
+    public bool CheckTurns(Piece tempPiece)
+    {
+        Player cPlayer = currentPlayer.GetComponent<Player>();
+        Piece activePiece = null;
+        if(selectedPiece != null)
+        {
+            activePiece = board.activePieces.Find(m => m.GetComponent<Piece>().id == selectedPiece.id).GetComponent<Piece>();
+
+        }
+        Piece commander = activePiece.type == Piece.PieceType.King ? null : activePiece.commander.GetComponent<Piece>();
+
+        if (cPlayer.isWhite)
+        {
+            return SubtractTurn(activePiece, commander);
+        }
+        else
+        {
+            return SubtractTurn(activePiece, commander);
+        }
+    }
+    public void SwitchPlayers()
+    {
+        ResetTurns(currentPlayer);
+        //Switch players
+        if (!isWhiteTurn)
+        {
+            isWhiteTurn = !isWhiteTurn;
+
+            currentPlayer = playerOne;
+
+        }
+        else
+        {
+            isWhiteTurn = !isWhiteTurn;
+
+            currentPlayer = playerTwo;
+        }
+       
+    }
+    public void ResetTurns(GameObject currentPlayer)
+    {
+        if (currentPlayer.GetComponent<Player>().isWhite)
+        {
+            List<GameObject> kingCommander = board.activePieces.FindAll(m => m.GetComponent<Piece>().type == Piece.PieceType.King && m.GetComponent<Piece>().IsWhite);
+            List<GameObject> bishopCommander = board.activePieces.FindAll(m => m.GetComponent<Piece>().type == Piece.PieceType.Bishop && m.GetComponent<Piece>().IsWhite);
+            foreach(GameObject i in kingCommander)
+            {
+                i.GetComponent<Piece>().numberOfTurns = 3;
+                i.GetComponent<Piece>().numberOfTurnsPawn = 1;
+            }
+            foreach(GameObject i in bishopCommander)
+            {
+                i.GetComponent<Piece>().numberOfTurns = 1;
+            }
+
+        }
+        else
+        {
+            List<GameObject> kingCommander = board.activePieces.FindAll(m => m.GetComponent<Piece>().type == Piece.PieceType.King && !m.GetComponent<Piece>().IsWhite);
+            List<GameObject> bishopCommander = board.activePieces.FindAll(m => m.GetComponent<Piece>().type == Piece.PieceType.Bishop && !m.GetComponent<Piece>().IsWhite);
+            foreach (GameObject i in kingCommander)
+            {
+                i.GetComponent<Piece>().numberOfTurns = 3;
+                i.GetComponent<Piece>().numberOfTurnsPawn = 1;
+            }
+            foreach (GameObject i in bishopCommander)
+            {
+                i.GetComponent<Piece>().numberOfTurns = 1;
+            }
+        }
+    }
     public void MovePiece(Vector2Int avaliablePosition) {
-        bool[,] availableMoves = AvailableMoves(SelectedPiece);
-        
+        bool[,] availableMoves = AvailableMoves(selectedPiece);
         if (availableMoves[avaliablePosition.x, avaliablePosition.y]) {
             Piece tempPiece = Pieces[avaliablePosition.x, avaliablePosition.y];
-            if(tempPiece != null)
+            if (!board.CanTakeTurn())
+            {
+                SwitchPlayers();
+            }
+            if (tempPiece != null)
             {
                 if (CanAttack(avaliablePosition))
                 {
-                    Attack(avaliablePosition);
+                   
+                    if (CheckTurns(tempPiece))
+                    {
+
+                        Attack(avaliablePosition);
+                        selectedPiece = null;
+                    }
+                    else
+                    {
+                        selectedPiece = null;
+                    }
+                    
+                    
                 }
             }
             else
             {
-                Move(avaliablePosition);
+                if (CheckTurns(tempPiece))
+                {      
+                    Move(avaliablePosition);
+                    selectedPiece = null;
+                }
+                else
+                {
+                    selectedPiece = null;
+                }
             }
+         
         }
-        SelectedPiece = null;
+        selectedPiece = null;
         board.RemoveHighlights();
     }
     public bool CanAttack(Vector2Int position)
     {
         if (IsThereEnemy(position))
         {
-            if (IsEnemyBeside(position.x,position.y, SelectedPiece))
+            if (IsEnemyBeside(position.x,position.y, selectedPiece))
             {
                 return true;
             }
@@ -83,26 +266,23 @@ public class GameManager : MonoBehaviour
         {
             KillEnemy(Pieces[position.x, position.y]);
             // Move piece to new position
-            Pieces[SelectedPiece.Position.x, SelectedPiece.Position.y] = null;
-            Pieces[position.x, position.y] = SelectedPiece;
-            SelectedPiece.Position = position;
+            Pieces[selectedPiece.Position.x, selectedPiece.Position.y] = null;
+            Pieces[position.x, position.y] = selectedPiece;
+            selectedPiece.Position = position;
 
             // Call function in board to move the piece game object
-            board.MoveObject(SelectedPiece.gameObject, position);
+            board.MoveObject(selectedPiece.gameObject, position);
             // Change turn order
             
             dice.isAttacking = false;
         }
-        currentPlayer.GetComponent<Player>().numberOfTurns--;
     }
     public void Move(Vector2Int position)
     {
-        Pieces[SelectedPiece.Position.x, SelectedPiece.Position.y] = null;
-        Pieces[position.x, position.y] = SelectedPiece;
-        SelectedPiece.Position = position;
-        board.MoveObject(SelectedPiece.gameObject, position);
-       
-        currentPlayer.GetComponent<Player>().numberOfTurns--;
+        Pieces[selectedPiece.Position.x, selectedPiece.Position.y] = null;
+        Pieces[position.x, position.y] = selectedPiece;
+        selectedPiece.Position = position;
+        board.MoveObject(selectedPiece.gameObject, position);
 
     }
     public bool IsEnemyBeside(Vector2Int loc, Piece piece)
@@ -198,7 +378,7 @@ public class GameManager : MonoBehaviour
     }
     public bool IsThereEnemy(Vector2Int positionOfPiece)
     {
-       if(IsWhiteTurn == !Pieces[positionOfPiece.x, positionOfPiece.y].IsWhite || !IsWhiteTurn == Pieces[positionOfPiece.x, positionOfPiece.y].IsWhite)
+       if(isWhiteTurn == !Pieces[positionOfPiece.x, positionOfPiece.y].IsWhite || !isWhiteTurn == Pieces[positionOfPiece.x, positionOfPiece.y].IsWhite)
         {
             return true;
         }
@@ -206,7 +386,7 @@ public class GameManager : MonoBehaviour
     }
     public bool IsThereEnemy(int i, int j)
     {
-        if (IsWhiteTurn == !Pieces[i, j].IsWhite || !IsWhiteTurn == Pieces[i, j].IsWhite)
+        if (isWhiteTurn == !Pieces[i, j].IsWhite || !isWhiteTurn == Pieces[i, j].IsWhite)
         {
             return true;
         }

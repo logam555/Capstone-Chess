@@ -7,7 +7,6 @@ public class Player:MonoBehaviour
     public List<GameObject> pieces;
     public List<GameObject> capturedPieces;
     public int forward;
-    public int numberOfTurns;
     public bool isWhite { get; set; }
     public bool isPlaying;
     public Player(string name, bool positiveZMovement)

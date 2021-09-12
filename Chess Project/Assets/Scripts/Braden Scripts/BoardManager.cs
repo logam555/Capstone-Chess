@@ -25,7 +25,7 @@ public class BoardManager : MonoBehaviour
 
     public List<GameObject> activePieces;
     private List<GameObject> highlights;
-    
+    private bool isSelected = false;
 
     private GameManager gm;
     
@@ -42,46 +42,143 @@ public class BoardManager : MonoBehaviour
         if(Input.GetMouseButtonDown(0)) {
             if(selection.x >= 0 && selection.y >= 0) {
                 Player currentPlayer = gm.currentPlayer.GetComponent<Player>();
-                if (gm.IsWhiteTurn == currentPlayer.isWhite)
+                if (ValidateTurn(currentPlayer))
                 {
-                    if(currentPlayer.numberOfTurns > 0)
-                    {
-                        if (gm.SelectedPiece == null)
+                    
+                        if (gm.selectedPiece == null)
                         {
                             gm.SelectPiece(selection);
+                            isSelected = true;
                         }
                         else
                         {
                             gm.MovePiece(selection);
                         }
+                    
+                }
+                else
+                {
+                    if (currentPlayer.isWhite)
+                    {
+                        Piece kingCommander = activePieces[0].GetComponent<Piece>();
+                        if(kingCommander.numberOfTurns == 0)
+                        {
+                            gm.SwitchPlayers();
+                        }
                     }
                     else
                     {
-                        //Switch players
-                        if (!gm.IsWhiteTurn)
+                        Piece kingCommander = activePieces[16].GetComponent<Piece>();
+                        if (kingCommander.numberOfTurns == 0)
                         {
-                            gm.IsWhiteTurn = !gm.IsWhiteTurn;
-                            currentPlayer.numberOfTurns = 3;
-                            gm.currentPlayer = gm.playerOne;
-                            
-                        }
-                        else
-                        {
-                            gm.IsWhiteTurn = !gm.IsWhiteTurn;
-                            currentPlayer.numberOfTurns = 3;
-                            gm.currentPlayer = gm.playerTwo;
+                            gm.SwitchPlayers();
                         }
                     }
+                    RemoveHighlights();
+                    gm.selectedPiece = null;
                 }
+                
             }
         }
     }
+    public bool ValidateTurn(Player cPlayer)
+    {
+        
+        if (gm.selectedPiece != null)
+        {
+            return CanTakeTurn();
+            
+        }
+        else
+        {
+            if (gm.isWhiteTurn)
+            {
+                Piece SuperCommander = activePieces[0].GetComponent<Piece>();
+                if(SuperCommander.numberOfTurns > 0)
+                {
+                    return true;
 
-    //////////////////////////////////////////////////////////////////////////////////////////////////////////////
-                                        /// INTERACTION FUNCTIONS ///
+                }
+            }
+            else
+            {
+                Piece SuperCommander = activePieces[16].GetComponent<Piece>();
+
+                if (SuperCommander.numberOfTurns > 0)
+                {
+                    return true;
+
+                }
+            }
+            return false;
+           
+        }
+    }
+    public bool CanTakeTurn()
+    {
+            Piece selectedPiece = gm.selectedPiece;
+            Piece activePiece = activePieces.Find(m => m.GetComponent<Piece>().id == selectedPiece.id).GetComponent<Piece>();
+            Piece commander = activePiece.type == Piece.PieceType.King ? null : activePiece.commander.GetComponent<Piece>();
+
+            if (activePiece.IsWhite)
+            {
+                Piece SuperCommander = activePieces[0].GetComponent<Piece>();
+                if ((activePiece.type == Piece.PieceType.King && commander == null) && activePiece.numberOfTurns > 0)
+                {
+                    return true;
+                }
+                else if (commander.type == Piece.PieceType.Bishop)
+                {
+                    if (commander.numberOfTurns > 0 && SuperCommander.numberOfTurns > 0)
+                    {
+                        return true;
+                    }
+                }
+                else if (commander.type == Piece.PieceType.King)
+                {
+                    if (SuperCommander.numberOfTurns > 0 && SuperCommander.numberOfTurnsPawn > 0)
+                    {
+                        return true;
+                    }
+                }
+                else
+                {
+                    return false;
+                }
+            }
+            else
+            {
+                Piece SuperCommander = activePieces[16].GetComponent<Piece>();
+                if ((activePiece.type == Piece.PieceType.King && commander == null) && activePiece.numberOfTurns > 0)
+                {
+                    return true;
+                }
+                else if (commander.type == Piece.PieceType.Bishop)
+                {
+                    if (commander.numberOfTurns > 0 && SuperCommander.numberOfTurns > 0)
+                    {
+                        return true;
+                    }
+                }
+                else if (commander.type == Piece.PieceType.King)
+                {
+                    if (SuperCommander.numberOfTurns > 0 && SuperCommander.numberOfTurnsPawn > 0)
+                    {
+                        return true;
+                    }
+                }
+                else
+                {
+                    return false;
+                }
+            }
+            return false;
+    }
+    /////////////////////////////////////////////////// &&///////////////////////////////////////////////////////////
+    /// INTERACTION FUNCTIONS ///
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////
     // Function to select a piece object for movement
-    
+
 
     public void MoveObject(GameObject pieceObject, Vector2Int position) {
         pieceObject.transform.position = GetTileCenter(position.x, position.y);
@@ -112,6 +209,7 @@ public class BoardManager : MonoBehaviour
         pieceObject.transform.SetParent(transform);
         pieceObject.GetComponent<Piece>().type = type;
         pieceObject.GetComponent<Piece>().index = index;
+        pieceObject.GetComponent<Piece>().id = System.Guid.NewGuid();
         gm.Pieces[position.x, position.y] = pieceObject.GetComponent<Piece>();
         gm.Pieces[position.x, position.y].Position = position;
         activePieces.Add(pieceObject);

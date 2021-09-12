@@ -320,7 +320,7 @@ public struct FuzzyLogic
         }
         else if (p.type == Piece.PieceType.Pawn && p.IsWhite)
         {
-            if(index > 0 && index < 3)
+            if(index >= 0 && index < 3)
             {
                 p.commander = listPieces[2];
             }
@@ -335,7 +335,7 @@ public struct FuzzyLogic
         }
         else if (p.type == Piece.PieceType.Pawn && !p.IsWhite)
         {
-            if (index > 0 && index < 3)
+            if (index >= 0 && index < 3)
             {
                 p.commander = listPieces[18];
             }
