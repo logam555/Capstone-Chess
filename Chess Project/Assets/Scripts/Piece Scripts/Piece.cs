@@ -36,6 +36,7 @@ public abstract class Piece : MonoBehaviour
     [SerializeField]
     public System.Guid id;
     public int index;
+    public bool isBishopDead { get; set; }
     protected FuzzyLogic fl = new FuzzyLogic();
     protected Vector2Int[] directions = {new Vector2Int(0,1), new Vector2Int(1,0),
                                new Vector2Int(0,-1), new Vector2Int(-1,0),

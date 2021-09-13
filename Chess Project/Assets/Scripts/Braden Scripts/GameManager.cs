@@ -128,7 +128,7 @@ public class GameManager : MonoBehaviour
     {
         Piece SuperCommander = isWhiteTurn ? board.activePieces[0].GetComponent<Piece>()
             : board.activePieces[16].GetComponent<Piece>();
-        if (activePiece.type == Piece.PieceType.King && (activePiece.numberOfTurns > 0 && activePiece.numberOfTurnsPawn > 0))
+        if (activePiece.type == Piece.PieceType.King && (activePiece.numberOfTurns > 0))
         {
             SuperCommander.numberOfTurns--;
             return true;
@@ -228,6 +228,19 @@ public class GameManager : MonoBehaviour
         bool isSuccessful = IsAttackSuccessful(dice.RollDice(), position);
         if (isSuccessful)
         {
+            Piece killPiece = Pieces[position.x, position.y];
+            if(Pieces[position.x,position.y].type == Piece.PieceType.Bishop && killPiece.IsWhite)
+            {
+                Piece superCommander = board.activePieces[0].GetComponent<Piece>();
+                superCommander.isBishopDead = true;
+                //ReassignRoles(killPiece);
+            }
+            else
+            {
+                Piece superCommander = board.activePieces[16].GetComponent<Piece>();
+                superCommander.isBishopDead = true;
+                //ReassignRoles(killPiece);
+            }
             KillEnemy(Pieces[position.x, position.y]);
             // Move piece to new position
             Pieces[selectedPiece.Position.x, selectedPiece.Position.y] = null;
@@ -239,6 +252,7 @@ public class GameManager : MonoBehaviour
             // Change turn order
 
             dice.isAttacking = false;
+
         }
     }
     public void KillEnemy(Piece enemyPiece)
@@ -270,7 +284,7 @@ public class GameManager : MonoBehaviour
             List<GameObject> bishopCommander = board.activePieces.FindAll(m => m.GetComponent<Piece>().type == Piece.PieceType.Bishop && m.GetComponent<Piece>().IsWhite);
             foreach (GameObject i in kingCommander)
             {
-                i.GetComponent<Piece>().numberOfTurns = 3;
+                i.GetComponent<Piece>().numberOfTurns = !i.GetComponent<Piece>().isBishopDead ? 3 : 2;
                 i.GetComponent<Piece>().numberOfTurnsPawn = 1;
             }
             foreach (GameObject i in bishopCommander)
@@ -285,7 +299,7 @@ public class GameManager : MonoBehaviour
             List<GameObject> bishopCommander = board.activePieces.FindAll(m => m.GetComponent<Piece>().type == Piece.PieceType.Bishop && !m.GetComponent<Piece>().IsWhite);
             foreach (GameObject i in kingCommander)
             {
-                i.GetComponent<Piece>().numberOfTurns = 3;
+                i.GetComponent<Piece>().numberOfTurns = !i.GetComponent<Piece>().isBishopDead ? 3 : 2; 
                 i.GetComponent<Piece>().numberOfTurnsPawn = 1;
             }
             foreach (GameObject i in bishopCommander)
