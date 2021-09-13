@@ -29,11 +29,7 @@ public class BoardManager : MonoBehaviour
     private List<GameObject> activePieces;
     private List<GameObject> highlights;
 
-<<<<<<< HEAD
     private Vector2Int positionCurrent = new Vector2Int(0, 0); //using for mouse over highlight
-=======
-    private Vector2Int positionCurrent = new Vector2Int(0, 0);
->>>>>>> origin/GL-Phase-1-V3g
 
     private GameManager gm;
 
@@ -42,13 +38,8 @@ public class BoardManager : MonoBehaviour
         highlights = new List<GameObject>();
         SpawnAllPieces();
 
-<<<<<<< HEAD
         //setup static board naming
 
-=======
-     
-        //setup static board naming
->>>>>>> origin/GL-Phase-1-V3g
     }
 
     private void Update() {
@@ -95,23 +86,14 @@ public class BoardManager : MonoBehaviour
         //mouse movement highlighting
         positionCurrent.x = (int)hit.point.x;
         positionCurrent.y = (int)hit.point.z;
-        Debug.Log(positionCurrent);
-
-<<<<<<< HEAD
+        Debug.Log("x"+ positionCurrent + "y");
+ 
         //testing mouse over using positionCurrent //redo positionCurrent 
-        if (positionCurrent.x != 0 & positionCurrent.y != 0)
-            HighlightSelectedMouse();
+        if ((positionCurrent.x != 0 && positionCurrent.y != 0))
+            HighlightSelectedMouse(); //HighlightSelectedMouse(positionCurrent);
         else
-            highlights.Clear();
-=======
-        
-        if(positionCurrent != positionCurrent)
-            HighlightSelectedMouse(positionCurrent);
-        else
-            highlights.Clear();
-        
-    }
->>>>>>> origin/GL-Phase-1-V3g
+            //highlights.Clear();
+            Debug.Log("debug"+ positionCurrent);
 
     }
 
@@ -130,15 +112,6 @@ public class BoardManager : MonoBehaviour
             pieceObject.tag = "White Pieces";
         else
             pieceObject.tag = "Black Pieces";
-
-<<<<<<< HEAD
-        //adding tags for White and Black pieces. 0-5 index for white, 6-11 index for black.
-        if (index <= 5)
-            pieceObject.tag = "White Pieces";
-        else
-            pieceObject.tag = "Black Pieces";
-=======
->>>>>>> origin/GL-Phase-1-V3g
 
         activePieces.Add(pieceObject);
     }
@@ -284,11 +257,14 @@ public class BoardManager : MonoBehaviour
         highlights.Clear();
     }
 
-<<<<<<< HEAD
+    //testing
     private void HighlightSelectedMouse()
-=======
+    {
+
+    }
+
+    //testing
     private void HighlightSelectedMouse(Vector2Int position)
->>>>>>> origin/GL-Phase-1-V3g
     {
 
     }
