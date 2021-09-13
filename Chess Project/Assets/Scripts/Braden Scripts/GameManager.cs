@@ -54,6 +54,7 @@ public class GameManager : MonoBehaviour
                     {
                         Attack(avaliablePosition);
                         selectedPiece = null;
+                        board.EndOfTurn(currentPlayer.GetComponent<Player>());
                     }
                     else
                     {
@@ -69,6 +70,7 @@ public class GameManager : MonoBehaviour
                 {      
                     Move(avaliablePosition);
                     selectedPiece = null;
+                    board.EndOfTurn(currentPlayer.GetComponent<Player>());
                 }
                 else
                 {

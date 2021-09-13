@@ -61,31 +61,34 @@ public class BoardManager : MonoBehaviour
                 }
                 else
                 {
-                    if (currentPlayer.isWhite)
-                    {
-                        Piece kingCommander = activePieces[0].GetComponent<Piece>();
-                        if(kingCommander.numberOfTurns == 0)
-                        {
-                            gm.SwitchPlayers();
-                        }
-                    }
-                    else
-                    {
-                        Piece kingCommander = activePieces[16].GetComponent<Piece>();
-                        if (kingCommander.numberOfTurns == 0)
-                        {
-                            gm.SwitchPlayers();
-                        }
-                    }
-                    RemoveHighlights();
-                    gm.selectedPiece = null;
+                    EndOfTurn(currentPlayer);
                 }
                 
             }
         }
     }
     #region TURN VALIDATION- Validate the turn
-
+    public void EndOfTurn(Player currentPlayer)
+    {
+        if (currentPlayer.isWhite)
+        {
+            Piece kingCommander = activePieces[0].GetComponent<Piece>();
+            if (kingCommander.numberOfTurns == 0)
+            {
+                gm.SwitchPlayers();
+            }
+        }
+        else
+        {
+            Piece kingCommander = activePieces[16].GetComponent<Piece>();
+            if (kingCommander.numberOfTurns == 0)
+            {
+                gm.SwitchPlayers();
+            }
+        }
+        RemoveHighlights();
+        gm.selectedPiece = null;
+    }
     public bool ValidateTurn(Player cPlayer)
     {
 
