@@ -85,7 +85,7 @@ public class GameManager : MonoBehaviour
 
 
     
-    #region SELECTING AND HIGHLIGHTING FUNCTIONS
+    #region SELECTING, HIGHLIGHTING, SUBTRACT FUNCTIONS
     // Functions for highlighting an object
     public void SelectPiece(Vector2Int position)
     {
@@ -130,73 +130,27 @@ public class GameManager : MonoBehaviour
             : board.activePieces[16].GetComponent<Piece>();
         if (activePiece.type == Piece.PieceType.King && (activePiece.numberOfTurns > 0 && activePiece.numberOfTurnsPawn > 0))
         {
+            SuperCommander.numberOfTurns--;
             return true;
         }
-        else if (activePiece.type == Piece.PieceType.Pawn)
+        else if (commander.type == Piece.PieceType.King && (SuperCommander.numberOfTurns > 0 && SuperCommander.numberOfTurnsPawn > 0))
         {
-
-            if (commander.type == Piece.PieceType.King & (SuperCommander.numberOfTurns > 0 && SuperCommander.numberOfTurnsPawn > 0))
-            {
-                SuperCommander.numberOfTurns--;
-                SuperCommander.numberOfTurnsPawn--;
-                return true;
-            }
-            else if (commander.type != Piece.PieceType.King && (commander.numberOfTurnsPawn > 0 && SuperCommander.numberOfTurns > 0))
-            {
-                commander.numberOfTurns--;
-                SuperCommander.numberOfTurns--;
-                return true;
-            }
-            else if (SuperCommander.numberOfTurns < 0)
-            {
-                SwitchPlayers();
-                return false;
-            }
-            else
-            {
-                return false;
-            }
+            SuperCommander.numberOfTurns--;
+            SuperCommander.numberOfTurnsPawn--;
+            return true;
         }
-        else if (activePiece.type != Piece.PieceType.Pawn && activePiece.type != Piece.PieceType.King)
+        else if (commander.type == Piece.PieceType.Bishop && (SuperCommander.numberOfTurns > 0 && commander.numberOfTurns > 0))
         {
-            if (commander.type == Piece.PieceType.King && (SuperCommander.numberOfTurns > 0 && activePiece.numberOfTurns > 0))
-            {
-                SuperCommander.numberOfTurns--;
-                activePiece.numberOfTurns--;
-                return true;
-            }
-            else if (commander.type == Piece.PieceType.Queen && (SuperCommander.numberOfTurns > 0 && SuperCommander.numberOfTurnsPawn > 0))
-            {
-                SuperCommander.numberOfTurns--;
-                SuperCommander.numberOfTurnsPawn--;
-                return true;
-            }
-            else if (commander.type == Piece.PieceType.Bishop && (activePiece.numberOfTurns > 0 && SuperCommander.numberOfTurns > 0))
-            {
-                commander.numberOfTurns--;
-                SuperCommander.numberOfTurns--;
-                return true;
-            }
-            else if (commander.type != Piece.PieceType.King && (commander.numberOfTurns > 0 && SuperCommander.numberOfTurns > 0))
-            {
-                commander.numberOfTurns--;
-                SuperCommander.numberOfTurns--;
-                return true;
-            }
-            else if (SuperCommander.numberOfTurns < 0)
-            {
-                SwitchPlayers();
-                return false;
-            }
-            else
-            {
-                return false;
-            }
+            commander.numberOfTurns--;
+            SuperCommander.numberOfTurns--;
+            return true;
         }
-        else
+        else if(SuperCommander.numberOfTurns < 0)
         {
+            SwitchPlayers();
             return false;
         }
+        return false;
     }
     public bool CheckTurns(Piece tempPiece)
     {
