@@ -512,4 +512,63 @@ public struct FuzzyLogic
             Debug.Log("Cannot attach commanding pieces, there is no type for object!");
         }
     }
+    public static bool FindFuzzyLogic(int rollNumber, Piece avaliablePosition,Piece[,] Pieces)
+    {
+        Piece pieceToAttack = Pieces[avaliablePosition.Position.x, avaliablePosition.Position.y];
+
+        if (pieceToAttack.type == Piece.PieceType.King)
+        {
+            int numberToMatch = FuzzyLogic.FindNumberKing(pieceToAttack);
+            if (rollNumber == numberToMatch)
+            {
+                return true;
+            }
+        }
+        else if (pieceToAttack.type == Piece.PieceType.Queen)
+        {
+            int numberToMatch = FuzzyLogic.FindNumberQueen(pieceToAttack);
+            if (rollNumber == numberToMatch)
+            {
+                return true;
+            }
+        }
+        else if (pieceToAttack.type == Piece.PieceType.Bishop)
+        {
+            int numberToMatch = FuzzyLogic.FindNumberBishop(pieceToAttack);
+            if (rollNumber == numberToMatch)
+            {
+                return true;
+            }
+        }
+        else if (pieceToAttack.type == Piece.PieceType.Pawn)
+        {
+            int numberToMatch = FuzzyLogic.FindNumberPawn(pieceToAttack);
+            if (rollNumber == numberToMatch)
+            {
+                return true;
+            }
+        }
+        else if (pieceToAttack.type == Piece.PieceType.Knight)
+        {
+            int numberToMatch = FuzzyLogic.FindNumberKnight(pieceToAttack);
+            if (rollNumber == numberToMatch)
+            {
+                return true;
+            }
+        }
+        else if (pieceToAttack.type == Piece.PieceType.Rook)
+        {
+            int numberToMatch = FuzzyLogic.FindNumberRook(pieceToAttack);
+            if (rollNumber == numberToMatch)
+            {
+                return true;
+            }
+        }
+        else
+        {
+            Debug.Log("Piece does not have type on script!");
+            return false;
+        }
+        return false;
+    }
 }

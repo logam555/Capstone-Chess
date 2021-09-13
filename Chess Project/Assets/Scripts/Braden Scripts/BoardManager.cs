@@ -1,11 +1,16 @@
 /* Written by Braden Stonehill
  Edited by David Corredor
- Last date edited: 10/48/2021
+ Last date edited: 09/13/2021
  Board.cs - Manages the instantiation, rendering, and interactions with the board.
  The Pieces property is a two-dimensional representation of the board to be used with other scripts.
 
- Version 1: Created methods to spawn all piece models, select game objects based on interaction with the board,
- and highlight tiles on the board.*/
+ FINSIHED-Version 1: Created methods to spawn all piece models, select game objects based on interaction with the board,
+ and highlight tiles on the board.
+ ALMOST FINISHED-Version 2: Allow pieces to move and attack enemies. FuzzyLogic should take place when attacking. Validation
+for each turn to make sure the commander has enough turns.
+THINGS TO WORK ON- If commander is killed, assign new commander and disable the ability to move
+three turns.
+ */
 
 using System.Collections;
 using System.Collections.Generic;
@@ -25,7 +30,6 @@ public class BoardManager : MonoBehaviour
 
     public List<GameObject> activePieces;
     private List<GameObject> highlights;
-    private bool isSelected = false;
 
     private GameManager gm;
     
@@ -48,7 +52,6 @@ public class BoardManager : MonoBehaviour
                         if (gm.selectedPiece == null)
                         {
                             gm.SelectPiece(selection);
-                            isSelected = true;
                         }
                         else
                         {
@@ -81,20 +84,22 @@ public class BoardManager : MonoBehaviour
             }
         }
     }
+    #region TURN VALIDATION- Validate the turn
+
     public bool ValidateTurn(Player cPlayer)
     {
-        
+
         if (gm.selectedPiece != null)
         {
             return CanTakeTurn();
-            
+
         }
         else
         {
             if (gm.isWhiteTurn)
             {
                 Piece SuperCommander = activePieces[0].GetComponent<Piece>();
-                if(SuperCommander.numberOfTurns > 0)
+                if (SuperCommander.numberOfTurns > 0)
                 {
                     return true;
 
@@ -111,74 +116,72 @@ public class BoardManager : MonoBehaviour
                 }
             }
             return false;
-           
+
         }
     }
     public bool CanTakeTurn()
     {
-            Piece selectedPiece = gm.selectedPiece;
-            Piece activePiece = activePieces.Find(m => m.GetComponent<Piece>().id == selectedPiece.id).GetComponent<Piece>();
-            Piece commander = activePiece.type == Piece.PieceType.King ? null : activePiece.commander.GetComponent<Piece>();
+        Piece selectedPiece = gm.selectedPiece;
+        Piece activePiece = activePieces.Find(m => m.GetComponent<Piece>().id == selectedPiece.id).GetComponent<Piece>();
+        Piece commander = activePiece.type == Piece.PieceType.King ? null : activePiece.commander.GetComponent<Piece>();
 
-            if (activePiece.IsWhite)
+        if (activePiece.IsWhite)
+        {
+            Piece SuperCommander = activePieces[0].GetComponent<Piece>();
+            if ((activePiece.type == Piece.PieceType.King && commander == null) && activePiece.numberOfTurns > 0)
             {
-                Piece SuperCommander = activePieces[0].GetComponent<Piece>();
-                if ((activePiece.type == Piece.PieceType.King && commander == null) && activePiece.numberOfTurns > 0)
+                return true;
+            }
+            else if (commander.type == Piece.PieceType.Bishop)
+            {
+                if (commander.numberOfTurns > 0 && SuperCommander.numberOfTurns > 0)
                 {
+
                     return true;
                 }
-                else if (commander.type == Piece.PieceType.Bishop)
+            }
+            else if (commander.type == Piece.PieceType.King)
+            {
+                if (SuperCommander.numberOfTurns > 0 && SuperCommander.numberOfTurnsPawn > 0)
                 {
-                    if (commander.numberOfTurns > 0 && SuperCommander.numberOfTurns > 0)
-                    {
-                        return true;
-                    }
-                }
-                else if (commander.type == Piece.PieceType.King)
-                {
-                    if (SuperCommander.numberOfTurns > 0 && SuperCommander.numberOfTurnsPawn > 0)
-                    {
-                        return true;
-                    }
-                }
-                else
-                {
-                    return false;
+                    return true;
                 }
             }
             else
             {
-                Piece SuperCommander = activePieces[16].GetComponent<Piece>();
-                if ((activePiece.type == Piece.PieceType.King && commander == null) && activePiece.numberOfTurns > 0)
+                return false;
+            }
+        }
+        else
+        {
+            Piece SuperCommander = activePieces[16].GetComponent<Piece>();
+            if ((activePiece.type == Piece.PieceType.King && commander == null) && activePiece.numberOfTurns > 0)
+            {
+                return true;
+            }
+            else if (commander.type == Piece.PieceType.Bishop)
+            {
+                if (commander.numberOfTurns > 0 && SuperCommander.numberOfTurns > 0)
                 {
                     return true;
                 }
-                else if (commander.type == Piece.PieceType.Bishop)
+            }
+            else if (commander.type == Piece.PieceType.King)
+            {
+                if (SuperCommander.numberOfTurns > 0 && SuperCommander.numberOfTurnsPawn > 0)
                 {
-                    if (commander.numberOfTurns > 0 && SuperCommander.numberOfTurns > 0)
-                    {
-                        return true;
-                    }
-                }
-                else if (commander.type == Piece.PieceType.King)
-                {
-                    if (SuperCommander.numberOfTurns > 0 && SuperCommander.numberOfTurnsPawn > 0)
-                    {
-                        return true;
-                    }
-                }
-                else
-                {
-                    return false;
+                    return true;
                 }
             }
-            return false;
+            else
+            {
+                return false;
+            }
+        }
+        return false;
     }
-    /////////////////////////////////////////////////// &&///////////////////////////////////////////////////////////
-    /// INTERACTION FUNCTIONS ///
-    //////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    // Function to select a piece object for movement
-
+    #endregion
+    #region INTERACTION FUNCTIONS- Function to select a piece object for movement
 
     public void MoveObject(GameObject pieceObject, Vector2Int position) {
         pieceObject.transform.position = GetTileCenter(position.x, position.y);
@@ -198,12 +201,8 @@ public class BoardManager : MonoBehaviour
             selection.y = -1;
         }
     }
-
-
-    //////////////////////////////////////////////////////////////////////////////////////////////////////////////
-                                        /// INSTANTIATION FUNCTIONS ///
-    //////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    // Function to spawn a piece prefab on a tile and add the object to the list of active objects
+    #endregion
+    #region INSTANTIATION FUNCTIONS- Function to spawn a piece prefab on a tile and add the object to the list of active objects
     private void SpawnPiece(int index, Vector2Int position,Piece.PieceType type) {
         GameObject pieceObject = Instantiate(piecePrefabs[index], GetTileCenter(position.x, position.y), Quaternion.Euler(-90, 0, 0)) as GameObject;
         pieceObject.transform.SetParent(transform);
@@ -285,10 +284,8 @@ public class BoardManager : MonoBehaviour
             }
         }
     }
-    //////////////////////////////////////////////////////////////////////////////////////////////////////////////
-                                        /// RENDERING FUNCTIONS ///
-    //////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    // Utility function to get the center position of a tile of the board game object
+    #endregion
+    #region RENDERING FUNCTIONS-Utility function to get the center position of a tile of the board game object
     private Vector3 GetTileCenter(int x, int y) {
         Vector3 origin = Vector3.zero;
         origin.x += (TILE_SIZE * x) + TILE_OFFSET;
@@ -370,4 +367,6 @@ public class BoardManager : MonoBehaviour
         }
         highlights.Clear();
     }
+
+    #endregion
 }
