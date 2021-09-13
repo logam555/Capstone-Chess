@@ -6,7 +6,8 @@
  Version 1: Created methods to spawn all piece models, select game objects based on interaction with the board,
  and highlight tiles on the board.
 
- Versions 1.1: Edited By George, 09/08/2021: Adding ...
+ Version 1.1: Edited by George 09/09/2021: Adding Tags to chess pieces, adding base heuirtics, 
+ adding in mouse over board hovering highlighting, add in board grid naming, ... .
  */
 
 using System.Collections;
@@ -27,7 +28,8 @@ public class BoardManager : MonoBehaviour
 
     private List<GameObject> activePieces;
     private List<GameObject> highlights;
-    
+
+    private Vector2Int positionCurrent = new Vector2Int(0, 0); //using for mouse over highlight
 
     private GameManager gm;
 
@@ -35,6 +37,9 @@ public class BoardManager : MonoBehaviour
         gm = GameManager.Instance;
         highlights = new List<GameObject>();
         SpawnAllPieces();
+
+        //setup static board naming
+
     }
 
     private void Update() {
@@ -69,20 +74,31 @@ public class BoardManager : MonoBehaviour
             return;
 
         RaycastHit hit;
-        if(Physics.Raycast(Camera.main.ScreenPointToRay(Input.mousePosition), out hit, 25.0f, LayerMask.GetMask("ChessPlane"))) {
+        if (Physics.Raycast(Camera.main.ScreenPointToRay(Input.mousePosition), out hit, 25.0f, LayerMask.GetMask("ChessPlane"))) {
             selection.x = (int)hit.point.x;
             selection.y = (int)hit.point.z;
         } else {
             selection.x = -1;
             selection.y = -1;
         }
-    }
+        
+        //mouse movement highlighting
+        positionCurrent.x = (int)hit.point.x;
+        positionCurrent.y = (int)hit.point.z;
+        Debug.Log(positionCurrent);
 
+        //testing mouse over using positionCurrent //redo positionCurrent 
+        if (positionCurrent.x != 0 & positionCurrent.y != 0)
+            HighlightSelectedMouse();
+        else
+            highlights.Clear();
+
+    }
 
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////
                                         /// INSTANTIATION FUNCTIONS ///
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    // Function to spawn a piece prefab on a tile and add the object to the list of active objects
+    // Function to spawn a piece prefab on a tile and add the object to the list of active objects with correct color tag.
     private void SpawnPiece(int index, Vector2Int position) {
         GameObject pieceObject = Instantiate(piecePrefabs[index], GetTileCenter(position.x, position.y), Quaternion.Euler(-90, 0, 0)) as GameObject;
         pieceObject.transform.SetParent(transform);
@@ -95,10 +111,16 @@ public class BoardManager : MonoBehaviour
         else
             pieceObject.tag = "Black Pieces";
 
+        //adding tags for White and Black pieces. 0-5 index for white, 6-11 index for black.
+        if (index <= 5)
+            pieceObject.tag = "White Pieces";
+        else
+            pieceObject.tag = "Black Pieces";
+
         activePieces.Add(pieceObject);
     }
 
-    // Initilization function to spawn all chess pieces
+    // Initilization function to spawn all chess pieces: White index numbers 0-5, Black index numbers 6-11.
     private void SpawnAllPieces() {
         activePieces = new List<GameObject>();
 
@@ -148,7 +170,6 @@ public class BoardManager : MonoBehaviour
         for (int i = 0; i < 8; i++)
             SpawnPiece(11, new Vector2Int(i, 6));
     }
-
 
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////
                                         /// RENDERING FUNCTIONS ///
@@ -222,11 +243,26 @@ public class BoardManager : MonoBehaviour
         highlight.transform.position = GetTileCenter(x, y) + Vector3.up * (index != 2 ? -0.149f : -0.14f);
     }
 
+    //function to spawn and remove mouse following highlighted tile.
+    private void HighlightTileMouse(int index, int x, int y)
+    {
+        GameObject highlight = Instantiate(highlightPrefabs[index]);
+        highlights.Add(highlight);
+        highlight.transform.position = GetTileCenter(x, y) + Vector3.up * (index != 2 ? -0.149f : -0.14f);
+
+        Destroy(highlight);
+    }
+
     // Utility function to destroy all highlight game objects
     public void RemoveHighlights() {
         foreach(GameObject highlight in highlights) {
             Destroy(highlight);
         }
         highlights.Clear();
+    }
+
+    private void HighlightSelectedMouse()
+    {
+
     }
 }
