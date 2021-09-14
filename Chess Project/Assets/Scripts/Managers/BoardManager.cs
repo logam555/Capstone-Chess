@@ -10,6 +10,7 @@
  adding in mouse over board hovering highlighting, add in board grid naming, ... .
  */
 
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -39,7 +40,7 @@ public class BoardManager : MonoBehaviour
         SpawnAllPieces();
 
         //setup static board naming
-
+        ChessboardNaming();
     }
 
     private void Update() {
@@ -86,15 +87,16 @@ public class BoardManager : MonoBehaviour
         //mouse movement highlighting
         positionCurrent.x = (int)hit.point.x;
         positionCurrent.y = (int)hit.point.z;
-        Debug.Log("x"+ positionCurrent + "y");
+        //Debug.Log("x"+ positionCurrent + "y");
  
+        /*
         //testing mouse over using positionCurrent //redo positionCurrent 
         if ((positionCurrent.x != 0 && positionCurrent.y != 0))
             HighlightSelectedMouse(); //HighlightSelectedMouse(positionCurrent);
         else
             //highlights.Clear();
             Debug.Log("debug"+ positionCurrent);
-
+        */
     }
 
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -183,7 +185,7 @@ public class BoardManager : MonoBehaviour
         Vector3 widthLine = Vector3.right * 8;
         Vector3 heightLine = Vector3.forward * 8;
 
-        for(int i = 0; i < 9; i++) {
+        for (int i = 0; i < 9; i++) {
             Vector3 start = Vector3.forward * i;
             Debug.DrawLine(start, start + widthLine);
             for (int j = 0; j < 9; j++) {
@@ -267,5 +269,45 @@ public class BoardManager : MonoBehaviour
     private void HighlightSelectedMouse(Vector2Int position)
     {
 
+    }
+
+    // Utility Debug function for testing raycasting and selection
+    private void ChessboardNaming()
+    {
+        Vector3 widthLine = Vector3.right * 8;
+        Vector3 heightLine = Vector3.forward * 8;
+        Debug.Log(widthLine + "first" + heightLine);
+        int test1 = 0;
+        char letterBoard = '0';
+        string showB = "";
+
+        for (int i = 65; i < 73; i++)
+        {
+            Vector3 start = Vector3.forward * i;
+            letterBoard = Convert.ToChar(i);
+            showB = letterBoard.ToString();
+            Debug.Log("letter" + showB);
+            Debug.Log(start + "2nd" + widthLine + "i" + i);
+            for (int j = 0; j < 9; j++)
+            {
+                start = Vector3.right * j;
+                Debug.DrawLine(start, start + heightLine);
+                Debug.Log(start + "3rd" + heightLine + "j" + j);
+                Debug.Log("running count" + test1);
+                test1++;
+            }
+        }
+
+        /*
+        if (selection.x >= 0 && selection.y >= 0)
+        {
+            Debug.DrawLine(
+                Vector3.forward * selection.y + Vector3.right * selection.x,
+                Vector3.forward * (selection.y + 1) + Vector3.right * (selection.x + 1));
+            Debug.DrawLine(
+                Vector3.forward * (selection.y + 1) + Vector3.right * selection.x,
+                Vector3.forward * selection.y + Vector3.right * (selection.x + 1));
+        }
+        */
     }
 }
