@@ -1548,6 +1548,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   board: {fileID: 1991664890}
+  isGameOver: 0
 --- !u!4 &1326303755
 Transform:
   m_ObjectHideFlags: 0
