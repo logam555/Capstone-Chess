@@ -5,6 +5,7 @@ ResolutionChange.cs - Changes the resolution of the game.
 
 Version 1: Makes the game change resolution with the buttons.*/
 using UnityEngine;
+
 using UnityEngine.UIElements;
 public class ResolutionChange : MonoBehaviour
 {
