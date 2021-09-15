@@ -17,6 +17,12 @@ using UnityEngine;
 
 public class BoardManager : MonoBehaviour
 {
+    //class
+    private class BoardTile
+    {
+        private bool isWhite;
+    }
+
     private const float TILE_SIZE = 1.0f;
     private const float TILE_OFFSET = 0.5f;
 
@@ -30,6 +36,11 @@ public class BoardManager : MonoBehaviour
     private List<GameObject> activePieces;
     private List<GameObject> highlights;
 
+    //[SerializeField]
+    //private List<int, Char> chessBoardGridCo;
+    private Dictionary<string, BoardTile> chessBoardGridCo; 
+    
+
     private Vector2Int positionCurrent = new Vector2Int(0, 0); //using for mouse over highlight
 
     private GameManager gm;
@@ -40,6 +51,8 @@ public class BoardManager : MonoBehaviour
         SpawnAllPieces();
 
         //setup static board naming
+        chessBoardGridCo = new Dictionary<string, BoardTile>();
+        //chessBoardGridCo = new List<int, char>();
         ChessboardNaming();
     }
 
@@ -274,27 +287,32 @@ public class BoardManager : MonoBehaviour
     // Utility Debug function for testing raycasting and selection
     private void ChessboardNaming()
     {
-        Vector3 widthLine = Vector3.right * 8;
-        Vector3 heightLine = Vector3.forward * 8;
-        Debug.Log(widthLine + "first" + heightLine);
-        int test1 = 0;
+        //Vector3 widthLine = Vector3.right * 8;
+        //Vector3 heightLine = Vector3.forward * 8;
+        //Debug.Log(widthLine + "first" + heightLine);
+        //int test1 = 0;
+        BoardTile board = new BoardTile();
+
         char letterBoard = '0';
         string showB = "";
 
-        for (int i = 65; i < 73; i++)
+        for (int j = 1; j < 9; j++)
         {
-            Vector3 start = Vector3.forward * i;
-            letterBoard = Convert.ToChar(i);
-            showB = letterBoard.ToString();
-            Debug.Log("letter" + showB);
-            Debug.Log(start + "2nd" + widthLine + "i" + i);
-            for (int j = 0; j < 9; j++)
+            //Vector3 start = Vector3.forward * i;
+            //Debug.Log("running count" + j);
+            //Debug.Log(start + "2nd" + widthLine + "i" + i);
+            //test1 = 0;
+            for (int i = 65; i < 73; i++)
             {
-                start = Vector3.right * j;
-                Debug.DrawLine(start, start + heightLine);
-                Debug.Log(start + "3rd" + heightLine + "j" + j);
-                Debug.Log("running count" + test1);
-                test1++;
+                //start = Vector3.right * j;
+                //Debug.DrawLine(start, start + heightLine);
+                //Debug.Log(start + "3rd" + heightLine + "j" + j);
+                //Debug.Log("running count" + j);
+                //test1++;
+                letterBoard = Convert.ToChar(i);
+                showB = j + letterBoard.ToString();
+                //Debug.Log("letter" + showB);
+                chessBoardGridCo.Add(showB, board);
             }
         }
 
@@ -309,5 +327,6 @@ public class BoardManager : MonoBehaviour
                 Vector3.forward * selection.y + Vector3.right * (selection.x + 1));
         }
         */
+        //return board;
     }
 }
