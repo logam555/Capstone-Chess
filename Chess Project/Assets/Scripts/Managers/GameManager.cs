@@ -105,6 +105,14 @@ public class GameManager : MonoBehaviour
             CurrentPlayer.capturedPieces["Knight"] += 1;
         } else if (captured is Bishop) {
             CurrentPlayer.capturedPieces["Bishop"] += 1;
+            Bishop bishop = (Bishop)captured;
+            bishop.DelegatePieces();
+
+            if (CurrentPlayer == user)
+                ai.commanders.Remove(bishop);
+            else
+                user.commanders.Remove(bishop);
+
         } else if (captured is Queen) {
             CurrentPlayer.capturedPieces["Queen"] += 1;
         } else if (captured is King) {
@@ -298,39 +306,54 @@ public class GameManager : MonoBehaviour
         leftBishop.Commander = leftBishop;
 
         // Left Knight
-        PieceAt(new Vector2Int(1, 0)).Commander = leftBishop;
+        leftBishop.subordinates.Add(PieceAt(new Vector2Int(1, 0)));
 
         // Left three pawns
-        PieceAt(new Vector2Int(0, 1)).Commander = leftBishop;
-        PieceAt(new Vector2Int(1, 1)).Commander = leftBishop;
-        PieceAt(new Vector2Int(2, 1)).Commander = leftBishop;
+        leftBishop.subordinates.Add(PieceAt(new Vector2Int(0, 1)));
+        leftBishop.subordinates.Add(PieceAt(new Vector2Int(1, 1)));
+        leftBishop.subordinates.Add(PieceAt(new Vector2Int(2, 1)));
+
+        // Set the commander for each piece
+        foreach(Piece piece in leftBishop.subordinates) {
+            piece.Commander = leftBishop;
+        }
 
         // Attach white pieces to right white bishop
         Bishop rightBishop = (Bishop)PieceAt(new Vector2Int(5, 0));
         rightBishop.Commander = rightBishop;
 
         // Right Knight
-        PieceAt(new Vector2Int(6, 0)).Commander = rightBishop;
+        rightBishop.subordinates.Add(PieceAt(new Vector2Int(6, 0)));
 
         // Right three pawns
-        PieceAt(new Vector2Int(7, 1)).Commander = rightBishop;
-        PieceAt(new Vector2Int(6, 1)).Commander = rightBishop;
-        PieceAt(new Vector2Int(5, 1)).Commander = rightBishop;
+        rightBishop.subordinates.Add(PieceAt(new Vector2Int(7, 1)));
+        rightBishop.subordinates.Add(PieceAt(new Vector2Int(6, 1)));
+        rightBishop.subordinates.Add(PieceAt(new Vector2Int(5, 1)));
+
+        // Set the commander for each piece
+        foreach (Piece piece in rightBishop.subordinates) {
+            piece.Commander = rightBishop;
+        }
 
         // Attach white pieces to white king
         King king = (King)PieceAt(new Vector2Int(4, 0));
         king.Commander = king;
 
         // Center two pawns
-        PieceAt(new Vector2Int(3, 1)).Commander = king;
-        PieceAt(new Vector2Int(4, 1)).Commander = king;
+        king.subordinates.Add(PieceAt(new Vector2Int(3, 1)));
+        king.subordinates.Add(PieceAt(new Vector2Int(4, 1)));
 
         // Both Rooks
-        PieceAt(new Vector2Int(0, 0)).Commander = king;
-        PieceAt(new Vector2Int(7, 0)).Commander = king;
+        king.subordinates.Add(PieceAt(new Vector2Int(0, 0)));
+        king.subordinates.Add(PieceAt(new Vector2Int(7, 0)));
 
         // Queen
-        PieceAt(new Vector2Int(3, 0)).Commander = king;
+        king.subordinates.Add(PieceAt(new Vector2Int(3, 0)));
+
+        // Set the commander for each piece
+        foreach (Piece piece in king.subordinates) {
+            piece.Commander = king;
+        }
 
         // Attach commanding bishops to king
         leftBishop.superCommander = king;
@@ -340,46 +363,61 @@ public class GameManager : MonoBehaviour
         king.rightBishop = rightBishop;
 
 
-        // Attach Black Pieces
+        // Attach black Pieces
 
         // Attach black pieces to left black bishop
         leftBishop = (Bishop)PieceAt(new Vector2Int(2, 7));
         leftBishop.Commander = leftBishop;
 
         // Left Knight
-        PieceAt(new Vector2Int(1, 7)).Commander = leftBishop;
+        leftBishop.subordinates.Add(PieceAt(new Vector2Int(1, 7)));
 
         // Left three pawns
-        PieceAt(new Vector2Int(0, 6)).Commander = leftBishop;
-        PieceAt(new Vector2Int(1, 6)).Commander = leftBishop;
-        PieceAt(new Vector2Int(2, 6)).Commander = leftBishop;
+        leftBishop.subordinates.Add(PieceAt(new Vector2Int(0, 6)));
+        leftBishop.subordinates.Add(PieceAt(new Vector2Int(1, 6)));
+        leftBishop.subordinates.Add(PieceAt(new Vector2Int(2, 6)));
+
+        // Set the commander for each piece
+        foreach (Piece piece in leftBishop.subordinates) {
+            piece.Commander = leftBishop;
+        }
 
         // Attach black pieces to right black bishop
         rightBishop = (Bishop)PieceAt(new Vector2Int(5, 7));
         rightBishop.Commander = rightBishop;
 
         // Right Knight
-        PieceAt(new Vector2Int(6, 7)).Commander = rightBishop;
+        rightBishop.subordinates.Add(PieceAt(new Vector2Int(6, 7)));
 
         // Right three pawns
-        PieceAt(new Vector2Int(7, 6)).Commander = rightBishop;
-        PieceAt(new Vector2Int(6, 6)).Commander = rightBishop;
-        PieceAt(new Vector2Int(5, 6)).Commander = rightBishop;
+        rightBishop.subordinates.Add(PieceAt(new Vector2Int(7, 6)));
+        rightBishop.subordinates.Add(PieceAt(new Vector2Int(6, 6)));
+        rightBishop.subordinates.Add(PieceAt(new Vector2Int(5, 6)));
+
+        // Set the commander for each piece
+        foreach (Piece piece in rightBishop.subordinates) {
+            piece.Commander = rightBishop;
+        }
 
         // Attach black pieces to black king
         king = (King)PieceAt(new Vector2Int(4, 7));
         king.Commander = king;
 
         // Center two pawns
-        PieceAt(new Vector2Int(3, 6)).Commander = king;
-        PieceAt(new Vector2Int(4, 6)).Commander = king;
+        king.subordinates.Add(PieceAt(new Vector2Int(3, 6)));
+        king.subordinates.Add(PieceAt(new Vector2Int(4, 6)));
 
         // Both Rooks
-        PieceAt(new Vector2Int(0, 7)).Commander = king;
-        PieceAt(new Vector2Int(7, 7)).Commander = king;
+        king.subordinates.Add(PieceAt(new Vector2Int(0, 7)));
+        king.subordinates.Add(PieceAt(new Vector2Int(7, 7)));
 
         // Queen
-        PieceAt(new Vector2Int(3, 7)).Commander = king;
+        king.subordinates.Add(PieceAt(new Vector2Int(3, 7)));
+
+        // Set the commander for each piece
+        foreach (Piece piece in king.subordinates) {
+            piece.Commander = king;
+        }
 
         // Attach commanding bishops to king
         leftBishop.superCommander = king;

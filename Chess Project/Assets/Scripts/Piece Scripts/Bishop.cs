@@ -3,7 +3,9 @@
  Last date edited: 09/15/2021
  Bishop.cs - child class of Piece.cs that implements move and attack using rules for the bishop
 
- Version 1.4: 
+ Version 1.5: 
+  - Added method to delegate all subordinates to king if captured
+
   - Altered class definition for Bishop to inherit commander class rather than piece class
 
   - Removed the attack function as it no longer needs to be implemented by the child classes.
@@ -57,6 +59,15 @@ public class Bishop : Commander
         }
 
         return enemyPos;
+    }
+
+    public void DelegatePieces() {
+        foreach (Piece piece in this.subordinates) {
+            superCommander.subordinates.Add(piece);
+            piece.Commander = superCommander;
+        }
+
+        this.subordinates.Clear();
     }
 
 }
