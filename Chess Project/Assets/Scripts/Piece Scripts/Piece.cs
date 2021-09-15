@@ -1,9 +1,16 @@
 /* Written by David Corredor
- Edited by Braden Stonehill
- Last date edited: 09/07/2021
+ Edited by Braden Stonehill, David Corredor
+ Last date edited: 09/15/2021
  Piece.cs - abstract class for chess pieces that sets the basis for moving and attacking for each piece
 
- Version 1.2:
+ Version 1.4:
+  - Created a commander abstract class that is a child of Piece specifically for use with King and Bishop to include commander utility.
+ Edited all child classes to check if commander action has been used to limit available locations and enemies in range once the commander
+ action has been used.
+
+ - Altered the attack script so it no longer has to be implemented in the child classes and uses the same approach
+ for all pieces using the Fuzzy Logic struct to determine the number needed for a successful attack.
+
   - Added EnemiesInRange function for detecting attackable enemies and removed FuzzyLogic object to be located in a separate
  script.
 
@@ -22,36 +29,37 @@ using UnityEngine;
 
 public abstract class Piece : MonoBehaviour
 {
+    #region PROTECTED PROPERTIES
     [SerializeField]
     protected bool isWhite;
     protected Vector2Int[] directions = {new Vector2Int(0,1), new Vector2Int(1,0),
                                new Vector2Int(0,-1), new Vector2Int(-1,0),
                                new Vector2Int(1,1), new Vector2Int(1,-1),
                                new Vector2Int(-1,-1), new Vector2Int(-1,1)};
+    #endregion
 
-
+    #region PUBLIC PROPERTIES
     public bool IsWhite { get => isWhite; }
     public bool Delegated { get; set; }
     public Vector2Int[] Directions { get => directions; }
     public Vector2Int Position { get; set; }
-    public Piece Commander { get; set; }
-    
+    public Commander Commander { get; set; }
+    #endregion
 
-    // Will attempt to attack enemy piece with probabilities based on fuzzy-logic table
-    // returning true if attack is successful, false otherwise. 
-    public abstract bool Attack(Piece enemy, bool isMoving = false);
-
+    #region ABSTRACT METHODS
     // Determines what positions are available to move to based on pieces movement restriction
     public abstract List<Vector2Int> LocationsAvailable();
 
     // Function to determine if enemies are withing attacking range
     public abstract List<Vector2Int> EnemiesInRange();
+    #endregion
 
+    #region UNIVERSAL METHODS
     // Recursive location function for pieces that move multiple tiles
     public List<Vector2Int> RecursiveLocations(Vector2Int position, int moves, bool ignorePieces=false) {
         List<Vector2Int> locations = new List<Vector2Int>();
 
-        if (position.x < 0 || position.x > 7 || position.y < 0 || position.y > 7)
+        if (!GameManager.ValidPosition(position))
             return locations;
 
         if (!ignorePieces && GameManager.Instance.IsPieceAt(position))
@@ -67,4 +75,30 @@ public abstract class Piece : MonoBehaviour
 
         return locations;
     }
+
+    // Will attempt to attack enemy piece with probabilities based on fuzzy-logic table
+    // returning true if attack is successful, false otherwise. 
+    public bool Attack(Piece enemy, bool isMoving = false) {
+        // Simulate dice roll
+        int roll = DiceManager.Instance.RollDice();
+
+        // If piece is a Knight combining move and attack add one to the roll.
+        if (isMoving)
+            roll += 1;
+
+        // Assign minimum attack number needed based off of fuzzy logic table
+        int mininumValue = FuzzyLogic.FindFuzzyNumber(this, enemy);
+
+        if (roll >= mininumValue)
+            return true;
+
+        return false;
+    }
+    #endregion
+}
+
+public abstract class Commander : Piece {
+    public List<Piece> subordinates = new List<Piece>();
+    public int commandActions = 1;
+    public bool usedFreeMovement = false;
 }

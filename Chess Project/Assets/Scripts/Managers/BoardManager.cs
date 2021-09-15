@@ -1,6 +1,6 @@
 /* Written by Braden Stonehill
  Edited by Braden Stonehil
- Last date edited: 09/14/2021
+ Last date edited: 09/15/2021
  BoardManager.cs - Manages the instantiation, rendering, and interactions with the board.
 
  Version 1: Created methods to spawn all piece models, select game objects based on interaction with the board,
@@ -32,7 +32,7 @@ public class BoardManager : MonoBehaviour
     private void Start() {
         gm = GameManager.Instance;
         highlights = new List<GameObject>();
-        SpawnAllPieces();
+        SpawnAllPieces();   
     }
 
     private void Update() {
@@ -73,6 +73,7 @@ public class BoardManager : MonoBehaviour
         pieceObject.transform.SetParent(transform);
         gm.Pieces[position.x, position.y] = pieceObject.GetComponent<Piece>();
         gm.Pieces[position.x, position.y].Position = position;
+        gm.Pieces[position.x, position.y].Delegated = false;
         activePieces.Add(pieceObject);
     }
 
@@ -125,6 +126,9 @@ public class BoardManager : MonoBehaviour
         // Pawns
         for (int i = 0; i < 8; i++)
             SpawnPiece(11, new Vector2Int(i, 6));
+
+        // Attach pieces to their commanders
+        gm.AttachCommandingPieces();
     }
     #endregion
 

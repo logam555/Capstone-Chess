@@ -1,10 +1,12 @@
 /* Written by David Corredor
- Edited by Braden Stonehill
- Last date edited: 09/14/2021
+ Edited by Braden Stonehill, David Corredor
+ Last date edited: 09/15/2021
  GameManager.cs - Manages the rules, turn order, tracking and moving pieces, and checking the state of the pieces on
  the board and the players.
 
- Version 1.2: 
+ Version 1.3: 
+  - Added functions to assign pieces to their commanders. Added functions for instantiation of players.
+
   - Added functionality for passing turn, tracking players and captured pieces, and support for three actions per turn.
 
   - Removed functions that dealt with board and object manipulation as that is handled in the BoardManager.
@@ -37,9 +39,6 @@ public class GameManager : MonoBehaviour
     }
 
     private void Start() {
-        user = new Player("Human", true);
-        ai = new Player("AI", false);
-        CurrentPlayer = user;
         Pieces = new Piece[8, 8];
         IsGameOver = false;
     }
@@ -55,7 +54,7 @@ public class GameManager : MonoBehaviour
             }
 
 
-            if (Input.GetKeyDown(KeyCode.Space) || CurrentPlayer.remainingActions <= 0) {
+            if (Input.GetKeyDown(KeyCode.Space)) {
                 PassTurn();
             }
         }
@@ -75,6 +74,12 @@ public class GameManager : MonoBehaviour
 
     // Function to move the selected piece in the array implementation of the board
     private void MovePiece(Vector2Int position) {
+        // Check if selected piece is commander and is using free movement
+        if(SelectedPiece is Commander && !SelectedPiece.Commander.usedFreeMovement && (Mathf.Abs((position - SelectedPiece.Position).sqrMagnitude) <= 2)) {
+            SelectedPiece.Commander.usedFreeMovement = true;
+            SelectedPiece.Commander.commandActions += 1;
+        }
+
         // Move piece to new position
         Pieces[SelectedPiece.Position.x, SelectedPiece.Position.y] = null;
         Pieces[position.x, position.y] = SelectedPiece;
@@ -84,7 +89,7 @@ public class GameManager : MonoBehaviour
         board.MoveObject(SelectedPiece.gameObject, position);
 
         // Reduce number of actions remaining
-        CurrentPlayer.remainingActions -= 1;
+        SelectedPiece.Commander.commandActions -= 1;
 
         // Deselect the piece
         SelectPiece(new Vector2Int(-1, -1));
@@ -112,8 +117,14 @@ public class GameManager : MonoBehaviour
     #region TURN VALIDATION FUNCTIONS - Functions that handle condition checking for turn orders and number of actions in turn.
     // Function to pass the turn to the next player
     private void PassTurn() {
-        CurrentPlayer.remainingActions = 3;
+        CurrentPlayer.ResetTurn();
         CurrentPlayer = CurrentPlayer == user ? ai : user;
+    }
+
+    private bool EndofTurn() {
+        if (CurrentPlayer.TotalActionsRemaining() <= 0 && CurrentPlayer.UsedAllFreeMovements())
+            return true;
+        return false;
     }
     #endregion
 
@@ -140,7 +151,7 @@ public class GameManager : MonoBehaviour
             bool attackSuccessful;
 
             // Check if selected piece is a knight and is attacking a non-adjacent piece
-            if (SelectedPiece is Knight && (Mathf.Abs(position.sqrMagnitude - SelectedPiece.Position.sqrMagnitude) > 2))
+            if (SelectedPiece is Knight && (Mathf.Abs((position - SelectedPiece.Position).sqrMagnitude) > 2))
                 isMoving = true;
 
             // Change optional isMoving parameter if selected piece is a Knight attacking a non-adjacent piece
@@ -177,7 +188,7 @@ public class GameManager : MonoBehaviour
                     }
                 } else {
                     // Reduce number of actions remaining
-                    CurrentPlayer.remainingActions -= 1;
+                    SelectedPiece.Commander.commandActions -= 1;
 
                     // Deselect the piece
                     SelectPiece(new Vector2Int(-1, -1));
@@ -191,6 +202,10 @@ public class GameManager : MonoBehaviour
         } else
             // Deselect the piece
             SelectPiece(new Vector2Int(-1, -1));
+
+        // Check if current player used all available actions
+        if (EndofTurn())
+            PassTurn();
     }
 
     // Function that returns a boolean map of the board with all positions that are available to selected piece.
@@ -265,11 +280,136 @@ public class GameManager : MonoBehaviour
     }
 
     // Function that returns true if position is within boundaries of the board.
-    public bool ValidPosition(Vector2Int position) {
+    public static bool ValidPosition(Vector2Int position) {
         if (position.x < 0 || position.x > 7 || position.y < 0 || position.y > 7)
             return false;
 
         return true;
+    }
+    #endregion
+
+    #region INSTANTIATION FUNCTIONS - Functions that instatiate objects and run at beginning of game.
+    // Function to add pieces as subordinates to their appropriate commanders
+    public void AttachCommandingPieces() {
+        // Attach White Pieces
+
+        // Attach white pieces to left white bishop
+        Bishop leftBishop = (Bishop)PieceAt(new Vector2Int(2, 0));
+        leftBishop.Commander = leftBishop;
+
+        // Left Knight
+        PieceAt(new Vector2Int(1, 0)).Commander = leftBishop;
+
+        // Left three pawns
+        PieceAt(new Vector2Int(0, 1)).Commander = leftBishop;
+        PieceAt(new Vector2Int(1, 1)).Commander = leftBishop;
+        PieceAt(new Vector2Int(2, 1)).Commander = leftBishop;
+
+        // Attach white pieces to right white bishop
+        Bishop rightBishop = (Bishop)PieceAt(new Vector2Int(5, 0));
+        rightBishop.Commander = rightBishop;
+
+        // Right Knight
+        PieceAt(new Vector2Int(6, 0)).Commander = rightBishop;
+
+        // Right three pawns
+        PieceAt(new Vector2Int(7, 1)).Commander = rightBishop;
+        PieceAt(new Vector2Int(6, 1)).Commander = rightBishop;
+        PieceAt(new Vector2Int(5, 1)).Commander = rightBishop;
+
+        // Attach white pieces to white king
+        King king = (King)PieceAt(new Vector2Int(4, 0));
+        king.Commander = king;
+
+        // Center two pawns
+        PieceAt(new Vector2Int(3, 1)).Commander = king;
+        PieceAt(new Vector2Int(4, 1)).Commander = king;
+
+        // Both Rooks
+        PieceAt(new Vector2Int(0, 0)).Commander = king;
+        PieceAt(new Vector2Int(7, 0)).Commander = king;
+
+        // Queen
+        PieceAt(new Vector2Int(3, 0)).Commander = king;
+
+        // Attach commanding bishops to king
+        leftBishop.superCommander = king;
+        rightBishop.superCommander = king;
+
+        king.leftBishop = leftBishop;
+        king.rightBishop = rightBishop;
+
+
+        // Attach Black Pieces
+
+        // Attach black pieces to left black bishop
+        leftBishop = (Bishop)PieceAt(new Vector2Int(2, 7));
+        leftBishop.Commander = leftBishop;
+
+        // Left Knight
+        PieceAt(new Vector2Int(1, 7)).Commander = leftBishop;
+
+        // Left three pawns
+        PieceAt(new Vector2Int(0, 6)).Commander = leftBishop;
+        PieceAt(new Vector2Int(1, 6)).Commander = leftBishop;
+        PieceAt(new Vector2Int(2, 6)).Commander = leftBishop;
+
+        // Attach black pieces to right black bishop
+        rightBishop = (Bishop)PieceAt(new Vector2Int(5, 7));
+        rightBishop.Commander = rightBishop;
+
+        // Right Knight
+        PieceAt(new Vector2Int(6, 7)).Commander = rightBishop;
+
+        // Right three pawns
+        PieceAt(new Vector2Int(7, 6)).Commander = rightBishop;
+        PieceAt(new Vector2Int(6, 6)).Commander = rightBishop;
+        PieceAt(new Vector2Int(5, 6)).Commander = rightBishop;
+
+        // Attach black pieces to black king
+        king = (King)PieceAt(new Vector2Int(4, 7));
+        king.Commander = king;
+
+        // Center two pawns
+        PieceAt(new Vector2Int(3, 6)).Commander = king;
+        PieceAt(new Vector2Int(4, 6)).Commander = king;
+
+        // Both Rooks
+        PieceAt(new Vector2Int(0, 7)).Commander = king;
+        PieceAt(new Vector2Int(7, 7)).Commander = king;
+
+        // Queen
+        PieceAt(new Vector2Int(3, 7)).Commander = king;
+
+        // Attach commanding bishops to king
+        leftBishop.superCommander = king;
+        rightBishop.superCommander = king;
+
+        king.leftBishop = leftBishop;
+        king.rightBishop = rightBishop;
+
+        // Create the players and attach commanders to players
+        CreatePlayers();
+    }
+
+    // Function to create the players
+    private void CreatePlayers() {
+        // create collection of commanders
+        Commander[] whiteCommanders = {
+            (Commander)PieceAt(new Vector2Int(4,0)),
+            (Commander)PieceAt(new Vector2Int(2,0)),
+            (Commander)PieceAt(new Vector2Int(5,0)),
+        };
+
+        Commander[] blackCommanders = {
+            (Commander)PieceAt(new Vector2Int(4,7)),
+            (Commander)PieceAt(new Vector2Int(2,7)),
+            (Commander)PieceAt(new Vector2Int(5,7)),
+        };
+
+        user = new Player("Human", true, new List<Commander>(whiteCommanders));
+        ai = new Player("AI", false, new List<Commander>(blackCommanders));
+        CurrentPlayer = user;
     }
     #endregion
 }

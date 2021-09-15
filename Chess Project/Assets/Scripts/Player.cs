@@ -1,9 +1,12 @@
 ﻿/* Written by David Corredor
  Edited by Braden Stonehill
- Last date edited: 09/07/2021
+ Last date edited: 09/15/2021
  Player.cs - Object to contain player information such as captured pieces, identifier for player, and color of pieces under control
 
- Version 1.2:
+ Version 1.3:
+  - Changed remaining actions to list of commanders and added functions to reset commanders move when resetting a players turn
+ and function to calculate the number of actions remaining based on the number of actions available for each commander
+
   - Removed the pieces property and changed capturedPieces property to a dictionary of values as game objects of pieces are deleted.
  Added functionality for three actions per turn.
 */
@@ -16,13 +19,14 @@ public class Player
     public Dictionary<string, int> capturedPieces;
     public string name;
     public bool isWhite;
-    public int remainingActions;
+    public List<Commander> commanders;
 
-    public Player(string name, bool isWhite)
+    public Player(string name, bool isWhite, List<Commander> commanders)
     {
         this.name = name;
         this.isWhite = isWhite;
-        this.remainingActions = 3;
+
+        this.commanders = commanders;
 
         this.capturedPieces = new Dictionary<string, int>();
         this.capturedPieces.Add("King", 0);
@@ -32,5 +36,31 @@ public class Player
         this.capturedPieces.Add("Rook", 0);
         this.capturedPieces.Add("Pawn", 0);
 
+    }
+
+    public int TotalActionsRemaining() {
+        int actions = 0;
+
+        foreach(Commander commander in commanders) {
+            actions += commander.commandActions;
+        }
+
+        return actions;
+    }
+
+    public void ResetTurn() {
+        foreach (Commander commander in commanders) {
+            commander.commandActions = 1;
+            commander.usedFreeMovement = false;
+        }
+    }
+
+    public bool UsedAllFreeMovements() {
+        foreach (Commander commander in commanders) {
+            if (!commander.usedFreeMovement)
+                return false;
+        }
+
+        return true;
     }
 }

@@ -1,9 +1,11 @@
 ﻿/* Written by David Corredor
  Edited by Braden Stonehill
- Last date edited: 09/07/2021
+ Last date edited: 09/15/2021
  Knight.cs - child class of Piece.cs that implements move and attack using rules for the knight
 
- Version 1.2:
+ Version 1.3:
+  - Removed the attack function as it no longer needs to be implemented by the child classes.
+
   - Implemented the attack function using the fuzzy logic table and the EnemiesInRange function to find all enemies within
  movement range.
  
@@ -16,24 +18,12 @@ using UnityEngine;
 
 public class Knight : Piece
 {
-    public override bool Attack(Piece enemy, bool isMoving = false) {
-        // Simulate dice roll
-        int roll = DiceManager.Instance.RollDice();
-
-        if (isMoving)
-            roll += 1;
-
-        // Assign minimum attack number needed based off of fuzzy logic table
-        int mininumValue = FuzzyLogic.FindNumberKnight(enemy);
-
-        if (roll >= mininumValue)
-            return true;
-
-        return false;
-    }
-
+  
     public override List<Vector2Int> LocationsAvailable() {
         List<Vector2Int> locations = new List<Vector2Int>();
+
+        if (this.Commander.commandActions <= 0)
+            return locations;
 
         foreach (Vector2Int dir in this.directions) {
             Vector2Int nextTile = new Vector2Int(this.Position.x + dir.x, this.Position.y + dir.y);
@@ -48,7 +38,10 @@ public class Knight : Piece
         List<Vector2Int> enemyPos = new List<Vector2Int>();
         List<Vector2Int> availableMoves = this.LocationsAvailable();
 
-        availableMoves.RemoveAll(pos => pos.x < 0 || pos.x > 7 || pos.y < 0 || pos.y > 7);
+        if (this.Commander.commandActions <= 0)
+            return enemyPos;
+
+        availableMoves.RemoveAll(pos => !GameManager.ValidPosition(pos));
 
         foreach(Vector2Int pos in availableMoves) {
             if (GameManager.Instance.IsEnemyPieceAt(this.IsWhite, pos))
