@@ -1,6 +1,6 @@
 /* Written by David Corredor
  Edited by Braden Stonehill
- Last date edited: 09/07/2021
+ Last date edited: 09/14/2021
  GameManager.cs - Manages the rules, turn order, tracking and moving pieces, and checking the state of the pieces on
  the board and the players.
 
@@ -18,20 +18,19 @@ using UnityEngine;
 
 public class GameManager : MonoBehaviour
 {
-    public static GameManager Instance { get; set; }
-
-    public BoardManager board; // Not instantiated, value is filled in the editor
-    public Piece[,] Pieces { get; set; }
-    public Piece SelectedPiece { get; set; }
-
-
+    #region PRIVATE PROPERTIES
     private Player user;
     private Player ai;
+    #endregion
 
-    [SerializeField]
-    public Player currentPlayer;
-
-    public bool isGameOver;
+    #region PUBLIC PROPERTIES
+    public static GameManager Instance { get; set; }
+    public BoardManager board; // Not instantiated, value is populated in the editor
+    public Piece[,] Pieces { get; set; }
+    public Piece SelectedPiece { get; set; }
+    public Player CurrentPlayer { get; set; }
+    public bool IsGameOver { get; set; }
+    #endregion
 
     private void Awake() {
         Instance = this;
@@ -40,41 +39,117 @@ public class GameManager : MonoBehaviour
     private void Start() {
         user = new Player("Human", true);
         ai = new Player("AI", false);
-        currentPlayer = user;
+        CurrentPlayer = user;
         Pieces = new Piece[8, 8];
-
-        isGameOver = false;
+        IsGameOver = false;
     }
 
     private void Update() {
-        if(Input.GetKeyDown(KeyCode.Space) || currentPlayer.remainingActions <= 0) {
-            PassTurn();
+        if (!IsGameOver) {
+            if (Input.GetMouseButtonDown(0)) {
+                if (SelectedPiece == null) {
+                    SelectPiece(board.selection);
+                } else {
+                    CheckMove(board.selection);
+                }
+            }
+
+
+            if (Input.GetKeyDown(KeyCode.Space) || CurrentPlayer.remainingActions <= 0) {
+                PassTurn();
+            }
         }
     }
 
-    // Function that grabs a reference to the Piece object at the selected tile and
-    // cals the board function to highlight all available squares for the piece.
+    #region PIECE INTERACTION FUNCTIONS - Functions that interact with the object representation of the pieces.
+    // Function to select a valid piece and highlight all possible moves.
     public void SelectPiece(Vector2Int position) {
-        if (Pieces[position.x, position.y] == null)
-            return;
-
-        if (Pieces[position.x, position.y].IsWhite != currentPlayer.isWhite)
-            return;
-
-        SelectedPiece = Pieces[position.x, position.y];
-        board.HighlightAllTiles(position, AvailableMoves(SelectedPiece), SelectedPiece.EnemiesInRange());
+        if (IsPieceAt(position) && PieceAt(position).IsWhite == CurrentPlayer.isWhite) {
+            SelectedPiece = Pieces[position.x, position.y];
+            board.HighlightAllTiles(position, AvailableMoves(SelectedPiece), SelectedPiece.EnemiesInRange());
+        } else {
+            SelectedPiece = null;
+            board.RemoveHighlights();
+        }
     }
 
-    // Function to check if the selected tile is a valid move for the selected piece.
+    // Function to move the selected piece in the array implementation of the board
+    private void MovePiece(Vector2Int position) {
+        // Move piece to new position
+        Pieces[SelectedPiece.Position.x, SelectedPiece.Position.y] = null;
+        Pieces[position.x, position.y] = SelectedPiece;
+        SelectedPiece.Position = position;
+
+        // Call function in board to move the piece game object
+        board.MoveObject(SelectedPiece.gameObject, position);
+
+        // Reduce number of actions remaining
+        CurrentPlayer.remainingActions -= 1;
+
+        // Deselect the piece
+        SelectPiece(new Vector2Int(-1, -1));
+    }
+
+    // Function to add captured pieces to current player
+    private void CapturePiece(Piece captured) {
+        if (captured is Pawn) {
+            CurrentPlayer.capturedPieces["Pawn"] += 1;
+        } else if (captured is Rook) {
+            CurrentPlayer.capturedPieces["Rook"] += 1;
+        } else if (captured is Knight) {
+            CurrentPlayer.capturedPieces["Knight"] += 1;
+        } else if (captured is Bishop) {
+            CurrentPlayer.capturedPieces["Bishop"] += 1;
+        } else if (captured is Queen) {
+            CurrentPlayer.capturedPieces["Queen"] += 1;
+        } else if (captured is King) {
+            CurrentPlayer.capturedPieces["King"] += 1;
+            IsGameOver = true;
+        }
+    }
+    #endregion
+
+    #region TURN VALIDATION FUNCTIONS - Functions that handle condition checking for turn orders and number of actions in turn.
+    // Function to pass the turn to the next player
+    private void PassTurn() {
+        CurrentPlayer.remainingActions = 3;
+        CurrentPlayer = CurrentPlayer == user ? ai : user;
+    }
+    #endregion
+
+    #region BOARD EVALUTATION FUNCTIONS - Functions that scan the board array for pieces and available positions.
+    // Function to check if the selected tile is a valid move for the selected piece and perform appropriate action.
     public void CheckMove(Vector2Int position) {
+        // Deselect the selected piece if position is not valid
+        if (!ValidPosition(position)) {
+            SelectPiece(position);
+            return;
+        }
+            
+
+        // Get all available positions to move and list of enemy positions in range
         bool[,] availableMoves = AvailableMoves(SelectedPiece);
         List<Vector2Int> enemies = SelectedPiece.EnemiesInRange();
-        
+
+        // Move piece if position is in available moves, attack enemy piece if position contains enemy, or change selection if position contains a friendly piece
         if (availableMoves[position.x, position.y]) {
             MovePiece(position);
+
         } else if (enemies.Contains(position)) {
-            bool isMoving = SelectedPiece is Knight && (Mathf.Abs(position.sqrMagnitude - SelectedPiece.Position.sqrMagnitude) > 2) ? true : false;
-            bool attackSuccessful = !isMoving ? SelectedPiece.Attack(Pieces[position.x, position.y]) : SelectedPiece.Attack(Pieces[position.x, position.y], true);
+            bool isMoving = false;
+            bool attackSuccessful;
+
+            // Check if selected piece is a knight and is attacking a non-adjacent piece
+            if (SelectedPiece is Knight && (Mathf.Abs(position.sqrMagnitude - SelectedPiece.Position.sqrMagnitude) > 2))
+                isMoving = true;
+
+            // Change optional isMoving parameter if selected piece is a Knight attacking a non-adjacent piece
+            if (isMoving)
+                attackSuccessful = SelectedPiece.Attack(Pieces[position.x, position.y], true);
+            else
+                attackSuccessful = SelectedPiece.Attack(Pieces[position.x, position.y]);
+
+            // Capture piece and remove model if attack is successful
             if (attackSuccessful) {
                 // Remove the captured piece and add to capture pieces
                 Piece enemy = Pieces[position.x, position.y];
@@ -85,12 +160,13 @@ public class GameManager : MonoBehaviour
                 MovePiece(position);
 
             } else {
-                if(SelectedPiece is Knight && isMoving) {
+                // Move knight next to defending piece if attacking a non-adjacent piece
+                if (SelectedPiece is Knight && isMoving) {
                     List<Vector2Int> locations = SelectedPiece.LocationsAvailable();
-                    locations.RemoveAll(pos => pos.x < 0 || pos.x > 7 || pos.y < 0 || pos.y > 7);
-                    locations.RemoveAll(pos => PieceAt(pos));
+                    locations.RemoveAll(pos => !ValidPosition(pos));
+                    locations.RemoveAll(pos => IsPieceAt(pos));
 
-                    foreach(Vector2Int pos in locations) {
+                    foreach (Vector2Int pos in locations) {
                         Vector2Int diff = Vector2Int.zero;
                         diff.x = Mathf.Abs(position.x - pos.x);
                         diff.y = Mathf.Abs(position.y - pos.y);
@@ -99,39 +175,31 @@ public class GameManager : MonoBehaviour
                             break;
                         }
                     }
-                }
-                // Reduce number of actions remaining
-                currentPlayer.remainingActions -= 1;
+                } else {
+                    // Reduce number of actions remaining
+                    CurrentPlayer.remainingActions -= 1;
+
+                    // Deselect the piece
+                    SelectPiece(new Vector2Int(-1, -1));
+                }  
             }
-        }
-        
 
-        SelectedPiece = null;
-        board.RemoveHighlights();
+        } else if (IsFriendlyPieceAt(CurrentPlayer.isWhite, position)) {
+            board.RemoveHighlights();
+            SelectPiece(position);
+
+        } else
+            // Deselect the piece
+            SelectPiece(new Vector2Int(-1, -1));
     }
 
-    // Function to move the selected piece in the array implementation of the board
-    public void MovePiece(Vector2Int position) {
-        // Move piece to new position
-        Pieces[SelectedPiece.Position.x, SelectedPiece.Position.y] = null;
-        Pieces[position.x, position.y] = SelectedPiece;
-        SelectedPiece.Position = position;
-
-        // Call function in board to move the piece game object
-        board.MoveObject(SelectedPiece.gameObject, position);
-
-        // Reduce number of actions remaining
-        currentPlayer.remainingActions -= 1;
-    }
-
-    // Function that returns a boolean map of the board with all positions that can be moved to by
-    // the selected piece set to true
+    // Function that returns a boolean map of the board with all positions that are available to selected piece.
     public bool[,] AvailableMoves(Piece piece) {
         bool[,] allowedMoves = new bool[8, 8];
         List<Vector2Int> possibleMoves = piece.LocationsAvailable();
 
-        possibleMoves.RemoveAll(pos => pos.x < 0 || pos.x > 7 || pos.y < 0 || pos.y > 7);
-        possibleMoves.RemoveAll(pos => PieceAt(pos));
+        possibleMoves.RemoveAll(pos => !ValidPosition(pos));
+        possibleMoves.RemoveAll(pos => IsPieceAt(pos));
 
         foreach (Vector2Int position in possibleMoves) {
             allowedMoves[position.x, position.y] = true;
@@ -139,9 +207,18 @@ public class GameManager : MonoBehaviour
         return allowedMoves;
     }
 
+    // Function that returns the object at board position
+    public Piece PieceAt(Vector2Int position) {
+        if (ValidPosition(position))
+            return Pieces[position.x, position.y];
+        return null;
+    }
 
     // Function that returns true if space is occupied
-    public bool PieceAt(Vector2Int position) {
+    public bool IsPieceAt(Vector2Int position) {
+        if (!ValidPosition(position))
+            return false;
+
         Piece piece = Pieces[position.x, position.y];
 
         if (piece == null) {
@@ -152,7 +229,10 @@ public class GameManager : MonoBehaviour
     }
 
     // Function that returns true if space is occupied by a friendly piece
-    public bool FriendlyPieceAt(bool isWhite, Vector2Int position) {
+    public bool IsFriendlyPieceAt(bool isWhite, Vector2Int position) {
+        if (!ValidPosition(position))
+            return false;
+
         Piece piece = Pieces[position.x, position.y];
 
         if (piece == null) {
@@ -167,7 +247,10 @@ public class GameManager : MonoBehaviour
     }
 
     // Function that returns true if space is occupied by an enemy piece
-    public bool EnemyPieceAt(bool isWhite, Vector2Int position) {
+    public bool IsEnemyPieceAt(bool isWhite, Vector2Int position) {
+        if (!ValidPosition(position))
+            return false;
+
         Piece piece = Pieces[position.x, position.y];
 
         if (piece == null) {
@@ -181,28 +264,12 @@ public class GameManager : MonoBehaviour
         return true;
     }
 
-    // Function to pass the turn to the next player
-    private void PassTurn() {
-        currentPlayer.remainingActions = 3;
-        currentPlayer = currentPlayer == user ? ai : user;
-    }
+    // Function that returns true if position is within boundaries of the board.
+    public bool ValidPosition(Vector2Int position) {
+        if (position.x < 0 || position.x > 7 || position.y < 0 || position.y > 7)
+            return false;
 
-    // Function to add captured pieces to current player
-    private void CapturePiece(Piece captured) { 
-        if(captured is Pawn) {
-            currentPlayer.capturedPieces["Pawn"] += 1;
-        } else if (captured is Rook) {
-            currentPlayer.capturedPieces["Rook"] += 1;
-        } else if (captured is Knight) {
-            currentPlayer.capturedPieces["Knight"] += 1;
-        } else if (captured is Bishop) {
-            currentPlayer.capturedPieces["Bishop"] += 1;
-        } else if (captured is Queen) {
-            currentPlayer.capturedPieces["Queen"] += 1;
-        } else if (captured is King) {
-            currentPlayer.capturedPieces["King"] += 1;
-            isGameOver = true;
-        }
+        return true;
     }
-
+    #endregion
 }

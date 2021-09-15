@@ -56,7 +56,7 @@ public class King : Piece
             if (position.x < 0 || position.x > 7 || position.y < 0 || position.y > 7)
                 continue;
 
-            if (GameManager.Instance.EnemyPieceAt(this.IsWhite, position))
+            if (GameManager.Instance.IsEnemyPieceAt(this.IsWhite, position))
                 enemyPos.Add(position);
         }
 

@@ -12,6 +12,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public struct FuzzyLogic {
+    #region ENUMERATOR PROPERTIES
     public enum AttackPawn : int {
         Pawn = 4,
         Rook = 6,
@@ -65,7 +66,9 @@ public struct FuzzyLogic {
         Queen = 4,
         King = 4
     }
+    #endregion
 
+    #region STATIC METHODS
     public static int FindNumberKing(Piece pieceToAttack) {
         if (pieceToAttack is King) {
             return (int)AttackKing.King;
@@ -168,5 +171,6 @@ public struct FuzzyLogic {
         return 0;
 
     }
+    #endregion
 }
 

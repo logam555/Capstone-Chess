@@ -54,7 +54,7 @@ public abstract class Piece : MonoBehaviour
         if (position.x < 0 || position.x > 7 || position.y < 0 || position.y > 7)
             return locations;
 
-        if (!ignorePieces && GameManager.Instance.PieceAt(position))
+        if (!ignorePieces && GameManager.Instance.IsPieceAt(position))
             return locations;
 
         if (moves > 0) {

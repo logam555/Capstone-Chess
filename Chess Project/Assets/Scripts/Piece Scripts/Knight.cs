@@ -51,7 +51,7 @@ public class Knight : Piece
         availableMoves.RemoveAll(pos => pos.x < 0 || pos.x > 7 || pos.y < 0 || pos.y > 7);
 
         foreach(Vector2Int pos in availableMoves) {
-            if (GameManager.Instance.EnemyPieceAt(this.IsWhite, pos))
+            if (GameManager.Instance.IsEnemyPieceAt(this.IsWhite, pos))
                 enemyPos.Add(pos);
         }
 
