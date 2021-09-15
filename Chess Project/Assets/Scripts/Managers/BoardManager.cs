@@ -8,6 +8,9 @@
 
  Version 1.1: Edited by George 09/09/2021: Adding Tags to chess pieces, adding base heuirtics, 
  adding in mouse over board hovering highlighting, add in board grid naming, ... .
+
+ Version 1.2 Edited by George 09/16/2021: mouse hovering commented out/removed, base heuirtics moved to heuirtics class in seperate script, 
+ boarding naming converted into board tile class that can hold each tiles offical position along with basic board tile information.
  */
 
 using System;
@@ -17,10 +20,15 @@ using UnityEngine;
 
 public class BoardManager : MonoBehaviour
 {
-    //class
+    //class for holding boards tile information for tile based accessing and assigning tile positioning base on offical chess rules
     private class BoardTile
     {
+        private bool isOccupied;
         private bool isWhite;
+        private string boardPosition;
+        private string occupiedPieceType;
+        private int whiteHeuristic;
+        private int blackHeuristic;
     }
 
     private const float TILE_SIZE = 1.0f;
@@ -36,12 +44,8 @@ public class BoardManager : MonoBehaviour
     private List<GameObject> activePieces;
     private List<GameObject> highlights;
 
-    //[SerializeField]
-    //private List<int, Char> chessBoardGridCo;
     private Dictionary<string, BoardTile> chessBoardGridCo; 
-    
-
-    private Vector2Int positionCurrent = new Vector2Int(0, 0); //using for mouse over highlight
+    //removed variable for mouse over highlight
 
     private GameManager gm;
 
@@ -50,10 +54,9 @@ public class BoardManager : MonoBehaviour
         highlights = new List<GameObject>();
         SpawnAllPieces();
 
-        //setup static board naming
+        //setup static board tile naming and default variables
         chessBoardGridCo = new Dictionary<string, BoardTile>();
-        //chessBoardGridCo = new List<int, char>();
-        ChessboardNaming();
+        ChessboardTileSetup();
     }
 
     private void Update() {
@@ -98,18 +101,7 @@ public class BoardManager : MonoBehaviour
         }
         
         //mouse movement highlighting
-        positionCurrent.x = (int)hit.point.x;
-        positionCurrent.y = (int)hit.point.z;
-        //Debug.Log("x"+ positionCurrent + "y");
- 
-        /*
-        //testing mouse over using positionCurrent //redo positionCurrent 
-        if ((positionCurrent.x != 0 && positionCurrent.y != 0))
-            HighlightSelectedMouse(); //HighlightSelectedMouse(positionCurrent);
-        else
-            //highlights.Clear();
-            Debug.Log("debug"+ positionCurrent);
-        */
+        //removed
     }
 
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -122,7 +114,7 @@ public class BoardManager : MonoBehaviour
         gm.Pieces[position.x, position.y] = pieceObject.GetComponent<Piece>();
         gm.Pieces[position.x, position.y].Position = position;
 
-        //adding tags for White and Black pieces. 0-5 index for white, 6-11 index for black.
+        //adding tags for White and Black pieces. 0-5 index for white, 6-11 index for black. added by george to existing function
         if (index <= 5)
             pieceObject.tag = "White Pieces";
         else
@@ -255,14 +247,7 @@ public class BoardManager : MonoBehaviour
     }
 
     //function to spawn and remove mouse following highlighted tile.
-    private void HighlightTileMouse(int index, int x, int y)
-    {
-        GameObject highlight = Instantiate(highlightPrefabs[index]);
-        highlights.Add(highlight);
-        highlight.transform.position = GetTileCenter(x, y) + Vector3.up * (index != 2 ? -0.149f : -0.14f);
-
-        Destroy(highlight);
-    }
+    //removed function for moving highlight mouse
 
     // Utility function to destroy all highlight game objects
     public void RemoveHighlights() {
@@ -272,61 +257,38 @@ public class BoardManager : MonoBehaviour
         highlights.Clear();
     }
 
-    //testing
-    private void HighlightSelectedMouse()
+    //testing mouse movement highlight function
+    //removed function for moving highlight mouse
+
+    //function to setup the tile position names, tile is occupied status, if occupied by which color/piece type and basic board wide heuirtics for each color.
+    private void ChessboardTileSetup()
     {
-
-    }
-
-    //testing
-    private void HighlightSelectedMouse(Vector2Int position)
-    {
-
-    }
-
-    // Utility Debug function for testing raycasting and selection
-    private void ChessboardNaming()
-    {
-        //Vector3 widthLine = Vector3.right * 8;
-        //Vector3 heightLine = Vector3.forward * 8;
-        //Debug.Log(widthLine + "first" + heightLine);
-        //int test1 = 0;
         BoardTile board = new BoardTile();
 
         char letterBoard = '0';
         string showB = "";
 
+        //setting up tiles and adding to dictionary
         for (int j = 1; j < 9; j++)
         {
-            //Vector3 start = Vector3.forward * i;
-            //Debug.Log("running count" + j);
-            //Debug.Log(start + "2nd" + widthLine + "i" + i);
-            //test1 = 0;
+            //Debug.Log("j" + j);
             for (int i = 65; i < 73; i++)
             {
-                //start = Vector3.right * j;
-                //Debug.DrawLine(start, start + heightLine);
-                //Debug.Log(start + "3rd" + heightLine + "j" + j);
-                //Debug.Log("running count" + j);
-                //test1++;
+                //Debug.Log("running count" + i);
                 letterBoard = Convert.ToChar(i);
-                showB = j + letterBoard.ToString();
-                //Debug.Log("letter" + showB);
+                showB = letterBoard.ToString() + j;//place letter before number
+                Debug.Log("position " + showB);
                 chessBoardGridCo.Add(showB, board);
+
+                if(j == 1 || j == 2)
+                {
+
+                }
+                else if (j == 7 || j == 8)
+                {
+
+                }
             }
         }
-
-        /*
-        if (selection.x >= 0 && selection.y >= 0)
-        {
-            Debug.DrawLine(
-                Vector3.forward * selection.y + Vector3.right * selection.x,
-                Vector3.forward * (selection.y + 1) + Vector3.right * (selection.x + 1));
-            Debug.DrawLine(
-                Vector3.forward * (selection.y + 1) + Vector3.right * selection.x,
-                Vector3.forward * selection.y + Vector3.right * (selection.x + 1));
-        }
-        */
-        //return board;
     }
 }
