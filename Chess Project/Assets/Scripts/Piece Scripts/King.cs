@@ -25,6 +25,8 @@ public class King : Commander
     public Commander leftBishop = null;
     public Commander rightBishop = null;
 
+    public bool usedDelegation = false;
+
     public override List<Vector2Int> LocationsAvailable() {
         List<Vector2Int> locations = new List<Vector2Int>();
 
@@ -58,6 +60,56 @@ public class King : Commander
         }
 
         return enemyPos;
+    }
+
+    public void DelegatePiece(Piece subordinate, Commander commander) {
+        // Check if bishops have max subordinates
+        if (commander.subordinates.Count() >= 6)
+            return;
+
+        // Check if delegation has been used
+        if (this.usedDelegation)
+            return;
+
+        // Add subordinate to bishop
+        commander.subordinates.Add(subordinate);
+
+        // Change subordinate's commander to bishop
+        subordinate.Commander = commander;
+
+        // Remove subordinate from list of subordinates
+        subordinates.Remove(subordinate);
+
+        // Mark subordinate as delegated
+        subordinate.Delegated = true;
+
+        // Mark that action has been used
+        this.usedDelegation = true;
+    }
+
+    public void RecallPiece(Piece subordinate, Commander commander) {
+        // Check if piece was delegated
+        if (!subordinate.Delegated)
+            return;
+
+        // Check if delegation has been used
+        if (this.usedDelegation)
+            return;
+
+        // Add subordinate to list of subordinates
+        this.subordinates.Add(subordinate);
+
+        // Change subordinate's commander to king
+        subordinate.Commander = this;
+
+        // Remove subordinate from bishop
+        commander.subordinates.Remove(subordinate);
+
+        // Unmark subordinate as delegated
+        subordinate.Delegated = false;
+
+        // Mark that action has been used
+        this.usedDelegation = true;
     }
 
 }

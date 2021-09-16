@@ -57,6 +57,27 @@ public class GameManager : MonoBehaviour
             if (Input.GetKeyDown(KeyCode.Space)) {
                 PassTurn();
             }
+
+            if (Input.GetMouseButtonDown(1) && SelectedPiece != null) {
+                Piece pieceToDelegate = SelectedPiece;
+                SelectPiece(board.selection);
+
+                if(SelectedPiece == pieceToDelegate) {
+                    if(pieceToDelegate.Delegated) {
+                        King king = (King)CurrentPlayer.commanders.Find(commander => commander is King);
+                        king.RecallPiece(pieceToDelegate, pieceToDelegate.Commander);
+                    }
+
+                    SelectPiece(new Vector2Int(-1, -1));
+                } else {
+                    if(SelectedPiece is Commander && !(SelectedPiece is King) && pieceToDelegate.Commander is King) {
+                        King king = (King)pieceToDelegate.Commander;
+                        king.DelegatePiece(pieceToDelegate, (Commander)SelectedPiece);
+                    }
+                    
+                    SelectPiece(new Vector2Int(-1, -1));
+                }
+            }
         }
     }
 

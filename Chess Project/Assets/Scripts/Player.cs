@@ -52,6 +52,11 @@ public class Player
         foreach (Commander commander in commanders) {
             commander.commandActions = 1;
             commander.usedFreeMovement = false;
+
+            if(commander is King) {
+                King king = (King)commander;
+                king.usedDelegation = false;
+            }
         }
     }
 
