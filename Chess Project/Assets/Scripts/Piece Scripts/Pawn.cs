@@ -1,9 +1,11 @@
 ﻿/* Written by David Corredor
  Edited by Braden Stonehill
- Last date edited: 09/07/2021
+ Last date edited: 09/15/2021
  Pawn.cs - child class of Piece.cs that implements move and attack using rules for the pawn
 
- Version 1.1: 
+ Version 1.3: 
+  - Removed the attack function as it no longer needs to be implemented by the child classes.
+
   - Implemented the attack function to utilize the fuzzy logic table and the EnemiesInRange function
  to detect enemies immediately in front of the pawn that can be attacked.
 
@@ -16,26 +18,15 @@ using UnityEngine;
 
 public class Pawn : Piece
 {
-
-    public override bool Attack(Piece enemy, bool isMoving = false) {
-        // Simulate dice roll
-        int roll = DiceManager.Instance.RollDice();
-
-        // Assign minimum attack number needed based off of fuzzy logic table
-        int mininumValue = FuzzyLogic.FindNumberPawn(enemy);
-
-        if (roll >= mininumValue)
-            return true;
-
-        return false;
-    }
-
     public override List<Vector2Int> LocationsAvailable()
     {
         List<Vector2Int> locations = new List<Vector2Int>();
         int forwardDirection = this.IsWhite ? 1 : -1;
 
-        
+        if (this.Commander.commandActions <= 0)
+            return locations;
+
+
         Vector2Int forwardOne = new Vector2Int(this.Position.x, this.Position.y + forwardDirection);
         locations.Add(forwardOne);
 
@@ -52,10 +43,13 @@ public class Pawn : Piece
         List<Vector2Int> enemyPos = new List<Vector2Int>();
         List<Vector2Int> availableMoves = this.LocationsAvailable();
 
-        availableMoves.RemoveAll(pos => pos.x < 0 || pos.x > 7 || pos.y < 0 || pos.y > 7);
+        if (this.Commander.commandActions <= 0)
+            return enemyPos;
+
+        availableMoves.RemoveAll(pos => !GameManager.ValidPosition(pos));
 
         foreach(Vector2Int pos in availableMoves) {
-            if (GameManager.Instance.EnemyPieceAt(this.IsWhite, pos))
+            if (GameManager.Instance.IsEnemyPieceAt(this.IsWhite, pos))
                 enemyPos.Add(pos);
         }
 

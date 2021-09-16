@@ -1,6 +1,6 @@
 /* Written by Braden Stonehill
- Edited by ___
- Last date edited: 09/07/2021
+ Edited by Braden Stonehil
+ Last date edited: 09/15/2021
  BoardManager.cs - Manages the instantiation, rendering, and interactions with the board.
 
  Version 1: Created methods to spawn all piece models, select game objects based on interaction with the board,
@@ -12,46 +12,41 @@ using UnityEngine;
 
 public class BoardManager : MonoBehaviour
 {
+    #region PROPERTIES
     private const float TILE_SIZE = 1.0f;
     private const float TILE_OFFSET = 0.5f;
 
-    private Vector2Int selection = new Vector2Int(-1, -1);
+    public Vector2Int selection = new Vector2Int(-1, -1);
 
     [SerializeField]
-    private List<GameObject> piecePrefabs; // Not instantiated, list is filled in the editor
+    private List<GameObject> piecePrefabs; // Not instantiated, list is populated in the editor
     [SerializeField]
-    private List<GameObject> highlightPrefabs; // Not instantiated, list is filled in the editor
+    private List<GameObject> highlightPrefabs; // Not instantiated, list is populated in the editor
+    [SerializeField]
+    private Material commanderHighlightPrefab; // Not instantiated, populated in the editor
 
     private List<GameObject> activePieces;
     private List<GameObject> highlights;
+    private MeshRenderer commanderModel;
+    private Material commanderMaterial;
     
-
     private GameManager gm;
+    #endregion
 
     private void Start() {
         gm = GameManager.Instance;
         highlights = new List<GameObject>();
-        SpawnAllPieces();
+        commanderModel = null;
+        commanderMaterial = null;
+        SpawnAllPieces();   
     }
 
     private void Update() {
         UpdateSelection();
         DrawChessboard();
-
-        if(Input.GetMouseButtonDown(0)) {
-            if(selection.x >= 0 && selection.y >= 0) {
-                if(gm.SelectedPiece == null) {
-                    gm.SelectPiece(selection);
-                } else {
-                    gm.CheckMove(selection);
-                }
-            }
-        }
     }
 
-    //////////////////////////////////////////////////////////////////////////////////////////////////////////////
-                                        /// INTERACTION FUNCTIONS ///
-    //////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    #region INTERACTION FUNCTIONS - Functions to select, move, and remove models on the board.
     public void MoveObject(GameObject pieceObject, Vector2Int position) {
         pieceObject.transform.position = GetTileCenter(position.x, position.y);
     }
@@ -74,17 +69,17 @@ public class BoardManager : MonoBehaviour
             selection.y = -1;
         }
     }
+    #endregion
 
 
-    //////////////////////////////////////////////////////////////////////////////////////////////////////////////
-                                        /// INSTANTIATION FUNCTIONS ///
-    //////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    #region INSTATIATION FUNCTIONS - Functions to instatiate models and populate the board.
     // Function to spawn a piece prefab on a tile and add the object to the list of active objects
     private void SpawnPiece(int index, Vector2Int position) {
         GameObject pieceObject = Instantiate(piecePrefabs[index], GetTileCenter(position.x, position.y), Quaternion.Euler(-90, 0, 0)) as GameObject;
         pieceObject.transform.SetParent(transform);
         gm.Pieces[position.x, position.y] = pieceObject.GetComponent<Piece>();
         gm.Pieces[position.x, position.y].Position = position;
+        gm.Pieces[position.x, position.y].Delegated = false;
         activePieces.Add(pieceObject);
     }
 
@@ -137,12 +132,14 @@ public class BoardManager : MonoBehaviour
         // Pawns
         for (int i = 0; i < 8; i++)
             SpawnPiece(11, new Vector2Int(i, 6));
+
+        // Attach pieces to their commanders
+        gm.AttachCommandingPieces();
     }
+    #endregion
 
 
-    //////////////////////////////////////////////////////////////////////////////////////////////////////////////
-                                        /// RENDERING FUNCTIONS ///
-    //////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    #region RENDERING FUNCTIONS - Functions for rendering highlights and debug displays
     // Utility function to get the center position of a tile of the board game object
     private Vector3 GetTileCenter(int x, int y) {
         Vector3 origin = Vector3.zero;
@@ -176,10 +173,11 @@ public class BoardManager : MonoBehaviour
     }
 
     // Function to highlight all tiles associated with selected piece
-    public void HighlightAllTiles(Vector2Int position, bool[,] availableMoves, List<Vector2Int> enemies) {
+    public void HighlightAllTiles(Vector2Int position, bool[,] availableMoves, List<Vector2Int> enemies, Commander commander) {
         HighlightSelected(position);
         HighlightAvailableMoves(availableMoves);
         HighlightEnemies(enemies);
+        HighlightCommander(commander);
     }
 
     // Function to highlight the tile of the selected piece
@@ -205,6 +203,12 @@ public class BoardManager : MonoBehaviour
         }
     }
 
+    private void HighlightCommander(Commander commander) {
+        commanderModel = commander.GetComponent<MeshRenderer>();
+        commanderMaterial = commanderModel.material;
+        commanderModel.material = commanderHighlightPrefab;
+    }
+
     // Utility function to highlight any tile with the selected prefab at the x and y grid position
     private void HighlightTile(int index, int x, int y) {
         GameObject highlight = Instantiate(highlightPrefabs[index]);
@@ -218,5 +222,12 @@ public class BoardManager : MonoBehaviour
             Destroy(highlight);
         }
         highlights.Clear();
+
+        if(commanderMaterial != null && commanderModel != null) {
+            commanderModel.material = commanderMaterial;
+            commanderModel = null;
+            commanderMaterial = null;
+        }
     }
+    #endregion
 }

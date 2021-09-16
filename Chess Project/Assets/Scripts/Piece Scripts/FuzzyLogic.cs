@@ -1,10 +1,13 @@
 /* Written by Braden Stonehill
- Edited by David Corredor
- Last date edited: 09/07/2021
+ Edited by David Corredor, Braden Stonehill
+ Last date edited: 09/15/2021
  FuzzyLogic.cs - struct object that contains int enumerators for each attacking piece with the minimum roll needed
  to capture the defending piece.
 
- Version 1.2: 
+ Version 1.3: 
+  - Changed all functions to private and added a function that determines the type of the attacker and defender
+ to determine what function to use for calculating the minimum roll needed.
+
   - Added functions for fetching the values for each attacking piece based on the type of the defending piece. */
 
 using System.Collections;
@@ -12,6 +15,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public struct FuzzyLogic {
+    #region ENUMERATOR PROPERTIES
     public enum AttackPawn : int {
         Pawn = 4,
         Rook = 6,
@@ -65,8 +69,10 @@ public struct FuzzyLogic {
         Queen = 4,
         King = 4
     }
+    #endregion
 
-    public static int FindNumberKing(Piece pieceToAttack) {
+    #region STATIC METHODS
+    private static int FindNumberKing(Piece pieceToAttack) {
         if (pieceToAttack is King) {
             return (int)AttackKing.King;
         } else if (pieceToAttack is Queen) {
@@ -82,7 +88,7 @@ public struct FuzzyLogic {
         }
         return 0;
     }
-    public static int FindNumberQueen(Piece pieceToAttack) {
+    private static int FindNumberQueen(Piece pieceToAttack) {
         if (pieceToAttack is King ) {
             return (int)FuzzyLogic.AttackQueen.King;
         } else if (pieceToAttack is Queen ) {
@@ -100,7 +106,7 @@ public struct FuzzyLogic {
 
 
     }
-    public static int FindNumberBishop(Piece pieceToAttack) {
+    private static int FindNumberBishop(Piece pieceToAttack) {
         if (pieceToAttack is King ) {
             return (int)FuzzyLogic.AttackBishop.King;
         } else if (pieceToAttack is Queen ) {
@@ -117,7 +123,7 @@ public struct FuzzyLogic {
         return 0;
 
     }
-    public static int FindNumberRook(Piece pieceToAttack) {
+    private static int FindNumberRook(Piece pieceToAttack) {
         if (pieceToAttack is King) {
             return (int)FuzzyLogic.AttackRook.King;
         } else if (pieceToAttack is Queen ) {
@@ -134,7 +140,7 @@ public struct FuzzyLogic {
         return 0;
 
     }
-    public static int FindNumberKnight(Piece pieceToAttack) {
+    private static int FindNumberKnight(Piece pieceToAttack) {
         if (pieceToAttack is King) {
             return (int)FuzzyLogic.AttackKnight.King;
         } else if (pieceToAttack is Queen ) {
@@ -151,7 +157,7 @@ public struct FuzzyLogic {
         return 0;
 
     }
-    public static int FindNumberPawn(Piece pieceToAttack) {
+    private static int FindNumberPawn(Piece pieceToAttack) {
         if (pieceToAttack is King) {
             return (int)FuzzyLogic.AttackPawn.King;
         } else if (pieceToAttack is Queen ) {
@@ -168,5 +174,21 @@ public struct FuzzyLogic {
         return 0;
 
     }
+
+    public static int FindFuzzyNumber(Piece attacker, Piece defender) {
+        if (attacker is King)
+            return FindNumberKing(defender);
+        else if (attacker is Queen)
+            return FindNumberQueen(defender);
+        else if (attacker is Bishop)
+            return FindNumberBishop(defender);
+        else if (attacker is Knight)
+            return FindNumberKnight(defender);
+        else if (attacker is Rook)
+            return FindNumberRook(defender);
+        else
+            return FindNumberPawn(defender);
+    }
+    #endregion
 }
 
