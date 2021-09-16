@@ -22,9 +22,13 @@ public class BoardManager : MonoBehaviour
     private List<GameObject> piecePrefabs; // Not instantiated, list is populated in the editor
     [SerializeField]
     private List<GameObject> highlightPrefabs; // Not instantiated, list is populated in the editor
+    [SerializeField]
+    private Material commanderHighlightPrefab; // Not instantiated, populated in the editor
 
     private List<GameObject> activePieces;
     private List<GameObject> highlights;
+    private MeshRenderer commanderModel;
+    private Material commanderMaterial;
     
     private GameManager gm;
     #endregion
@@ -32,6 +36,8 @@ public class BoardManager : MonoBehaviour
     private void Start() {
         gm = GameManager.Instance;
         highlights = new List<GameObject>();
+        commanderModel = null;
+        commanderMaterial = null;
         SpawnAllPieces();   
     }
 
@@ -167,10 +173,11 @@ public class BoardManager : MonoBehaviour
     }
 
     // Function to highlight all tiles associated with selected piece
-    public void HighlightAllTiles(Vector2Int position, bool[,] availableMoves, List<Vector2Int> enemies) {
+    public void HighlightAllTiles(Vector2Int position, bool[,] availableMoves, List<Vector2Int> enemies, Commander commander) {
         HighlightSelected(position);
         HighlightAvailableMoves(availableMoves);
         HighlightEnemies(enemies);
+        HighlightCommander(commander);
     }
 
     // Function to highlight the tile of the selected piece
@@ -196,6 +203,12 @@ public class BoardManager : MonoBehaviour
         }
     }
 
+    private void HighlightCommander(Commander commander) {
+        commanderModel = commander.GetComponent<MeshRenderer>();
+        commanderMaterial = commanderModel.material;
+        commanderModel.material = commanderHighlightPrefab;
+    }
+
     // Utility function to highlight any tile with the selected prefab at the x and y grid position
     private void HighlightTile(int index, int x, int y) {
         GameObject highlight = Instantiate(highlightPrefabs[index]);
@@ -209,6 +222,12 @@ public class BoardManager : MonoBehaviour
             Destroy(highlight);
         }
         highlights.Clear();
+
+        if(commanderMaterial != null && commanderModel != null) {
+            commanderModel.material = commanderMaterial;
+            commanderModel = null;
+            commanderMaterial = null;
+        }
     }
     #endregion
 }

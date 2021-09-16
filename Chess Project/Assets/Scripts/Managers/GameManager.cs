@@ -86,7 +86,7 @@ public class GameManager : MonoBehaviour
     public void SelectPiece(Vector2Int position) {
         if (IsPieceAt(position) && PieceAt(position).IsWhite == CurrentPlayer.isWhite) {
             SelectedPiece = Pieces[position.x, position.y];
-            board.HighlightAllTiles(position, AvailableMoves(SelectedPiece), SelectedPiece.EnemiesInRange());
+            board.HighlightAllTiles(position, AvailableMoves(SelectedPiece), SelectedPiece.EnemiesInRange(), SelectedPiece.Commander);
         } else {
             SelectedPiece = null;
             board.RemoveHighlights();
