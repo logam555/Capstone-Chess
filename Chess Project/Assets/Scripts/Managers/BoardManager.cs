@@ -6,10 +6,10 @@
  Version 1: Created methods to spawn all piece models, select game objects based on interaction with the board,
  and highlight tiles on the board.
 
- Version 1.1: Edited by George 09/09/2021: Adding Tags to chess pieces, adding base heuirtics, 
+ Version 1.1g: Edited by George 09/09/2021: Adding Tags to chess pieces, adding base heuirtics, 
  adding in mouse over board hovering highlighting, add in board grid naming, ... .
 
- Version 1.2 Edited by George 09/16/2021: mouse hovering commented out/removed, base heuirtics moved to heuirtics class in seperate script, 
+ Version 1.2g Edited by George 09/16/2021: mouse hovering commented out/removed, base heuirtics moved to heuirtics class in seperate script, 
  boarding naming converted into board tile class that can hold each tiles offical position along with basic board tile information.
  */
 
@@ -23,12 +23,12 @@ public class BoardManager : MonoBehaviour
     //class for holding boards tile information for tile based accessing and assigning tile positioning base on offical chess rules
     private class BoardTile
     {
-        private bool isOccupied;
-        private bool isWhite;
-        private string boardPosition;
-        private string occupiedPieceType;
-        private int whiteHeuristic;
-        private int blackHeuristic;
+        public bool isOccupied;
+        public bool isWhite;
+        public Vector2Int boardPosition;//for vector 2 version of string position
+        public string occupiedPieceType;
+        public int whiteHeuristic;
+        public int blackHeuristic;
     }
 
     private const float TILE_SIZE = 1.0f;
@@ -52,11 +52,12 @@ public class BoardManager : MonoBehaviour
     private void Start() {
         gm = GameManager.Instance;
         highlights = new List<GameObject>();
-        SpawnAllPieces();
 
         //setup static board tile naming and default variables
         chessBoardGridCo = new Dictionary<string, BoardTile>();
         ChessboardTileSetup();
+
+        SpawnAllPieces();
     }
 
     private void Update() {
@@ -108,7 +109,8 @@ public class BoardManager : MonoBehaviour
                                         /// INSTANTIATION FUNCTIONS ///
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////
     // Function to spawn a piece prefab on a tile and add the object to the list of active objects with correct color tag.
-    private void SpawnPiece(int index, Vector2Int position) {
+    // Edited By George; added string to function call; added in board tile variables.
+    private void SpawnPiece(int index, Vector2Int position, string piece) {
         GameObject pieceObject = Instantiate(piecePrefabs[index], GetTileCenter(position.x, position.y), Quaternion.Euler(-90, 0, 0)) as GameObject;
         pieceObject.transform.SetParent(transform);
         gm.Pieces[position.x, position.y] = pieceObject.GetComponent<Piece>();
@@ -121,57 +123,65 @@ public class BoardManager : MonoBehaviour
             pieceObject.tag = "Black Pieces";
 
         activePieces.Add(pieceObject);
+
+        //updating with starter tile's with occupied, color status, and type.  
+        //Debug.Log("piece convert " + Convert.ToString(Convert.ToChar(position.x + 65) + Convert.ToString(position.y + 1)));
+        chessBoardGridCo[Convert.ToString(Convert.ToChar(position.x + 65) + Convert.ToString(position.y + 1))].isOccupied = true;
+        chessBoardGridCo[Convert.ToString(Convert.ToChar(position.x + 65) + Convert.ToString(position.y + 1))].occupiedPieceType = piece;
+
+        if (index <= 5)
+            chessBoardGridCo[Convert.ToString(Convert.ToChar(position.x + 65) + Convert.ToString(position.y + 1))].isWhite = true;
     }
 
-    // Initilization function to spawn all chess pieces: White index numbers 0-5, Black index numbers 6-11.
+    // Initilization function to spawn all chess pieces: White index numbers 0-5, Black index numbers 6-11. Edited By George; added string of piece type to function calls.
     private void SpawnAllPieces() {
         activePieces = new List<GameObject>();
 
         // Spawn White Pieces
         // King
-        SpawnPiece(0, new Vector2Int(4, 0));
-
+        SpawnPiece(0, new Vector2Int(4, 0), "King");
+        
         // Queen
-        SpawnPiece(1, new Vector2Int(3, 0));
+        SpawnPiece(1, new Vector2Int(3, 0), "Queen");
 
         // Bishops
-        SpawnPiece(2, new Vector2Int(2, 0));
-        SpawnPiece(2, new Vector2Int(5, 0));
+        SpawnPiece(2, new Vector2Int(2, 0), "Bishop");
+        SpawnPiece(2, new Vector2Int(5, 0), "Bishop");
 
         // Knights
-        SpawnPiece(3, new Vector2Int(1, 0));
-        SpawnPiece(3, new Vector2Int(6, 0));
+        SpawnPiece(3, new Vector2Int(1, 0), "Knight");
+        SpawnPiece(3, new Vector2Int(6, 0), "Knight");
 
         // Rooks
-        SpawnPiece(4, new Vector2Int(0, 0));
-        SpawnPiece(4, new Vector2Int(7, 0));
+        SpawnPiece(4, new Vector2Int(0, 0), "Rook");
+        SpawnPiece(4, new Vector2Int(7, 0), "Rook");
 
         // Pawns
         for(int i = 0; i < 8; i++)
-            SpawnPiece(5, new Vector2Int(i, 1));
+            SpawnPiece(5, new Vector2Int(i, 1), "Pawn");
 
         // Spawn Black Pieces
         // King
-        SpawnPiece(6, new Vector2Int(4, 7));
+        SpawnPiece(6, new Vector2Int(4, 7), "King");
 
         // Queen
-        SpawnPiece(7, new Vector2Int(3, 7));
+        SpawnPiece(7, new Vector2Int(3, 7), "Queen");
 
         // Bishops
-        SpawnPiece(8, new Vector2Int(2, 7));
-        SpawnPiece(8, new Vector2Int(5, 7));
+        SpawnPiece(8, new Vector2Int(2, 7), "Bishop");
+        SpawnPiece(8, new Vector2Int(5, 7), "Bishop");
 
         // Knights
-        SpawnPiece(9, new Vector2Int(1, 7));
-        SpawnPiece(9, new Vector2Int(6, 7));
+        SpawnPiece(9, new Vector2Int(1, 7), "Knight");
+        SpawnPiece(9, new Vector2Int(6, 7), "Knight");
 
         // Rooks
-        SpawnPiece(10, new Vector2Int(0, 7));
-        SpawnPiece(10, new Vector2Int(7, 7));
+        SpawnPiece(10, new Vector2Int(0, 7), "Rook");
+        SpawnPiece(10, new Vector2Int(7, 7), "Rook");
 
         // Pawns
         for (int i = 0; i < 8; i++)
-            SpawnPiece(11, new Vector2Int(i, 6));
+            SpawnPiece(11, new Vector2Int(i, 6), "Pawn");
     }
 
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -264,30 +274,24 @@ public class BoardManager : MonoBehaviour
     private void ChessboardTileSetup()
     {
         BoardTile board = new BoardTile();
-
         char letterBoard = '0';
         string showB = "";
 
-        //setting up tiles and adding to dictionary
+        //setting up tiles and adding to dictionary default values
         for (int j = 1; j < 9; j++)
         {
-            //Debug.Log("j" + j);
             for (int i = 65; i < 73; i++)
             {
-                //Debug.Log("running count" + i);
                 letterBoard = Convert.ToChar(i);
                 showB = letterBoard.ToString() + j;//place letter before number
-                Debug.Log("position " + showB);
                 chessBoardGridCo.Add(showB, board);
-
-                if(j == 1 || j == 2)
-                {
-
-                }
-                else if (j == 7 || j == 8)
-                {
-
-                }
+                chessBoardGridCo[showB].isOccupied = false;
+                chessBoardGridCo[showB].isWhite = false;
+                chessBoardGridCo[showB].boardPosition.x = i - 65;
+                chessBoardGridCo[showB].boardPosition.y = j - 1;
+                chessBoardGridCo[showB].occupiedPieceType = "";
+                chessBoardGridCo[showB].whiteHeuristic = 0;
+                chessBoardGridCo[showB].blackHeuristic = 0;
             }
         }
     }
