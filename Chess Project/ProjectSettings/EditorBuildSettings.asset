@@ -9,6 +9,6 @@ EditorBuildSettings:
     path: Assets/Scenes/Main Final Scenes/Main Menu.unity
     guid: 8e67dcae746c6774582081461f2da638
   - enabled: 1
-    path: Assets/Scenes/Test Scenes/Braden-Test.unity
-    guid: a6d2769ae843efb40a3c99c7ff3e8f05
+    path: Assets/Scenes/Main Final Scenes/chessPlaying.unity
+    guid: aaa8dbe49c775cc42ad37d1cbc60e8db
   m_configObjects: {}
