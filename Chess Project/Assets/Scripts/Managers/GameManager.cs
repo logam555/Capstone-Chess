@@ -36,10 +36,10 @@ public class GameManager : MonoBehaviour
 
     private void Awake() {
         Instance = this;
+        Pieces = new Piece[8, 8];
     }
 
     private void Start() {
-        Pieces = new Piece[8, 8];
         IsGameOver = false;
     }
 
