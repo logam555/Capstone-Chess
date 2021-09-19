@@ -17,6 +17,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System;
 
 public class GameManager : MonoBehaviour
 {
@@ -316,6 +317,53 @@ public class GameManager : MonoBehaviour
 
         return true;
     }
+
+    //converts List of Vector2Int into an array where each piece location is accessable as an integer
+    public int[,] Vector2Int2Array(List<Vector2Int> v)
+    {   //(5, 3)
+        int[,] arr = new int[v.Count, 2];
+        for (int index = 0; index < v.Count - 1; index++)
+        {
+            string tempString = v[index].ToString();
+            arr[index, 0] = Convert.ToInt32(tempString.Substring(1, 1));
+            arr[index, 1] = Convert.ToInt32(tempString.Substring(4, 1));
+        }
+        return arr;
+    }
+    //paramaters Bool isWhite and List<Vector2Int> of locationsAvailable 
+    //Example Call: AIScanning(False, Pawn.Instance.LocationsAvailable); 
+    //Returns an int[,] array of a given pieces local area scan. 
+    //1=Empty square, 2=Friendly piece, 3=Enemy Piece, 0=Unknown/Square beyond local scan
+    public int[,] AIScanning(bool isWhite, List<Vector2Int> LocationsAvailable)
+    {
+        int[,] AIScan = new int[8, 8];
+
+        //LocationsAvailable = LocationsAvailable();
+
+        int[,] locArray = new int[LocationsAvailable.Count, 1];
+        locArray = Vector2Int2Array(LocationsAvailable);
+
+        for (int count = 0; count < LocationsAvailable.Count; count++)
+        {
+            Debug.Log("Count: " + count);
+            Debug.Log("PossibleLocations: " + LocationsAvailable[count]);
+            if (IsFriendlyPieceAt(isWhite, LocationsAvailable[count]) == true)
+            {
+                AIScan[locArray[count, 0], locArray[count, 1]] = 2;
+            }
+            else if (IsEnemyPieceAt(isWhite, LocationsAvailable[count]) == true)
+            {
+                AIScan[locArray[count, 0], locArray[count, 1]] = 3;
+            }
+            else
+            {
+                AIScan[locArray[count, 0], locArray[count, 1]] = 1;
+            }
+        }
+
+        return AIScan;
+    }
+
     #endregion
 
     #region INSTANTIATION FUNCTIONS - Functions that instatiate objects and run at beginning of game.
@@ -472,4 +520,5 @@ public class GameManager : MonoBehaviour
         CurrentPlayer = user;
     }
     #endregion
+
 }
