@@ -148,6 +148,7 @@ public class GameManager : MonoBehaviour
     #region TURN VALIDATION FUNCTIONS - Functions that handle condition checking for turn orders and number of actions in turn.
     // Function to pass the turn to the next player
     private void PassTurn() {
+        SelectPiece(new Vector2Int(-1, -1));
         CurrentPlayer.ResetTurn();
         CurrentPlayer = CurrentPlayer == user ? ai : user;
     }
