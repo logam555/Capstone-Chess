@@ -60,6 +60,7 @@ public class GameManager : MonoBehaviour
 
             if (Input.GetMouseButtonDown(1) && SelectedPiece != null) {
                 Piece pieceToDelegate = SelectedPiece;
+                SelectPiece(new Vector2Int(-1, -1));
                 SelectPiece(board.selection);
 
                 if(SelectedPiece == pieceToDelegate) {
