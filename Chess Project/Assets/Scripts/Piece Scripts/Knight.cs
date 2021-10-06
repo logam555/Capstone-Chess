@@ -1,9 +1,11 @@
 ﻿/* Written by David Corredor
  Edited by Braden Stonehill
- Last date edited: 09/15/2021
+ Last date edited: 10/06/2021
  Knight.cs - child class of Piece.cs that implements move and attack using rules for the knight
 
  Version 1.3:
+  - Utilized the new board property for accessing the virtual board
+
   - Removed the attack function as it no longer needs to be implemented by the child classes.
 
   - Implemented the attack function using the fuzzy logic table and the EnemiesInRange function to find all enemies within
@@ -41,10 +43,10 @@ public class Knight : Piece
         if (this.Commander.commandActions <= 0)
             return enemyPos;
 
-        availableMoves.RemoveAll(pos => !GameManager.ValidPosition(pos));
+        availableMoves.RemoveAll(pos => !board.ValidPosition(pos));
 
         foreach(Vector2Int pos in availableMoves) {
-            if (GameManager.Instance.IsEnemyPieceAt(this.IsWhite, pos))
+            if (board.IsEnemyPieceAt(this.IsWhite, pos))
                 enemyPos.Add(pos);
         }
 

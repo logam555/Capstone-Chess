@@ -19,10 +19,10 @@ public class MainMenu : MonoBehaviour
     // Exits the Game
       public void ExitGame()
     {
-        //Application.Quit();
+        Application.Quit();
         
         // Testing out if it works with the button
-        UnityEditor.EditorApplication.isPlaying = false;
+        //UnityEditor.EditorApplication.isPlaying = false;
     }
 
 

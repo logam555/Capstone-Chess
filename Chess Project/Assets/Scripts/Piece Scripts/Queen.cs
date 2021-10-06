@@ -1,9 +1,11 @@
 ﻿/* Written by David Corredor
  Edited by Braden Stonehill
- Last date edited: 09/15/2021
+ Last date edited: 10/06/2021
  Queen.cs - child class of Piece.cs that implements move and attack using rules for the queen
 
  Version 1.3: 
+  - Utilized the new board property for accessing the virtual board
+
   - Removed the attack function as it no longer needs to be implemented by the child classes.
   
   - Implemented the attack function based on the fuzzy logic table and the EnemiesInRange function
@@ -42,10 +44,10 @@ public class Queen : Piece
         foreach (Vector2Int dir in this.directions) {
             Vector2Int position = this.Position + dir;
 
-            if (!GameManager.ValidPosition(position))
+            if (!board.ValidPosition(position))
                 continue;
 
-            if (GameManager.Instance.IsEnemyPieceAt(this.IsWhite, position))
+            if (board.IsEnemyPieceAt(this.IsWhite, position))
                 enemyPos.Add(position);
         }
 

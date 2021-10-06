@@ -1,6 +1,6 @@
 ﻿/* Written by David Corredor
  Edited by Braden Stonehill
- Last date edited: 09/15/2021
+ Last date edited: 10/04/2021
  Player.cs - Object to contain player information such as captured pieces, identifier for player, and color of pieces under control
 
  Version 1.3:
@@ -25,17 +25,15 @@ public class Player
     {
         this.name = name;
         this.isWhite = isWhite;
-
         this.commanders = commanders;
 
-        this.capturedPieces = new Dictionary<string, int>();
-        this.capturedPieces.Add("King", 0);
-        this.capturedPieces.Add("Queen", 0);
-        this.capturedPieces.Add("Bishop", 0);
-        this.capturedPieces.Add("Knight", 0);
-        this.capturedPieces.Add("Rook", 0);
-        this.capturedPieces.Add("Pawn", 0);
-
+        capturedPieces = new Dictionary<string, int>();
+        capturedPieces.Add("King", 0);
+        capturedPieces.Add("Queen", 0);
+        capturedPieces.Add("Bishop", 0);
+        capturedPieces.Add("Knight", 0);
+        capturedPieces.Add("Rook", 0);
+        capturedPieces.Add("Pawn", 0);
     }
 
     public int TotalActionsRemaining() {
