@@ -270,7 +270,7 @@ public class BoardManager : MonoBehaviour
     private void HighlightTile(int index, int x, int y) {
         GameObject highlight = Instantiate(highlightPrefabs[index]);
         highlights.Add(highlight);
-        highlight.transform.position = GetTileCenter(x, y) + Vector3.up * (index != 2 ? -0.149f : -0.14f);
+        highlight.transform.position = GetTileCenter(x, y) + Vector3.up * (index != 2 ? 0f : 0f);
     }
 
     //function to spawn and remove mouse following highlighted tile.
