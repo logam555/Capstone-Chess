@@ -1,9 +1,11 @@
 /* Written by David Corredor
  Edited by Braden Stonehill, David Corredor
- Last date edited: 09/15/2021
+ Last date edited: 10/06/2021
  Piece.cs - abstract class for chess pieces that sets the basis for moving and attacking for each piece
 
  Version 1.4:
+  - Edited class to give all pieces access to the virtual board
+
   - Created a commander abstract class that is a child of Piece specifically for use with King and Bishop to include commander utility.
  Edited all child classes to check if commander action has been used to limit available locations and enemies in range once the commander
  action has been used.
@@ -32,6 +34,8 @@ public abstract class Piece : MonoBehaviour
     #region PROTECTED PROPERTIES
     [SerializeField]
     protected bool isWhite;
+    [SerializeField]
+    protected BoardManager board;
     protected Vector2Int[] directions = {new Vector2Int(0,1), new Vector2Int(1,0),
                                new Vector2Int(0,-1), new Vector2Int(-1,0),
                                new Vector2Int(1,1), new Vector2Int(1,-1),
@@ -46,6 +50,10 @@ public abstract class Piece : MonoBehaviour
     public Commander Commander { get; set; }
     #endregion
 
+    private void Start() {
+        board = FindObjectOfType<BoardManager>();
+    }
+
     #region ABSTRACT METHODS
     // Determines what positions are available to move to based on pieces movement restriction
     public abstract List<Vector2Int> LocationsAvailable();
@@ -59,10 +67,10 @@ public abstract class Piece : MonoBehaviour
     public List<Vector2Int> RecursiveLocations(Vector2Int position, int moves, bool ignorePieces=false) {
         List<Vector2Int> locations = new List<Vector2Int>();
 
-        if (!GameManager.ValidPosition(position))
+        if (!board.ValidPosition(position))
             return locations;
 
-        if (!ignorePieces && GameManager.Instance.IsPieceAt(position))
+        if (!ignorePieces && board.IsPieceAt(position))
             return locations;
 
         if (moves > 0) {

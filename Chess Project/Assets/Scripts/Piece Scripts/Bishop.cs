@@ -1,9 +1,11 @@
 ﻿/* Written by David Corredor
  Edited by Braden Stonehill, David Corredor
- Last date edited: 09/15/2021
+ Last date edited: 10/06/2021
  Bishop.cs - child class of Piece.cs that implements move and attack using rules for the bishop
 
  Version 1.5: 
+  - Utilized the new board property for accessing the virtual board
+
   - Added method to delegate all subordinates to king if captured
 
   - Altered class definition for Bishop to inherit commander class rather than piece class
@@ -51,10 +53,10 @@ public class Bishop : Commander
         foreach (Vector2Int dir in this.directions) {
             Vector2Int position = this.Position + dir;
 
-            if (!GameManager.ValidPosition(position))
+            if (!board.ValidPosition(position))
                 continue;
 
-            if (GameManager.Instance.IsEnemyPieceAt(this.IsWhite, position))
+            if (board.IsEnemyPieceAt(this.IsWhite, position))
                 enemyPos.Add(position);
         }
 

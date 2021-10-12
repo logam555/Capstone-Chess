@@ -1,320 +1,421 @@
-/* Written by Braden Stonehill
- Edited by Braden Stonehil
- Last date edited: 09/15/2021
- BoardManager.cs - Manages the instantiation, rendering, and interactions with the board.
+/* Written by David Corredor
+ Edited by Braden Stonehill
+ Last date edited: 10/06/2021
+ BoardManager.cs - tracking and moving pieces, and checking the state of the pieces on
+ the board and the players.
 
- Version 1: Created methods to spawn all piece models, select game objects based on interaction with the board,
- and highlight tiles on the board.
+ Version 1.0:
+  - Moved Functions that dealt with interaction with the virtual board to this class from the Game Manager*/
 
- Version 1.1g: Edited by George 09/09/2021: Adding Tags to chess pieces, adding base heuirtics, 
- adding in mouse over board hovering highlighting, add in board grid naming, ... .
-
- Version 1.2g Edited by George 09/16/2021: mouse hovering commented out/removed, base heuirtics moved to heuirtics class in seperate script, 
- boarding naming converted into board tile class that can hold each tiles offical position along with basic board tile information.
- */
-
-using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System;
 
 public class BoardManager : MonoBehaviour
 {
-    //class for holding boards tile information for tile based accessing and assigning tile positioning base on offical chess rules
-    private class BoardTile
-    {
-        public bool isOccupied;
-        public bool isWhite;
-        public Vector2Int boardPosition;//for vector 2 version of string position
-        public string occupiedPieceType;
-        public int whiteHeuristic;
-        public int blackHeuristic;
-    }
-
-    #region PROPERTIES
-    private const float TILE_SIZE = 1.0f;
-    private const float TILE_OFFSET = 0.5f;
-
-    public Vector2Int selection = new Vector2Int(-1, -1);
-
-    [SerializeField]
-    private List<GameObject> piecePrefabs; // Not instantiated, list is populated in the editor
-    [SerializeField]
-    private List<GameObject> highlightPrefabs; // Not instantiated, list is populated in the editor
-    [SerializeField]
-    private Material commanderHighlightPrefab; // Not instantiated, populated in the editor
-
-    private List<GameObject> activePieces;
-    private List<GameObject> highlights;
-    private MeshRenderer commanderModel;
-    private Material commanderMaterial;
-
-    //Dictionary for holding a key for searching Tile; value is custom tile class BoardTile
-    private Dictionary<string, BoardTile> chessBoardGridCo;
-    //removed variable for mouse over highlight
-
-    private Heuristics heuristics;
+    public Piece[,] Pieces { get; set; }
+    public Piece SelectedPiece { get; set; }
 
     private GameManager gm;
-    #endregion
+
+    private void Awake() {
+        Pieces = new Piece[8, 8];
+    }
 
     private void Start() {
         gm = GameManager.Instance;
-        highlights = new List<GameObject>();
-        commanderModel = null;
-        commanderMaterial = null;
-
-        //setup static board tile naming and default variables
-        chessBoardGridCo = new Dictionary<string, BoardTile>();
-        ChessboardTileSetup();
-
-        SpawnAllPieces();
-
-        //testing calls
-        heuristics = new Heuristics();
-        heuristics.HeuristicDifficulty();
-        heuristics.HeuristicSetup();
-        heuristics.BoardWideHeuristic();
-        
     }
 
-    private void Update() {
-        UpdateSelection();
-        DrawChessboard();
-    }
-
-    #region INTERACTION FUNCTIONS - Functions to select, move, and remove models on the board.
-    public void MoveObject(GameObject pieceObject, Vector2Int position) {
-        pieceObject.transform.position = GetTileCenter(position.x, position.y);
-    }
-
-    public void RemoveObject(GameObject pieceObject) {
-        Destroy(pieceObject);
-    }
-
-    // Function to determine what tile the mouse is hovering over, uses z component of raycast as the board is in the x-z plane
-    private void UpdateSelection() {
-        if (!Camera.main)
-            return;
-
-        RaycastHit hit;
-        if(Physics.Raycast(Camera.main.ScreenPointToRay(Input.mousePosition), out hit, 25.0f, LayerMask.GetMask("ChessPlane"))) {
-            selection.x = (int)hit.point.x;
-            selection.y = (int)hit.point.z;
+    #region PIECE INTERACTION FUNCTIONS - Functions that interact with the object representation of the pieces.
+    // Function to select a valid piece and highlight all possible moves.
+    public void SelectPiece(Vector2Int position) {
+        if (IsPieceAt(position) && PieceAt(position).IsWhite == gm.CurrentPlayer.isWhite) {
+            SelectedPiece = Pieces[position.x, position.y];
+            gm.boardModel.HighlightAllTiles(position, AvailableMoves(SelectedPiece), SelectedPiece.EnemiesInRange(), SelectedPiece.Commander);
         } else {
-            selection.x = -1;
-            selection.y = -1;
+            SelectedPiece = null;
+            gm.boardModel.RemoveHighlights();
+        }
+    }
+
+    // Function to move the selected piece in the array implementation of the board
+    private void MovePiece(Vector2Int position) {
+        // Check if selected piece is commander and is using free movement
+        if (SelectedPiece is Commander && !SelectedPiece.Commander.usedFreeMovement && (Mathf.Abs((position - SelectedPiece.Position).sqrMagnitude) <= 2)) {
+            SelectedPiece.Commander.usedFreeMovement = true;
+            SelectedPiece.Commander.commandActions += 1;
         }
 
-        //mouse movement highlighting
-        //removed
-    }
-    #endregion
+        // Move piece to new position
+        Pieces[SelectedPiece.Position.x, SelectedPiece.Position.y] = null;
+        Pieces[position.x, position.y] = SelectedPiece;
+        SelectedPiece.Position = position;
 
+        // Call function in board to move the piece game object
+        gm.boardModel.MoveObject(SelectedPiece.gameObject, position);
 
-    #region INSTATIATION FUNCTIONS - Functions to instatiate models and populate the board.
-    // Function to spawn a piece prefab on a tile and add the object to the list of active objects with correct color tag.
-    // Edited By George; added string to function call; added in board tile variables.
-    private void SpawnPiece(int index, Vector2Int position, string piece) {
-        GameObject pieceObject = Instantiate(piecePrefabs[index], GetTileCenter(position.x, position.y), Quaternion.Euler(-90, 0, 0)) as GameObject;
-        pieceObject.transform.SetParent(transform);
-        gm.Pieces[position.x, position.y] = pieceObject.GetComponent<Piece>();
-        gm.Pieces[position.x, position.y].Position = position;
-        gm.Pieces[position.x, position.y].Delegated = false;
+        // Reduce number of actions remaining
+        SelectedPiece.Commander.commandActions -= 1;
 
-        //adding tags for White and Black pieces. 0-5 index for white, 6-11 index for black. added by george to existing function
-        if (index <= 5)
-            pieceObject.tag = "White Pieces";
-        else
-            pieceObject.tag = "Black Pieces";
-
-        activePieces.Add(pieceObject);
-
-        //updating with starter tile's with occupied, color status, and type.  
-        chessBoardGridCo[Convert.ToString(Convert.ToChar(position.x + 65) + Convert.ToString(position.y + 1))].isOccupied = true;
-        chessBoardGridCo[Convert.ToString(Convert.ToChar(position.x + 65) + Convert.ToString(position.y + 1))].occupiedPieceType = piece;
-
-        if (index <= 5)
-            chessBoardGridCo[Convert.ToString(Convert.ToChar(position.x + 65) + Convert.ToString(position.y + 1))].isWhite = true;
+        // Deselect the piece
+        SelectPiece(new Vector2Int(-1, -1));
     }
 
-    // Initilization function to spawn all chess pieces
-    //Edited By George; added string of piece type to function calls.
-    private void SpawnAllPieces() {
-        activePieces = new List<GameObject>();
+    // Function to delegate a piece to new commander
+    public void DelegatePiece() {
+        Piece pieceToDelegate = SelectedPiece;
+        SelectPiece(new Vector2Int(-1, -1));
+        SelectPiece(gm.boardModel.selection);
 
-        // Spawn White Pieces
-        // King
-        SpawnPiece(0, new Vector2Int(4, 0), "King");
-
-        // Queen
-        SpawnPiece(1, new Vector2Int(3, 0), "Queen");
-
-        // Bishops
-        SpawnPiece(2, new Vector2Int(2, 0), "Bishop");
-        SpawnPiece(2, new Vector2Int(5, 0), "Bishop");
-
-        // Knights
-        SpawnPiece(3, new Vector2Int(1, 0), "Knight");
-        SpawnPiece(3, new Vector2Int(6, 0), "Knight");
-
-        // Rooks
-        SpawnPiece(4, new Vector2Int(0, 0), "Rook");
-        SpawnPiece(4, new Vector2Int(7, 0), "Rook");
-
-        // Pawns
-        for (int i = 0; i < 8; i++)
-            SpawnPiece(5, new Vector2Int(i, 1), "Pawn");
-
-        // Spawn Black Pieces
-        // King
-        SpawnPiece(6, new Vector2Int(4, 7), "King");
-
-        // Queen
-        SpawnPiece(7, new Vector2Int(3, 7), "Queen");
-
-        // Bishops
-        SpawnPiece(8, new Vector2Int(2, 7), "Bishop");
-        SpawnPiece(8, new Vector2Int(5, 7), "Bishop");
-
-        // Knights
-        SpawnPiece(9, new Vector2Int(1, 7), "Knight");
-        SpawnPiece(9, new Vector2Int(6, 7), "Knight");
-
-        // Rooks
-        SpawnPiece(10, new Vector2Int(0, 7), "Rook");
-        SpawnPiece(10, new Vector2Int(7, 7), "Rook");
-
-        // Pawns
-        for (int i = 0; i < 8; i++)
-            SpawnPiece(11, new Vector2Int(i, 6), "Pawn");
-
-        // Attach pieces to their commanders
-        gm.AttachCommandingPieces();
-    }
-    #endregion
-
-
-    #region RENDERING FUNCTIONS - Functions for rendering highlights and debug displays
-    // Utility function to get the center position of a tile of the board game object
-    private Vector3 GetTileCenter(int x, int y) {
-        Vector3 origin = Vector3.zero;
-        origin.x += (TILE_SIZE * x) + TILE_OFFSET;
-        origin.z += (TILE_SIZE * y) + TILE_OFFSET;
-        return origin;
-    }
-
-    // Utility Debug function for testing raycasting and selection
-    private void DrawChessboard() {
-        Vector3 widthLine = Vector3.right * 8;
-        Vector3 heightLine = Vector3.forward * 8;
-
-        for(int i = 0; i < 9; i++) {
-            Vector3 start = Vector3.forward * i;
-            Debug.DrawLine(start, start + widthLine);
-            for (int j = 0; j < 9; j++) {
-                start = Vector3.right * j;
-                Debug.DrawLine(start, start + heightLine);
+        if (SelectedPiece == pieceToDelegate) {
+            if (pieceToDelegate.Delegated) {
+                King king = (King)gm.CurrentPlayer.commanders.Find(commander => commander is King);
+                king.RecallPiece(pieceToDelegate, pieceToDelegate.Commander);
             }
+
+            SelectPiece(new Vector2Int(-1, -1));
+        } else {
+            if (SelectedPiece is Commander && !(SelectedPiece is King) && pieceToDelegate.Commander is King) {
+                King king = (King)pieceToDelegate.Commander;
+                king.DelegatePiece(pieceToDelegate, (Commander)SelectedPiece);
+            }
+
+            SelectPiece(new Vector2Int(-1, -1));
+        }
+    }
+    #endregion
+
+    #region BOARD EVALUTATION FUNCTIONS - Functions that scan the board array for pieces and available positions.
+    // Function to check if the selected tile is a valid move for the selected piece and perform appropriate action.
+    public void CheckMove(Vector2Int position) {
+        // Deselect the selected piece if position is not valid
+        if (!ValidPosition(position)) {
+            SelectPiece(position);
+            return;
         }
 
-        if(selection.x >= 0 && selection.y >= 0) {
-            Debug.DrawLine(
-                Vector3.forward * selection.y + Vector3.right * selection.x,
-                Vector3.forward * (selection.y + 1) + Vector3.right * (selection.x + 1));
-            Debug.DrawLine(
-                Vector3.forward * (selection.y + 1) + Vector3.right * selection.x,
-                Vector3.forward * selection.y + Vector3.right * (selection.x + 1));
-        }
-    }
 
-    // Function to highlight all tiles associated with selected piece
-    public void HighlightAllTiles(Vector2Int position, bool[,] availableMoves, List<Vector2Int> enemies, Commander commander) {
-        HighlightSelected(position);
-        HighlightAvailableMoves(availableMoves);
-        HighlightEnemies(enemies);
-        HighlightCommander(commander);
-    }
+        // Get all available positions to move and list of enemy positions in range
+        bool[,] availableMoves = AvailableMoves(SelectedPiece);
+        List<Vector2Int> enemies = SelectedPiece.EnemiesInRange();
 
-    // Function to highlight the tile of the selected piece
-    private void HighlightSelected(Vector2Int position) {
-        HighlightTile(0, position.x, position.y);
-    }
+        // Move piece if position is in available moves, attack enemy piece if position contains enemy, or change selection if position contains a friendly piece
+        if (availableMoves[position.x, position.y]) {
+            MovePiece(position);
 
-    // Function to highlight all available moves with available highlight prefab using a boolean map of the board
-    private void HighlightAvailableMoves(bool[,] moves) {
-        for(int i = 0; i < 8; i++) {
-            for(int j = 0; j < 8; j++) {
-                if(moves[i,j]) {
-                    HighlightTile(1, i, j);
+        } else if (enemies.Contains(position)) {
+            bool isMoving = false;
+            bool attackSuccessful;
+
+            // Check if selected piece is a knight and is attacking a non-adjacent piece
+            if (SelectedPiece is Knight && (Mathf.Abs((position - SelectedPiece.Position).sqrMagnitude) > 2))
+                isMoving = true;
+
+            // Change optional isMoving parameter if selected piece is a Knight attacking a non-adjacent piece
+            if (isMoving)
+                attackSuccessful = SelectedPiece.Attack(Pieces[position.x, position.y], true);
+            else
+                attackSuccessful = SelectedPiece.Attack(Pieces[position.x, position.y]);
+
+            // Capture piece and remove model if attack is successful
+            if (attackSuccessful) {
+                // Remove the captured piece and add to capture pieces
+                Piece enemy = Pieces[position.x, position.y];
+                gm.CapturePiece(enemy);
+                gm.boardModel.RemoveObject(enemy.gameObject);
+
+                // Move the selected piece
+                MovePiece(position);
+
+            } else {
+                // Move knight next to defending piece if attacking a non-adjacent piece
+                if (SelectedPiece is Knight && isMoving) {
+                    List<Vector2Int> locations = SelectedPiece.LocationsAvailable();
+                    locations.RemoveAll(pos => !ValidPosition(pos));
+                    locations.RemoveAll(pos => IsPieceAt(pos));
+
+                    foreach (Vector2Int pos in locations) {
+                        Vector2Int diff = Vector2Int.zero;
+                        diff.x = Mathf.Abs(position.x - pos.x);
+                        diff.y = Mathf.Abs(position.y - pos.y);
+                        if (diff.sqrMagnitude <= 2 && diff.sqrMagnitude > 0) {
+                            MovePiece(pos);
+                            break;
+                        }
+                    }
+                } else {
+                    // Reduce number of actions remaining
+                    SelectedPiece.Commander.commandActions -= 1;
+
+                    // Deselect the piece
+                    SelectPiece(new Vector2Int(-1, -1));
                 }
             }
+
+        } else if (IsFriendlyPieceAt(gm.CurrentPlayer.isWhite, position)) {
+            gm.boardModel.RemoveHighlights();
+            SelectPiece(position);
+
+        } else
+            // Deselect the piece
+            SelectPiece(new Vector2Int(-1, -1));
+    }
+
+    // Function that returns a boolean map of the board with all positions that are available to selected piece.
+    public bool[,] AvailableMoves(Piece piece) {
+        bool[,] allowedMoves = new bool[8, 8];
+        List<Vector2Int> possibleMoves = piece.LocationsAvailable();
+
+        possibleMoves.RemoveAll(pos => !ValidPosition(pos));
+        possibleMoves.RemoveAll(pos => IsPieceAt(pos));
+
+        foreach (Vector2Int position in possibleMoves) {
+            allowedMoves[position.x, position.y] = true;
         }
+        return allowedMoves;
     }
 
-    // Function to highlight all enemies within range for attack
-    private void HighlightEnemies(List<Vector2Int> positions) {
-        foreach(Vector2Int pos in positions) {
-            HighlightTile(2, pos.x, pos.y);
+    // Function that returns the object at board position
+    public Piece PieceAt(Vector2Int position) {
+        if (ValidPosition(position))
+            return Pieces[position.x, position.y];
+        return null;
+    }
+
+    // Function that returns true if space is occupied
+    public bool IsPieceAt(Vector2Int position) {
+        if (!ValidPosition(position))
+            return false;
+
+        Piece piece = Pieces[position.x, position.y];
+
+        if (piece == null) {
+            return false;
         }
+
+        return true;
     }
 
-    // Function to highlight commander
-    private void HighlightCommander(Commander commander) {
-        commanderModel = commander.GetComponent<MeshRenderer>();
-        commanderMaterial = commanderModel.material;
-        commanderModel.material = commanderHighlightPrefab;
-    }
+    // Function that returns true if space is occupied by a friendly piece
+    public bool IsFriendlyPieceAt(bool isWhite, Vector2Int position) {
+        if (!ValidPosition(position))
+            return false;
 
-    // Utility function to highlight any tile with the selected prefab at the x and y grid position
-    private void HighlightTile(int index, int x, int y) {
-        GameObject highlight = Instantiate(highlightPrefabs[index]);
-        highlights.Add(highlight);
-        highlight.transform.position = GetTileCenter(x, y) + Vector3.up * (index != 2 ? -0.149f : -0.14f);
-    }
+        Piece piece = Pieces[position.x, position.y];
 
-    //function to spawn and remove mouse following highlighted tile.
-    //removed function for moving highlight mouse
-
-    // Utility function to destroy all highlight game objects
-    public void RemoveHighlights() {
-        foreach(GameObject highlight in highlights) {
-            Destroy(highlight);
+        if (piece == null) {
+            return false;
         }
-        highlights.Clear();
 
-        if(commanderMaterial != null && commanderModel != null) {
-            commanderModel.material = commanderMaterial;
-            commanderModel = null;
-            commanderMaterial = null;
+        if (piece.IsWhite != isWhite) {
+            return false;
         }
+
+        return true;
     }
 
-    //function to setup the tile position names, tile is occupied status, if occupied by which color/piece type and basic board wide heuirtics for each color.
-    private void ChessboardTileSetup()
-    {
-        BoardTile board = new BoardTile();
-        char letterBoard = '0';
-        string showB = "";
+    // Function that returns true if space is occupied by an enemy piece
+    public bool IsEnemyPieceAt(bool isWhite, Vector2Int position) {
+        if (!ValidPosition(position))
+            return false;
 
-        //setting up tiles and adding to dictionary default values
-        for (int j = 1; j < 9; j++)
-        {
-            for (int i = 65; i < 73; i++)
-            {
-                letterBoard = Convert.ToChar(i);
-                showB = letterBoard.ToString() + j;//place letter before number
-                chessBoardGridCo.Add(showB, board);
-                chessBoardGridCo[showB].isOccupied = false;
-                chessBoardGridCo[showB].isWhite = false;
-                chessBoardGridCo[showB].boardPosition.x = i - 65;
-                chessBoardGridCo[showB].boardPosition.y = j - 1;
-                chessBoardGridCo[showB].occupiedPieceType = "";
-                chessBoardGridCo[showB].whiteHeuristic = 0;
-                chessBoardGridCo[showB].blackHeuristic = 0;
+        Piece piece = Pieces[position.x, position.y];
+
+        if (piece == null) {
+            return false;
+        }
+
+        if (piece.IsWhite == isWhite) {
+            return false;
+        }
+
+        return true;
+    }
+
+    // Function that returns true if position is within boundaries of the board.
+    public bool ValidPosition(Vector2Int position) {
+        if (position.x < 0 || position.x > 7 || position.y < 0 || position.y > 7)
+            return false;
+
+        return true;
+    }
+
+    //converts List of Vector2Int into an array where each piece location is accessable as an integer
+    public int[,] Vector2Int2Array(List<Vector2Int> v) {   //(5, 3)
+        int[,] arr = new int[v.Count, 2];
+        for (int index = 0; index < v.Count - 1; index++) {
+            string tempString = v[index].ToString();
+            arr[index, 0] = Convert.ToInt32(tempString.Substring(1, 1));
+            arr[index, 1] = Convert.ToInt32(tempString.Substring(4, 1));
+        }
+        return arr;
+    }
+    //paramaters Bool isWhite and List<Vector2Int> of locationsAvailable 
+    //Example Call: AIScanning(False, Pawn.Instance.LocationsAvailable); 
+    //Returns an int[,] array of a given pieces local area scan. 
+    //1=Empty square, 2=Friendly piece, 3=Enemy Piece, 0=Unknown/Square beyond local scan
+    public int[,] AIScanning(bool isWhite, List<Vector2Int> LocationsAvailable) {
+        int[,] AIScan = new int[8, 8];
+
+        //LocationsAvailable = LocationsAvailable();
+
+        int[,] locArray = new int[LocationsAvailable.Count, 1];
+        locArray = Vector2Int2Array(LocationsAvailable);
+
+        for (int count = 0; count < LocationsAvailable.Count; count++) {
+            Debug.Log("Count: " + count);
+            Debug.Log("PossibleLocations: " + LocationsAvailable[count]);
+            if (IsFriendlyPieceAt(isWhite, LocationsAvailable[count]) == true) {
+                AIScan[locArray[count, 0], locArray[count, 1]] = 2;
+            } else if (IsEnemyPieceAt(isWhite, LocationsAvailable[count]) == true) {
+                AIScan[locArray[count, 0], locArray[count, 1]] = 3;
+            } else {
+                AIScan[locArray[count, 0], locArray[count, 1]] = 1;
             }
         }
+
+        return AIScan;
     }
 
+    #endregion
+
+    #region INSTATIATION FUNCTIONS - Functions that instantiate objects
+    // Function to add pieces as subordinates to their appropriate commanders
+    public void AttachCommandingPieces() {
+        // Attach White Pieces
+
+        // Attach white pieces to left white bishop
+        Bishop leftBishop = (Bishop)PieceAt(new Vector2Int(2, 0));
+        leftBishop.Commander = leftBishop;
+
+        // Left Knight
+        leftBishop.subordinates.Add(PieceAt(new Vector2Int(1, 0)));
+
+        // Left three pawns
+        leftBishop.subordinates.Add(PieceAt(new Vector2Int(0, 1)));
+        leftBishop.subordinates.Add(PieceAt(new Vector2Int(1, 1)));
+        leftBishop.subordinates.Add(PieceAt(new Vector2Int(2, 1)));
+
+        // Set the commander for each piece
+        foreach (Piece piece in leftBishop.subordinates) {
+            piece.Commander = leftBishop;
+        }
+
+        // Attach white pieces to right white bishop
+        Bishop rightBishop = (Bishop)PieceAt(new Vector2Int(5, 0));
+        rightBishop.Commander = rightBishop;
+
+        // Right Knight
+        rightBishop.subordinates.Add(PieceAt(new Vector2Int(6, 0)));
+
+        // Right three pawns
+        rightBishop.subordinates.Add(PieceAt(new Vector2Int(7, 1)));
+        rightBishop.subordinates.Add(PieceAt(new Vector2Int(6, 1)));
+        rightBishop.subordinates.Add(PieceAt(new Vector2Int(5, 1)));
+
+        // Set the commander for each piece
+        foreach (Piece piece in rightBishop.subordinates) {
+            piece.Commander = rightBishop;
+        }
+
+        // Attach white pieces to white king
+        King king = (King)PieceAt(new Vector2Int(4, 0));
+        king.Commander = king;
+
+        // Center two pawns
+        king.subordinates.Add(PieceAt(new Vector2Int(3, 1)));
+        king.subordinates.Add(PieceAt(new Vector2Int(4, 1)));
+
+        // Both Rooks
+        king.subordinates.Add(PieceAt(new Vector2Int(0, 0)));
+        king.subordinates.Add(PieceAt(new Vector2Int(7, 0)));
+
+        // Queen
+        king.subordinates.Add(PieceAt(new Vector2Int(3, 0)));
+
+        // Set the commander for each piece
+        foreach (Piece piece in king.subordinates) {
+            piece.Commander = king;
+        }
+
+        // Attach commanding bishops to king
+        leftBishop.superCommander = king;
+        rightBishop.superCommander = king;
+
+        king.leftBishop = leftBishop;
+        king.rightBishop = rightBishop;
+
+
+        // Attach black Pieces
+
+        // Attach black pieces to left black bishop
+        leftBishop = (Bishop)PieceAt(new Vector2Int(2, 7));
+        leftBishop.Commander = leftBishop;
+
+        // Left Knight
+        leftBishop.subordinates.Add(PieceAt(new Vector2Int(1, 7)));
+
+        // Left three pawns
+        leftBishop.subordinates.Add(PieceAt(new Vector2Int(0, 6)));
+        leftBishop.subordinates.Add(PieceAt(new Vector2Int(1, 6)));
+        leftBishop.subordinates.Add(PieceAt(new Vector2Int(2, 6)));
+
+        // Set the commander for each piece
+        foreach (Piece piece in leftBishop.subordinates) {
+            piece.Commander = leftBishop;
+        }
+
+        // Attach black pieces to right black bishop
+        rightBishop = (Bishop)PieceAt(new Vector2Int(5, 7));
+        rightBishop.Commander = rightBishop;
+
+        // Right Knight
+        rightBishop.subordinates.Add(PieceAt(new Vector2Int(6, 7)));
+
+        // Right three pawns
+        rightBishop.subordinates.Add(PieceAt(new Vector2Int(7, 6)));
+        rightBishop.subordinates.Add(PieceAt(new Vector2Int(6, 6)));
+        rightBishop.subordinates.Add(PieceAt(new Vector2Int(5, 6)));
+
+        // Set the commander for each piece
+        foreach (Piece piece in rightBishop.subordinates) {
+            piece.Commander = rightBishop;
+        }
+
+        // Attach black pieces to black king
+        king = (King)PieceAt(new Vector2Int(4, 7));
+        king.Commander = king;
+
+        // Center two pawns
+        king.subordinates.Add(PieceAt(new Vector2Int(3, 6)));
+        king.subordinates.Add(PieceAt(new Vector2Int(4, 6)));
+
+        // Both Rooks
+        king.subordinates.Add(PieceAt(new Vector2Int(0, 7)));
+        king.subordinates.Add(PieceAt(new Vector2Int(7, 7)));
+
+        // Queen
+        king.subordinates.Add(PieceAt(new Vector2Int(3, 7)));
+
+        // Set the commander for each piece
+        foreach (Piece piece in king.subordinates) {
+            piece.Commander = king;
+        }
+
+        // Attach commanding bishops to king
+        leftBishop.superCommander = king;
+        rightBishop.superCommander = king;
+
+        king.leftBishop = leftBishop;
+        king.rightBishop = rightBishop;
+    }
+
+    // Function to attach piece object with game model script
+    public void LinkPiece(Vector2Int position, Piece piece) {
+        Pieces[position.x, position.y] = piece;
+        Pieces[position.x, position.y].Position = position;
+        Pieces[position.x, position.y].Delegated = false;
+    }
     #endregion
 }
