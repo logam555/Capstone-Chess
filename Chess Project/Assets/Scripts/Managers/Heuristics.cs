@@ -31,6 +31,13 @@ public class Heuristics : MonoBehaviour
 
     }
 
+    public int king;
+    public int queen;
+    public int bishop;
+    public int knight;
+    public int rook;
+    public int pawn;
+
     [SerializeField]
     private List<chessPiece> chessTypes;//
 
@@ -66,6 +73,12 @@ public class Heuristics : MonoBehaviour
         //may not be needed here, or a merge with individual scanning script when completed
     }
 
+    public void IndividualHeuristicScan(int range)
+    {
+
+        //small scan; maybe linked or separate from IndividualHeuristic
+    }
+
     public void CommanderHeuristic()
     {
         //need commander game logic
@@ -74,6 +87,8 @@ public class Heuristics : MonoBehaviour
     public void BoardWideHeuristic()
     {
         Debug.Log("board call");
+
+
     }
 
     public void HeuristicSetup()
@@ -112,18 +127,20 @@ public class Heuristics : MonoBehaviour
         Debug.Log("difficulty call");
 
         diff = PlayerPrefs.GetInt("Difficulty"); ;
-
-
-        //easy
-        if(diff == 1)
-        {
-            //base
-        }
+    
+        //base
+        king = 10;
+        queen = 8;
+        bishop = 4;
+        knight = 5;
+        rook = 4;
+        pawn = 2;
 
         //normal
         if (diff == 2)
         {
             //scale
+
         }
 
         //hard
