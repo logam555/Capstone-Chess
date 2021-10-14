@@ -100,11 +100,12 @@ public class IndiviualScanner : MonoBehaviour
                 {
                     if (ScanMap[k, i].friendFoe == 2)
                     {
-                        enemyMoveMap = BoardManager.Instance.AvailableMoves(BoardManager.Piece[k, i]);
+                    Piece p1 = (BoardManager.Instance.Pieces[k, i]);
+                        enemyMoveMap = BoardManager.Instance.AvailableMoves(p1);
                         if (enemyMoveMap[k, i] == true && SelectedPieceAvailMoves[k, i] == true)
                         {
                             ScanMap[k, i].isVulnerable = true;
-                            ScanMap[k, i].captureChance = FuzzyLogic.FindFuzzyNumber(BoardManager.Piece[k, i], scanPiece);
+                            ScanMap[k, i].captureChance = FuzzyLogic.FindFuzzyNumber(p1, scanPiece);
 
 
                         }
