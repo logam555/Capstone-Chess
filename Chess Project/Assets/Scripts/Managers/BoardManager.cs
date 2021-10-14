@@ -16,7 +16,7 @@ public class BoardManager : MonoBehaviour
 {
     public Piece[,] Pieces { get; set; }
     public Piece SelectedPiece { get; set; }
-
+    public static BoardManager Instance { get; set; }
     private GameManager gm;
 
     private void Awake() {
