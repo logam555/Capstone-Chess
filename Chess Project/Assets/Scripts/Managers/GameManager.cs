@@ -1,6 +1,6 @@
 /* Written by David Corredor
  Edited by Braden Stonehill, David Corredor
- Last date edited: 10/10/2021
+ Last date edited: 10/14/2021
  GameManager.cs - Manages the rules, turn order, tracking and moving pieces, and checking the state of the pieces on
  the board and the players.
 
@@ -17,7 +17,7 @@
  piece scripts. Combined and simplified scripts that checked positions of all, friendly, and enemy pieces and capturing
  pieces. Removed two square movement from initial movements of pawns.
  
-  - Added score and turn order to show on the UI (Tommy Oh)*/
+  - Added score and turn order to show on the UI and a button for skip turn(Tommy Oh)*/
 
 using System.Collections;
 using System.Collections.Generic;
@@ -57,7 +57,6 @@ public class GameManager : MonoBehaviour
 
                 } else {
                     board.CheckMove(boardModel.selection);
-                    GetComponent<AudioSource>().Play();
   
                 }
             }

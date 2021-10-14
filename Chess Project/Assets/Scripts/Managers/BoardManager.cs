@@ -1,11 +1,12 @@
 /* Written by David Corredor
  Edited by Braden Stonehill
- Last date edited: 10/06/2021
+ Last date edited: 10/14/2021
  BoardManager.cs - tracking and moving pieces, and checking the state of the pieces on
  the board and the players.
 
  Version 1.0:
-  - Moved Functions that dealt with interaction with the virtual board to this class from the Game Manager*/
+  - Moved Functions that dealt with interaction with the virtual board to this class from the Game Manager
+  - Added the place piece sound (tommy oh) */
 
 using System.Collections;
 using System.Collections.Generic;
@@ -51,6 +52,7 @@ public class BoardManager : MonoBehaviour
         Pieces[SelectedPiece.Position.x, SelectedPiece.Position.y] = null;
         Pieces[position.x, position.y] = SelectedPiece;
         SelectedPiece.Position = position;
+        GetComponent<AudioSource>().Play();
 
         // Call function in board to move the piece game object
         gm.boardModel.MoveObject(SelectedPiece.gameObject, position);
