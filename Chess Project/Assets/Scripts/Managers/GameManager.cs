@@ -159,11 +159,11 @@ public class GameManager : MonoBehaviour
             CurrentPlayer.capturedPieces["King"] += 1;
             if(CurrentPlayer == user)
             {
-              ScoreManager.scoreValue1 += CurrentPlayer.capturedPieces["King"] += 1;
+              ScoreManager.scoreValue1 += CurrentPlayer.capturedPieces["King"];
             }
             else
             {
-              ScoreManager.scoreValue2 += CurrentPlayer.capturedPieces["King"] += 1;;
+              ScoreManager.scoreValue2 += CurrentPlayer.capturedPieces["King"];
             }
             IsGameOver = true;
         }
