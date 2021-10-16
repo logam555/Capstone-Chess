@@ -21,32 +21,41 @@ public class DiceCheckZoneScript : MonoBehaviour
         if (DiceManager.Instance.thrown) {
             if (diceVelocity.x == 0f && diceVelocity.y == 0f && diceVelocity.z == 0f)
             {
-                switch (other.gameObject.name)
+                if (DiceManager.Instance.diceRb.IsSleeping())
                 {
-                    case "Side1":
-                        DiceManager.Instance.diceNumber = 1;
-                        DiceManager.Instance.hasLanded = true;
-                        break;
-                    case "Side2":
-                        DiceManager.Instance.diceNumber = 2;
-                        DiceManager.Instance.hasLanded = true;
-                        break;
-                    case "Side3":
-                        DiceManager.Instance.diceNumber = 3;
-                        DiceManager.Instance.hasLanded = true;
-                        break;
-                    case "Side4":
-                        DiceManager.Instance.diceNumber = 4;
-                        DiceManager.Instance.hasLanded = true;
-                        break;
-                    case "Side5":
-                        DiceManager.Instance.diceNumber = 5;
-                        DiceManager.Instance.hasLanded = true;
-                        break;
-                    case "Side6":
-                        DiceManager.Instance.diceNumber = 6;
-                        DiceManager.Instance.hasLanded = true;
-                        break;
+                    switch (other.gameObject.name)
+                    {
+                        case "Side1":
+                            DiceManager.Instance.diceNumber = 1;
+                            DiceManager.Instance.hasLanded = true;
+                            DiceManager.Instance.thrown = false;
+                            break;
+                        case "Side2":
+                            DiceManager.Instance.diceNumber = 2;
+                            DiceManager.Instance.hasLanded = true;
+                            DiceManager.Instance.thrown = false;
+                            break;
+                        case "Side3":
+                            DiceManager.Instance.diceNumber = 3;
+                            DiceManager.Instance.hasLanded = true;
+                            DiceManager.Instance.thrown = false;
+                            break;
+                        case "Side4":
+                            DiceManager.Instance.diceNumber = 4;
+                            DiceManager.Instance.hasLanded = true;
+                            DiceManager.Instance.thrown = false;
+                            break;
+                        case "Side5":
+                            DiceManager.Instance.diceNumber = 5;
+                            DiceManager.Instance.hasLanded = true;
+                            DiceManager.Instance.thrown = false;
+                            break;
+                        case "Side6":
+                            DiceManager.Instance.diceNumber = 6;
+                            DiceManager.Instance.hasLanded = true;
+                            DiceManager.Instance.thrown = false;
+                            break;
+                    }
                 }
             }
         }

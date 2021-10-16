@@ -20,7 +20,7 @@ public class DiceManager : MonoBehaviour
     public bool thrown = false;
     public GameObject diceZoneCollider;
     private GameObject diceObject;
-    private Rigidbody diceRb;
+    public Rigidbody diceRb;
     private Transform diceTransform;
 
     private void Awake() {
@@ -32,10 +32,6 @@ public class DiceManager : MonoBehaviour
     }
 
     private void Update() {
-        if (hasLanded)
-        {
-            thrown = false;
-        }
     }
 
     public void RollDice() {
