@@ -14,77 +14,41 @@ using UnityEngine;
 public class DiceManager : MonoBehaviour
 {
     public static DiceManager Instance { get; set; }
-    public bool isRotating;
-
+    public static Vector3 diceVelocity;
+    public int diceNumber;
+    public bool hasLanded;
+    public bool thrown = false;
+    public GameObject diceZoneCollider;
     private GameObject diceObject;
-    private float rotationSpeed;
-    private Quaternion targetRotation;
+    private Rigidbody diceRb;
+    private Transform diceTransform;
 
     private void Awake() {
         Instance = this;
-        isRotating = false;
-
+        hasLanded = false;
         diceObject = this.gameObject;
-        rotationSpeed = 12.0f;
-        targetRotation = Quaternion.identity;
+        diceRb = this.gameObject.GetComponent<Rigidbody>();
+        diceTransform = this.gameObject.GetComponent<Transform>();
     }
 
     private void Update() {
-        if(isRotating) {
-            RotateDice(targetRotation);
+        if (hasLanded)
+        {
+            thrown = false;
         }
     }
 
-    public int RollDice() {
-        int number =  Random.Range(1, 7);
-        targetRotation = CalculateRotation(number);
+    public void RollDice() {
+        thrown = true;
+        diceVelocity = diceRb.velocity;
 
-        isRotating = true;
-        return number;
+        float dirX = Random.Range(0, 500);
+        float dirY = Random.Range(0, 500);
+        float dirZ = Random.Range(0, 500);
+        diceTransform.position = new Vector3(diceZoneCollider.GetComponent<Transform>().position.x, diceZoneCollider.GetComponent<Transform>().position.y + 5f, diceZoneCollider.GetComponent<Transform>().position.z);
+        diceRb.rotation = Random.rotation;
+        diceRb.AddTorque(dirX, dirY, dirZ);
+
     }
-
-    private void RotateDice(Quaternion targetRotation) {
-        
-        if (Vector3.Distance(diceObject.transform.rotation.eulerAngles, targetRotation.eulerAngles) > 0.01f) {
-            diceObject.transform.rotation = Quaternion.Lerp(diceObject.transform.rotation, targetRotation, rotationSpeed * Time.deltaTime);
-        } else {
-            diceObject.transform.rotation = targetRotation;
-            isRotating = false;
-        }
-    }
-
-    private Quaternion CalculateRotation(int number) {
-        /* Rotation values for dice faces:
-         * 1 = 270 0 0,
-         * 2 = 0 0 0,
-         * 3 = 0 0 270.
-         * 4 = 0 0 90,
-         * 5 = 180 0 0,
-         * 6 = 90 0 0 */
-
-        Quaternion targetRotation = Quaternion.identity;
-
-        switch (number) {
-            case 1:
-                targetRotation = Quaternion.Euler(270, 0, 0);
-                break;
-            case 2:
-                targetRotation = Quaternion.Euler(0, 0, 0);
-                break;
-            case 3:
-                targetRotation = Quaternion.Euler(0, 0, 270);
-                break;
-            case 4:
-                targetRotation = Quaternion.Euler(0, 0, 90);
-                break;
-            case 5:
-                targetRotation = Quaternion.Euler(180, 0, 0);
-                break;
-            case 6:
-                targetRotation = Quaternion.Euler(90, 0, 0);
-                break;
-        }
-
-        return targetRotation;
-    }
+   
 }

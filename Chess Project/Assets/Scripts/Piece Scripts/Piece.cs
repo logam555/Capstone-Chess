@@ -88,8 +88,8 @@ public abstract class Piece : MonoBehaviour
     // returning true if attack is successful, false otherwise. 
     public bool Attack(Piece enemy, bool isMoving = false) {
         // Simulate dice roll
-        int roll = DiceManager.Instance.RollDice();
 
+        int roll = DiceManager.Instance.diceNumber;
         // If piece is a Knight combining move and attack add one to the roll.
         if (isMoving)
             roll += 1;
@@ -102,7 +102,6 @@ public abstract class Piece : MonoBehaviour
 
         return false;
     }
-    #endregion
 }
 
 public abstract class Commander : Piece {
@@ -110,3 +109,4 @@ public abstract class Commander : Piece {
     public int commandActions = 1;
     public bool usedFreeMovement = false;
 }
+#endregion

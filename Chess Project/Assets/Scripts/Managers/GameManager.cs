@@ -27,6 +27,10 @@ public class GameManager : MonoBehaviour
     #region PRIVATE PROPERTIES
     private Player user;
     private Player ai;
+    private float waitTime = 3.0f;
+    private float timer = 0.0f;
+    private bool isAttacking = false;
+    private Vector2Int selectedPositionDice;
     #endregion
 
     #region PUBLIC PROPERTIES
@@ -52,10 +56,20 @@ public class GameManager : MonoBehaviour
                 if (board.SelectedPiece == null) {
                     board.SelectPiece(boardModel.selection);
                 } else {
-                    board.CheckMove(boardModel.selection);
+                     isAttacking = board.CheckMove(boardModel.selection);
+                    if (isAttacking && !DiceManager.Instance.thrown){
+                        selectedPositionDice = boardModel.selection;
+                        DiceManager.Instance.RollDice(); };
                 }
             }
-
+            if (isAttacking)
+            {
+                if (DiceManager.Instance.hasLanded && DiceManager.Instance.GetComponent<Rigidbody>().IsSleeping())
+                {
+                    board.Attack(selectedPositionDice);
+                    isAttacking = false;
+                }
+            }
 
             if (Input.GetKeyDown(KeyCode.Space)) {
                 PassTurn();

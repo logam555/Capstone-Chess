@@ -8,6 +8,7 @@ TagManager:
   - Dice
   - White Pieces
   - Black Pieces
+  - Dice Check Zone
   layers:
   - Default
   - TransparentFX
