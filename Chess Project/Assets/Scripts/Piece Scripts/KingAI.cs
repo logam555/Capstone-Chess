@@ -5,17 +5,17 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class KingAI : Piece
+public class KingAI
 {
     private Piece King;
     private Piece[] pawn = new Piece[2];
     private Piece lRook;
     private Piece rRook;
     private BoardManager bm;
-    private bool isDead = false;
-    private Piece bestPiece { get; set; }
+    //private bool isDead = false;
+    public Piece bestPiece { get; set; }
     public bool isWhite;
-    private Vector2Int moves = new Vector2Int(3, 5);
+    private int[,] moves = new int[3, 5];
     private Piece[,] board = new Piece[8, 8];
 
 
@@ -41,7 +41,7 @@ public class KingAI : Piece
 
     public void getBoard() //Obtains board from GameManager
     {
-        board = bm.Pieces();
+        board = bm.Pieces;
     }
 
     public void getCommander()
@@ -121,27 +121,27 @@ public class KingAI : Piece
 
         int[] bl = local.getMove(board, lRook, false);
 
-        moves[0][1] = bl[1]; //x and y coordinates of best scoring move are recorded
-        moves[1][1] = bl[2];
-        moves[2][1] = bl[0]; //than score obtained is bestLocalScore
+        moves[0,1] = bl[1]; //x and y coordinates of best scoring move are recorded
+        moves[1,1] = bl[2];
+        moves[2,1] = bl[0]; //than score obtained is bestLocalScore
 
         bl = local.getMove(board, rRook, false);
 
-        moves[0][2] = bl[1]; //x and y coordinates of best scoring move are recorded
-        moves[1][2] = bl[2];
-        moves[2][2] = bl[0]; //than score obtained is bestLocalScore
+        moves[0,2] = bl[1]; //x and y coordinates of best scoring move are recorded
+        moves[1,2] = bl[2];
+        moves[2,2] = bl[0]; //than score obtained is bestLocalScore
 
         bl = local.getMove(board, pawn[0], false);
 
-        moves[0][3] = bl[1]; //x and y coordinates of best scoring move are recorded
-        moves[1][3] = bl[2];
-        moves[2][3] = bl[0]; //than score obtained is bestLocalScore
+        moves[0,3] = bl[1]; //x and y coordinates of best scoring move are recorded
+        moves[1,3] = bl[2];
+        moves[2,3] = bl[0]; //than score obtained is bestLocalScore
 
         bl = local.getMove(board, pawn[1], false);
 
-        moves[0][4] = bl[1]; //x and y coordinates of best scoring move are recorded
-        moves[1][4] = bl[2];
-        moves[2][4] = bl[0]; //than score obtained is bestLocalScore
+        moves[0,4] = bl[1]; //x and y coordinates of best scoring move are recorded
+        moves[1,4] = bl[2];
+        moves[2,4] = bl[0]; //than score obtained is bestLocalScore
     }
 
     public int[] bestGlobal() //obtains the best move possible in corp and returns x and y coordinates and return as array
@@ -149,19 +149,19 @@ public class KingAI : Piece
         getLocal();
         subordinateMoves();
 
-        int[] move = new int[2]
-        int bestScore = moves[2][0];
+        int[] move = new int[2];
+        int bestScore = moves[2,0];
 
         for (int j = 1; j < 5; j++)
         {
-            if (bestScore < moves[2][j])
+            if (bestScore < moves[2,j])
             {
-                move[0] = moves[0][j];
-                move[1] = moves[1][j];
+                move[0] = moves[0,j];
+                move[1] = moves[1,j];
             }
             if (j == 0)
             {
-                bestPiece = king;
+                bestPiece = King;
             }
             if (j == 1)
             {
@@ -188,10 +188,10 @@ public class KingAI : Piece
     {
         BestMove local = new BestMove();
 
-        int[] bl = local.bestLocal(board, king);
+        int[] bl = local.getMove(board, King, true);
 
-        moves[0][0] = bl[1]; //x and y coordinates of best scoring move are recorded
-        moves[1][0] = bl[2];
-        moves[2][0] = bl[0]; //than score obtained is bestLocalScore
+        moves[0,0] = bl[1]; //x and y coordinates of best scoring move are recorded
+        moves[1,0] = bl[2];
+        moves[2,0] = bl[0]; //than score obtained is bestLocalScore
     }
 }

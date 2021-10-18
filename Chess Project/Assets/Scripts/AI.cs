@@ -5,31 +5,34 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class AI : Player
+public class AI
 {
 	bool isTurn;
 	KingAI instance = new KingAI();
 	BishopAI lInstance = new BishopAI();
 	private BoardManager bm;
-	public Random rand = new Random();
+	//public Random rand = new Random();
 	BishopAI rInstance = new BishopAI();
-	int[,] moves = new moves(2,3)
+	int[] kingMove = new int[2];
+	int[] lBishopMove = new int[2];
+	int[] rBishopMove = new int[2];
+	int[,] moves = new int[2, 3];
 
 
     public void Start()
     {
-		int[] kingMove = instance.Start(true);
-		int[] lBishopMove = lInstance.Start(true, true, true, true);
-		int[] rBishopMove = rInstance.Start(true, true, true, true);
+		kingMove = instance.Start(true);
+		lBishopMove = lInstance.Start(true, true);
+		rBishopMove = rInstance.Start(true, true);
 
 		makeMove();
 	}
 
 	public void Step()
     {
-		int[] kingMove = instance.Step(true);
-		int[] lBishopMove = lInstance.Step(true, true, true, true);
-		int[] rBishopMove = rInstance.Step(true, true, true, true);
+		kingMove = instance.Step();
+		lBishopMove = lInstance.Step();
+		rBishopMove = rInstance.Step();
 
 		makeMove();
 	}

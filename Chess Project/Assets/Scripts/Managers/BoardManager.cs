@@ -41,7 +41,7 @@ public class BoardManager : MonoBehaviour
     }
 
     // Function to move the selected piece in the array implementation of the board
-    private void MovePiece(Vector2Int position) {
+    public void MovePiece(Vector2Int position) {
         // Check if selected piece is commander and is using free movement
         if (SelectedPiece is Commander && !SelectedPiece.Commander.usedFreeMovement && (Mathf.Abs((position - SelectedPiece.Position).sqrMagnitude) <= 2)) {
             SelectedPiece.Commander.usedFreeMovement = true;
