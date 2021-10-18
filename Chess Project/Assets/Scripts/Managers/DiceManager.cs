@@ -5,7 +5,10 @@
 
  Version 1.1: Function created to generate random number, calculate target rotation of the model based off
  of the number, and rotate the model over time for basic animation. Removed the raycasting input for moving the
- dice and simplified rotations.*/
+ dice and simplified rotations.
+ Version 2: Modify the code to no longer create a random number, but to apply a random force, a random torque, and a random rotation
+ to make the dice roll more realistic and random.
+ */
 
 using System.Collections;
 using System.Collections.Generic;
@@ -18,9 +21,9 @@ public class DiceManager : MonoBehaviour
     public int diceNumber;
     public bool hasLanded;
     public bool thrown = false;
-    public GameObject diceZoneCollider;
-    private GameObject diceObject;
+    public DiceCheckZoneScript diceZoneCollider;
     public Rigidbody diceRb;
+    private GameObject diceObject;
     private Transform diceTransform;
 
     private void Awake() {
@@ -32,18 +35,29 @@ public class DiceManager : MonoBehaviour
     }
 
     private void Update() {
+        
     }
 
     public void RollDice() {
         thrown = true;
         diceVelocity = diceRb.velocity;
-
-        float dirX = Random.Range(0, 500);
-        float dirY = Random.Range(0, 500);
-        float dirZ = Random.Range(0, 500);
-        diceTransform.position = new Vector3(diceZoneCollider.GetComponent<Transform>().position.x, diceZoneCollider.GetComponent<Transform>().position.y + 5f, diceZoneCollider.GetComponent<Transform>().position.z);
-        diceRb.rotation = Random.rotation;
-        diceRb.AddTorque(dirX, dirY, dirZ);
+        //Create a random direction for the torque
+        float dirTorqueX = Random.Range(0, 500);
+        float dirTorqueY = Random.Range(0, 500);
+        float dirTorqueZ = Random.Range(0, 500);
+        float speed = 60;
+        //Find the center position of the dice zone collider
+        Vector3 centerPostion = diceZoneCollider.Instance.GetComponent<Renderer>().bounds.center;
+        //Create a random force 
+        Vector3 force = transform.forward;
+        force = new Vector3(force.x, 1, force.z);
+        //Rotate the dice 
+        diceTransform.rotation = Random.rotation;
+        //Spawn the dice in the center of the dice zone
+        diceTransform.position = new Vector3(centerPostion.x, centerPostion.y + 2f, centerPostion.z);
+        //Apply the random force and torque
+        diceRb.AddForce(force * speed);
+        diceRb.AddTorque(dirTorqueX, dirTorqueY, dirTorqueZ);
 
     }
    
