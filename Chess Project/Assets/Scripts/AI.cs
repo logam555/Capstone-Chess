@@ -5,7 +5,7 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class AI
+public class AI : Player
 {
 	bool isTurn;
 	KingAI instance = new KingAI();
@@ -18,8 +18,23 @@ public class AI
 	int[] rBishopMove = new int[2];
 	int[,] moves = new int[2, 3];
 
+public AI (string name, bool isWhite, List<Commander> commanders) : base(name, isWhite, commanders)
+	{
+        this.name = name;
+        this.isWhite = isWhite;
+        this.commanders = commanders;
 
-    public void Start()
+        capturedPieces = new Dictionary<string, int>();
+        capturedPieces.Add("King", 0);
+        capturedPieces.Add("Queen", 0);
+        capturedPieces.Add("Bishop", 0);
+        capturedPieces.Add("Knight", 0);
+        capturedPieces.Add("Rook", 0);
+        capturedPieces.Add("Pawn", 0);
+    }
+
+
+public void Start()
     {
 		kingMove = instance.Start(true);
 		moveKing();
