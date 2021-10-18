@@ -24,11 +24,12 @@ using UnityEngine;
 public class ModelManager : MonoBehaviour
 {
     //class for holding boards tile information for tile based accessing and assigning tile positioning base on offical chess rules
-    private class BoardTile
+    public class BoardTile
     {
         public bool isOccupied;
         public bool isWhite;
         public Vector2Int boardPosition;//for vector 2 version of string position
+        public string officalBoardPosition;
         public string occupiedPieceType;
         public int whiteHeuristic;
         public int blackHeuristic;
@@ -55,7 +56,10 @@ public class ModelManager : MonoBehaviour
     //Dictionary for holding a key for searching Tile; value is custom tile class BoardTile
     private Dictionary<string, BoardTile> chessBoardGridCo;
     //removed variable for mouse over highlight
+    //[SerializeField]
+    //public List<ModelManager.BoardTile> chessBoardGridCo;
 
+    [SerializeField]
     private Heuristics heuristics;
 
     private GameManager gm;
@@ -68,22 +72,71 @@ public class ModelManager : MonoBehaviour
         commanderMaterial = null;
 
         //setup static board tile naming and default variables
-        chessBoardGridCo = new Dictionary<string, BoardTile>();
+        chessBoardGridCo = new Dictionary<string, ModelManager.BoardTile>();
+        //chessBoardGridCo = new List<BoardTile>();
+
         ChessboardTileSetup();
 
         SpawnAllPieces();
 
         //testing calls
-        heuristics = new Heuristics();
-        heuristics.HeuristicDifficulty();
-        heuristics.HeuristicSetup();
-        heuristics.BoardWideHeuristic();
-        
+        //heuristics = new Heuristics();
+        //heuristics.HeuristicDifficulty();
+        //heuristics.HeuristicSetup();
+        //heuristics.BoardWideHeuristic();
+
+        heuristics = GetComponent<Heuristics>();
+
     }
 
-    private void Update() {
+    private void Update()
+    {
         UpdateSelection();
         DrawChessboard();
+
+        if (Input.GetKeyDown(KeyCode.H))
+        {
+            heuristics.BoardWideHeuristic(ref chessBoardGridCo);
+
+            //Debug.Log("showB is " + chessBoardGridCo.TryGetValue(showB));
+            char letterBoard = '0';
+            string showB = "";
+
+            Debug.Log("Size on List for BoardTile " + chessBoardGridCo.Count);
+            for (int i = 0; i < chessBoardGridCo.Count; i++)
+            {
+                //Debug.Log("i is " + i);
+                //Debug.Log("boardPosition " + chessBoardGridCo[i].boardPosition);
+                //Debug.Log("officalBoardPosition " + chessBoardGridCo[i].officalBoardPosition);
+            }
+
+            for (int j = 1; j < 9; j++)
+            {
+                for (int i = 65; i < 73; i++)
+                {
+                    letterBoard = Convert.ToChar(i);
+                    showB = letterBoard.ToString() + j.ToString();
+                    //Debug.Log("showB is " + (chessBoardGridCo.TryGetValue(showB, )));
+                    //if(chessBoardGridCo.ContainsKey(showB))
+                    //{
+                        //Debug.Log("showB is True");
+                    //}
+                    //else
+                    //{
+                        //Debug.Log("showB is False");
+                    //}
+                    /*
+                    Debug.Log("showB is " + showB);
+                    Debug.Log("In Main ModelMan; test  White " + chessBoardGridCo[showB].isWhite);
+                    Debug.Log("In Main ModelMan; test  type " + chessBoardGridCo[showB].occupiedPieceType);
+                    Debug.Log("In Main ModelMan; test  Occupied " + chessBoardGridCo[showB].isOccupied);
+                    Debug.Log("In Main ModelMan; test Huer White " + chessBoardGridCo[showB].whiteHeuristic);
+                    Debug.Log("In Main ModelMan; test Huer Black " + chessBoardGridCo[showB].blackHeuristic);
+                    Debug.Log("In Main ModelMan; test v2 position " + chessBoardGridCo[showB].boardPosition);
+                    */
+                }
+            }
+        }
     }
 
     #region INTERACTION FUNCTIONS - Functions to select, move, and remove models on the board.
@@ -123,20 +176,38 @@ public class ModelManager : MonoBehaviour
         pieceObject.transform.SetParent(transform);
         gm.board.LinkPiece(position, pieceObject.GetComponent<Piece>());
 
+        int currentPosition = 0;
+
+        currentPosition = (position.x * 8) + (position.y);
+
+
+
         //adding tags for White and Black pieces. 0-5 index for white, 6-11 index for black. added by george to existing function
         if (index <= 5)
+        {
             pieceObject.tag = "White Pieces";
-        else
+            //chessBoardGridCo[currentPosition].isWhite = true;
+            chessBoardGridCo[Convert.ToString(Convert.ToChar(position.x + 65) + Convert.ToString(position.y + 1))].isWhite = true;
+        }
+        else 
+        { 
             pieceObject.tag = "Black Pieces";
+            chessBoardGridCo[Convert.ToString(Convert.ToChar(position.x + 65) + Convert.ToString(position.y + 1))].isWhite = false;
+        }
+
+        chessBoardGridCo[Convert.ToString(Convert.ToChar(position.x + 65) + Convert.ToString(position.y + 1))].isOccupied = true;
+        chessBoardGridCo[Convert.ToString(Convert.ToChar(position.x + 65) + Convert.ToString(position.y + 1))].occupiedPieceType = piece;
 
         activePieces.Add(pieceObject);
 
         //updating with starter tile's with occupied, color status, and type.  
-        chessBoardGridCo[Convert.ToString(Convert.ToChar(position.x + 65) + Convert.ToString(position.y + 1))].isOccupied = true;
-        chessBoardGridCo[Convert.ToString(Convert.ToChar(position.x + 65) + Convert.ToString(position.y + 1))].occupiedPieceType = piece;
+        //chessBoardGridCo[currentPosition].isOccupied = true;
+        //chessBoardGridCo[currentPosition].occupiedPieceType = piece;
 
-        if (index <= 5)
-            chessBoardGridCo[Convert.ToString(Convert.ToChar(position.x + 65) + Convert.ToString(position.y + 1))].isWhite = true;
+        //if (index <= 5)
+        //Debug.Log("Checking currentPosition " + currentPosition);
+        //Debug.Log("Checking v2 position " + chessBoardGridCo[currentPosition].boardPosition);
+        //Debug.Log("Checking Offical Board position " + chessBoardGridCo[currentPosition].officalBoardPosition);    
     }
 
     // Initilization function to spawn all chess pieces
@@ -291,6 +362,8 @@ public class ModelManager : MonoBehaviour
             commanderMaterial = null;
         }
     }
+    #endregion
+
 
     //function to setup the tile position names, tile is occupied status, if occupied by which color/piece type and basic board wide heuirtics for each color.
     private void ChessboardTileSetup()
@@ -304,19 +377,62 @@ public class ModelManager : MonoBehaviour
         {
             for (int i = 65; i < 73; i++)
             {
+                letterBoard = '0';
+                showB = "";
+                /*
                 letterBoard = Convert.ToChar(i);
-                showB = letterBoard.ToString() + j;//place letter before number
+                showB = letterBoard.ToString() + j.ToString();//place letter before number
+                board = new BoardTile();
+
+                board.isOccupied = false;
+                board.isWhite = false;
+                board.boardPosition.x = i - 65;
+                board.boardPosition.y = j - 1;
+                board.officalBoardPosition = showB;
+                board.occupiedPieceType = "";
+                board.whiteHeuristic = 0;
+                board.blackHeuristic = 0;
+
+                //Debug.Log("boardPosition Before " + board.boardPosition);
+                //Debug.Log("officalBoardPosition Before " + board.officalBoardPosition);
+
+                chessBoardGridCo.Add(board);
+
+                //Debug.Log("boardPosition Post " + chessBoardGridCo[chessBoardGridCo.Count - 1].boardPosition);
+                //Debug.Log("boardPosition Post " + chessBoardGridCo[chessBoardGridCo.Count - 1].officalBoardPosition);
+
+                //chessBoardGridCo[chessBoardGridCo.Count - 1].boardPosition.x = i - 65;
+                //chessBoardGridCo[chessBoardGridCo.Count - 1].boardPosition.y = j - 1;
+                //chessBoardGridCo[chessBoardGridCo.Count - 1].officalBoardPosition = showB;
+                */
+
+                letterBoard = Convert.ToChar(i);
+                showB = letterBoard.ToString() + j.ToString(); //place letter before number
+                board = new BoardTile();
+
                 chessBoardGridCo.Add(showB, board);
                 chessBoardGridCo[showB].isOccupied = false;
                 chessBoardGridCo[showB].isWhite = false;
                 chessBoardGridCo[showB].boardPosition.x = i - 65;
                 chessBoardGridCo[showB].boardPosition.y = j - 1;
+                chessBoardGridCo[showB].officalBoardPosition = showB;
                 chessBoardGridCo[showB].occupiedPieceType = "";
                 chessBoardGridCo[showB].whiteHeuristic = 0;
                 chessBoardGridCo[showB].blackHeuristic = 0;
             }
         }
+
+        /*
+        Debug.Log("Size on List for BoardTile " + chessBoardGridCo.Count);
+        for(int i = 0; i < chessBoardGridCo.Count; i++)
+        {
+            Debug.Log("i is " + i);
+            Debug.Log("boardPosition " + chessBoardGridCo[i].boardPosition);
+            Debug.Log("officalBoardPosition " + chessBoardGridCo[i].officalBoardPosition);
+        }
+        */
+        //Debug.Log("find index of a1 " + chessBoardGridCo.Contains(board.officalBoardPosition == "A1"));
+        //Debug.Log("boardPosition " + chessBoardGridCo[chessBoardGridCo.Count - 1].boardPosition);
     }
 
-    #endregion
 }
