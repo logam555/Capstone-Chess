@@ -28,7 +28,7 @@ public class GameManager : MonoBehaviour
 {
     #region PRIVATE PROPERTIES
     private Player user;
-    private Player ai;
+    private AI ai;
     #endregion
 
     #region PUBLIC PROPERTIES
@@ -186,7 +186,7 @@ public class GameManager : MonoBehaviour
         };
 
         user = new Player("Human", true, new List<Commander>(whiteCommanders));
-        ai = new Player("AI", false, new List<Commander>(blackCommanders));
+        ai = new AI("AI", false, new List<Commander>(blackCommanders));
         CurrentPlayer = user;
     }
     #endregion
