@@ -22,38 +22,50 @@ public class AI
     public void Start()
     {
 		kingMove = instance.Start(true);
+		moveKing();
 		lBishopMove = lInstance.Start(true, true);
+		movelBishop();
 		rBishopMove = rInstance.Start(true, true);
-
-		makeMove();
+		moverBishop();
 	}
 
 	public void Step()
     {
 		kingMove = instance.Step();
+		moveKing();
 		lBishopMove = lInstance.Step();
+		movelBishop();
 		rBishopMove = rInstance.Step();
-
-		makeMove();
+		moverBishop();
 	}
 
-	public void makeMove()
+	public void moveKing()
     {
 		Vector2Int newPosition = new Vector2Int(0, 0);
 
 		bm.SelectPiece(instance.bestPiece.Position);
 		newPosition.x = kingMove[0];
 		newPosition.y = kingMove[1];
-		bm.MovePiece(newPosition);
+		bm.CheckMove(newPosition);
+	}
+
+	public void movelBishop()
+    {
+		Vector2Int newPosition = new Vector2Int(0, 0);
 
 		bm.SelectPiece(lInstance.bestPiece.Position);
 		newPosition.x = lBishopMove[0];
 		newPosition.y = lBishopMove[1];
-		bm.MovePiece(newPosition);
+		bm.CheckMove(newPosition);
+	}
+
+	public void moverBishop()
+    {
+		Vector2Int newPosition = new Vector2Int(0, 0);
 
 		bm.SelectPiece(rInstance.bestPiece.Position);
 		newPosition.x = rBishopMove[0];
 		newPosition.y = rBishopMove[1];
-		bm.MovePiece(newPosition);
+		bm.CheckMove(newPosition);
 	}
 }

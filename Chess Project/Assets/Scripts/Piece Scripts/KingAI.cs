@@ -7,10 +7,7 @@ using UnityEngine;
 
 public class KingAI
 {
-    private Piece King;
-    private Piece[] pawn = new Piece[2];
-    private Piece lRook;
-    private Piece rRook;
+    private Commander King;
     private BoardManager bm;
     //private bool isDead = false;
     public Piece bestPiece { get; set; }
@@ -26,9 +23,7 @@ public class KingAI
         this.isWhite = isWhite;
 
         getCommander();
-        getRooks();
-        getPawns();
-
+        
         return bestGlobal();
     }
 
@@ -52,66 +47,14 @@ public class KingAI
             position.x = 7;
             position.y = 4;
 
-            King = bm.PieceAt(position);
+            King = (Commander)bm.PieceAt(position);
         }
         if (isWhite == false)
         {
             position.x = 0;
             position.y = 4;
 
-            King = bm.PieceAt(position);
-        }
-    }
-
-    public void getRooks()
-    {
-        Vector2Int position = new Vector2Int(0, 0);
-        if (isWhite == true)
-        {
-            position.x = 7;
-            position.y = 0;
-
-            lRook = bm.PieceAt(position);
-
-            position.y = 7;
-
-            rRook = bm.PieceAt(position);
-        }
-        if (isWhite == false)
-        {
-            position.x = 0;
-            position.y = 0;
-
-            lRook = bm.PieceAt(position);
-
-            position.y = 7;
-
-            rRook = bm.PieceAt(position);
-        }
-    }
-
-    public void getPawns()
-    {
-        Vector2Int position = new Vector2Int(0, 0);
-        if (isWhite == true)
-        {
-            position.x = 6;
-            position.y = 3;
-
-            pawn[0] = bm.PieceAt(position);
-
-            position.y = 4;
-            pawn[1] = bm.PieceAt(position);
-        }
-        if (isWhite == false)
-        {
-            position.x = 1;
-            position.y = 3;
-
-            pawn[0] = bm.PieceAt(position);
-
-            position.y = 4;
-            pawn[1] = bm.PieceAt(position);
+            King = (Commander)bm.PieceAt(position);
         }
     }
 
@@ -119,29 +62,14 @@ public class KingAI
     {
         BestMove local = new BestMove();
 
-        int[] bl = local.getMove(board, lRook, false);
+        for (int i = 0; i < King.subordinates.Count; i++)
+        {
+            int[] bl = local.getMove(board, King.subordinates[i], false);
 
-        moves[0,1] = bl[1]; //x and y coordinates of best scoring move are recorded
-        moves[1,1] = bl[2];
-        moves[2,1] = bl[0]; //than score obtained is bestLocalScore
-
-        bl = local.getMove(board, rRook, false);
-
-        moves[0,2] = bl[1]; //x and y coordinates of best scoring move are recorded
-        moves[1,2] = bl[2];
-        moves[2,2] = bl[0]; //than score obtained is bestLocalScore
-
-        bl = local.getMove(board, pawn[0], false);
-
-        moves[0,3] = bl[1]; //x and y coordinates of best scoring move are recorded
-        moves[1,3] = bl[2];
-        moves[2,3] = bl[0]; //than score obtained is bestLocalScore
-
-        bl = local.getMove(board, pawn[1], false);
-
-        moves[0,4] = bl[1]; //x and y coordinates of best scoring move are recorded
-        moves[1,4] = bl[2];
-        moves[2,4] = bl[0]; //than score obtained is bestLocalScore
+            moves[0, i+1] = bl[1]; //x and y coordinates of best scoring move are recorded
+            moves[1, i+1] = bl[2];
+            moves[2, i+1] = bl[0]; //than score obtained is bestLocalScore 
+        }
     }
 
     public int[] bestGlobal() //obtains the best move possible in corp and returns x and y coordinates and return as array
@@ -163,21 +91,9 @@ public class KingAI
             {
                 bestPiece = King;
             }
-            if (j == 1)
+            else
             {
-                bestPiece = lRook;
-            }
-            if (j == 2)
-            {
-                bestPiece = rRook;
-            }
-            if (j == 3)
-            {
-                bestPiece = pawn[0];
-            }
-            if (j == 4)
-            {
-                bestPiece = pawn[1];
+                bestPiece = King.subordinates[j - 1];
             }
         }
 

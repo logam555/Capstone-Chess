@@ -11,9 +11,7 @@ public class BishopAI
     private BoardManager bm;
     //private bool isDead = false;
     public bool isWhite;
-    private Piece bishop;
-    private Piece Knight;
-    private Piece[] pawn = new Piece[3];
+    private Commander bishop;
     public Piece bestPiece { get; set; }
     private int[,] moves = new int[3,5];
     private Piece[,] board = new Piece[8,8];
@@ -25,8 +23,6 @@ public class BishopAI
         this.isWhite = isWhite;
 
         getCommander(left);
-        getKnight(left);
-        getPawns(left);
 
         return bestGlobal();
     }
@@ -58,25 +54,13 @@ public class BishopAI
                 move[0] = moves[0,j];
                 move[1] = moves[1,j];
 
-                if(j == 0)
+                if (j == 0)
                 {
                     bestPiece = bishop;
                 }
-                if (j == 1)
+                else
                 {
-                    bestPiece = Knight;
-                }
-                if (j == 2)
-                {
-                    bestPiece = pawn[0];
-                }
-                if (j == 3)
-                {
-                    bestPiece = pawn[1];
-                }
-                if (j == 4)
-                {
-                    bestPiece = pawn[2];
+                    bestPiece = bishop.subordinates[j - 1];
                 }
             }
         }
@@ -99,29 +83,14 @@ public class BishopAI
     {
         BestMove local = new BestMove();
 
-        int[] bl = local.getMove(board,Knight,false);
+        for (int i = 0; i < bishop.subordinates.Count; i++)
+        {
+            int[] bl = local.getMove(board, bishop.subordinates[i], false);
 
-        moves[0,1] = bl[1]; //x and y coordinates of best scoring move are recorded
-        moves[1,1] = bl[2];
-        moves[2,1] = bl[0]; //than score obtained is bestLocalScore
-
-        bl = local.getMove(board,pawn[0],false);
-
-        moves[0,2] = bl[1]; //x and y coordinates of best scoring move are recorded
-        moves[1,2] = bl[2];
-        moves[2,2] = bl[0]; //than score obtained is bestLocalScore
-
-        bl = local.getMove(board,pawn[1],false);
-
-        moves[0,3] = bl[1]; //x and y coordinates of best scoring move are recorded
-        moves[1,3] = bl[2];
-        moves[2,3] = bl[0]; //than score obtained is bestLocalScore
-
-        bl = local.getMove(board,pawn[2],false);
-
-        moves[0,4] = bl[1]; //x and y coordinates of best scoring move are recorded
-        moves[1,4] = bl[2];
-        moves[2,4] = bl[0]; //than score obtained is bestLocalScore
+            moves[0, i + 1] = bl[1]; //x and y coordinates of best scoring move are recorded
+            moves[1, i + 1] = bl[2];
+            moves[2, i + 1] = bl[0]; //than score obtained is bestLocalScore 
+        }
     }
 
     public void getCommander(bool lBishop)
@@ -132,118 +101,28 @@ public class BishopAI
             position.x = 7;
             position.y = 2;
 
-            bishop = bm.PieceAt(position);
+            bishop = (Commander) bm.PieceAt(position);
         }
         if (isWhite == true && lBishop == false)
         {
             position.x = 7;
             position.y = 5;
 
-            bishop = bm.PieceAt(position);
+            bishop = (Commander) bm.PieceAt(position);
         }
         if (isWhite == false && lBishop == true)
         {
             position.x = 0;
             position.y = 2;
 
-            bishop = bm.PieceAt(position);
+            bishop = (Commander) bm.PieceAt(position);
         }
         if (isWhite == false && lBishop == false)
         {
             position.x = 0;
             position.y = 5;
 
-            bishop = bm.PieceAt(position);
-        }
-    }
-
-    public void getKnight(bool lKnight)
-    {
-        Vector2Int position = new Vector2Int(0, 0);
-        if (isWhite == true && lKnight == true)
-        {
-            position.x = 7;
-            position.y = 1;
-
-            Knight = bm.PieceAt(position);
-        }
-        if (isWhite == true && lKnight == false)
-        {
-            position.x = 7;
-            position.y = 6;
-
-            Knight = bm.PieceAt(position);
-        }
-        if (isWhite == false && lKnight == true)
-        {
-            position.x = 0;
-            position.y = 1;
-
-            Knight = bm.PieceAt(position);
-        }
-        if (isWhite == false && lKnight == false)
-        {
-            position.x = 0;
-            position.y = 6;
-
-            Knight = bm.PieceAt(position);
-        }
-    }
-
-    public void getPawns(bool lPawns)
-    {
-        Vector2Int position = new Vector2Int(0, 0);
-        if (isWhite == true && lPawns == true)
-        {
-            position.x = 1;
-            position.y = 0;
-
-            pawn[0] = bm.PieceAt(position);
-
-            position.y = 1;
-            pawn[1] = bm.PieceAt(position);
-
-            position.y = 2;
-            pawn[2] = bm.PieceAt(position);
-        }
-        if (isWhite == true && lPawns == false)
-        {
-            position.x = 1;
-            position.y = 5;
-
-            pawn[0] = bm.PieceAt(position);
-
-            position.y = 6;
-            pawn[1] = bm.PieceAt(position);
-
-            position.y = 7;
-            pawn[2] = bm.PieceAt(position);
-        }
-        if (isWhite == false && lPawns == true)
-        {
-            position.x = 7;
-            position.y = 0;
-
-            pawn[0] = bm.PieceAt(position);
-
-            position.y = 1;
-            pawn[1] = bm.PieceAt(position);
-
-            position.y = 2;
-            pawn[2] = bm.PieceAt(position);
-        }
-        if (isWhite == false && lPawns == false)
-        {
-            position.x = 7;
-            position.y = 5;
-
-            pawn[0] = bm.PieceAt(position);
-
-            position.y = 6;
-            pawn[1] = bm.PieceAt(position);
-
-            position.y = 7;
-            pawn[2] = bm.PieceAt(position);
+            bishop = (Commander) bm.PieceAt(position);
         }
     }
 }
