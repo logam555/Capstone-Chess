@@ -99,7 +99,7 @@ public class ModelManager : MonoBehaviour
                 {
                     letterBoard = Convert.ToChar(i);
                     showB = letterBoard.ToString() + j.ToString();
-\                    /*
+                    /*
                     Debug.Log("showB is " + showB);
                     Debug.Log("In Main ModelMan; test  White " + chessBoardGridCo[showB].isWhite);
                     Debug.Log("In Main ModelMan; test  type " + chessBoardGridCo[showB].occupiedPieceType);
