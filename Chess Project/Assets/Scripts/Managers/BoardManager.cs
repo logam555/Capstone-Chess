@@ -26,6 +26,8 @@ public class BoardManager : MonoBehaviour
 
     private void Start() {
         gm = GameManager.Instance;
+
+
     }
 
     #region PIECE INTERACTION FUNCTIONS - Functions that interact with the object representation of the pieces.

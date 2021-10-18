@@ -32,12 +32,6 @@ public class Heuristics : MonoBehaviour
 
     }
 
-    public int king;
-    public int queen;
-    public int bishop;
-    public int knight;
-    public int rook;
-    public int pawn;
 
     [SerializeField]
     private List<chessPiece> chessTypes;//
@@ -117,13 +111,8 @@ public class Heuristics : MonoBehaviour
 
                 letterBoard = Convert.ToChar(i);
                 showB = letterBoard.ToString() + j.ToString();
-                //showB += j.ToString();
-                //Debug.Log("showB is B " + showB);
-                //showB = Convert.ToString(letterBoard+j);
-                //Debug.Log("showB is F" + showB);
+
                 //attack/type/move/piece
-                //Debug.Log("In Main Loop BWH call; showB " + showB);
-                //Debug.Log("In Main Loop BWH call; test position " + chessBoardGridCo[showB].isWhite);
 
                 //Debug.Log("In Main Loop BWH call; First IF is occup " + chessBoardGridCo[showB].isOccupied);
                 //check space
@@ -136,27 +125,27 @@ public class Heuristics : MonoBehaviour
                         //Debug.Log("In Main Loop BWH call; 3rd IF is Type " + chessBoardGridCo[showB].occupiedPieceType);
                         if (chessBoardGridCo[showB].occupiedPieceType == "King")
                         {
-                            blackHeurTotal += 5;
+                            blackHeurTotal += chessTypes[0].typeValue;
                         }
                         else if (chessBoardGridCo[showB].occupiedPieceType == "Queen")
                         {
-                            blackHeurTotal += 5;
+                            blackHeurTotal += chessTypes[1].typeValue;
                         }
                         else if (chessBoardGridCo[showB].occupiedPieceType == "Bishop")
                         {
-                            blackHeurTotal += 4;
+                            blackHeurTotal += chessTypes[2].typeValue;
                         }
                         else if (chessBoardGridCo[showB].occupiedPieceType == "Knight")
                         {
-                            blackHeurTotal += 3;
+                            blackHeurTotal += chessTypes[3].typeValue;
                         }
                         else if (chessBoardGridCo[showB].occupiedPieceType == "Rook")
                         {
-                            blackHeurTotal += 2;
+                            blackHeurTotal += chessTypes[4].typeValue;
                         }
                         else if (chessBoardGridCo[showB].occupiedPieceType == "Pawn")
                         {
-                            blackHeurTotal += 1;
+                            blackHeurTotal += chessTypes[5].typeValue;
                         }
                     }
                     else
@@ -164,34 +153,32 @@ public class Heuristics : MonoBehaviour
                         //Debug.Log("In Main Loop BWH call; 3rd IF is Type " + chessBoardGridCo[showB].occupiedPieceType);
                         if (chessBoardGridCo[showB].occupiedPieceType == "King")
                         {
-                            whiteHeurTotal += 5;
+                            whiteHeurTotal += chessTypes[0].typeValue;
                         }
                         else if (chessBoardGridCo[showB].occupiedPieceType == "Queen")
                         {
-                            whiteHeurTotal += 5;
+                            whiteHeurTotal += chessTypes[1].typeValue;
                         }
                         else if (chessBoardGridCo[showB].occupiedPieceType == "Bishop")
                         {
-                            whiteHeurTotal += 4;
+                            whiteHeurTotal += chessTypes[2].typeValue;
                         }
                         else if (chessBoardGridCo[showB].occupiedPieceType == "Knight")
                         {
-                            whiteHeurTotal += 3;
+                            whiteHeurTotal += chessTypes[3].typeValue;
                         }
                         else if (chessBoardGridCo[showB].occupiedPieceType == "Rook")
                         {
-                            whiteHeurTotal += 2;
+                            whiteHeurTotal += chessTypes[4].typeValue;
                         }
                         else if (chessBoardGridCo[showB].occupiedPieceType == "Pawn")
                         {
-                            whiteHeurTotal += 1;
+                            whiteHeurTotal += chessTypes[5].typeValue;
                         }
                     }
 
 
                 }
-
-
 
                 //Debug.Log("In Main Loop BWH call; test temp Huer White " + whiteHeurTotal);
                 //Debug.Log("In Main Loop BWH call; test temp Huer Black " + blackHeurTotal);
@@ -201,7 +188,6 @@ public class Heuristics : MonoBehaviour
 
                 //Debug.Log("In Main Loop BWH call; test Huer White " + chessBoardGridCo[showB].whiteHeuristic);
                 //Debug.Log("In Main Loop BWH call; test Huer Black " + chessBoardGridCo[showB].blackHeuristic);
-                //chessBoardGridCo["A1"].whiteHeuristic = 77;
             }
         }
     }

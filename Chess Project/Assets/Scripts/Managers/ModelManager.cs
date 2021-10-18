@@ -56,8 +56,6 @@ public class ModelManager : MonoBehaviour
     //Dictionary for holding a key for searching Tile; value is custom tile class BoardTile
     private Dictionary<string, BoardTile> chessBoardGridCo;
     //removed variable for mouse over highlight
-    //[SerializeField]
-    //public List<ModelManager.BoardTile> chessBoardGridCo;
 
     [SerializeField]
     private Heuristics heuristics;
@@ -73,17 +71,10 @@ public class ModelManager : MonoBehaviour
 
         //setup static board tile naming and default variables
         chessBoardGridCo = new Dictionary<string, ModelManager.BoardTile>();
-        //chessBoardGridCo = new List<BoardTile>();
 
         ChessboardTileSetup();
 
         SpawnAllPieces();
-
-        //testing calls
-        //heuristics = new Heuristics();
-        //heuristics.HeuristicDifficulty();
-        //heuristics.HeuristicSetup();
-        //heuristics.BoardWideHeuristic();
 
         heuristics = GetComponent<Heuristics>();
 
@@ -98,17 +89,9 @@ public class ModelManager : MonoBehaviour
         {
             heuristics.BoardWideHeuristic(ref chessBoardGridCo);
 
-            //Debug.Log("showB is " + chessBoardGridCo.TryGetValue(showB));
             char letterBoard = '0';
             string showB = "";
 
-            Debug.Log("Size on List for BoardTile " + chessBoardGridCo.Count);
-            for (int i = 0; i < chessBoardGridCo.Count; i++)
-            {
-                //Debug.Log("i is " + i);
-                //Debug.Log("boardPosition " + chessBoardGridCo[i].boardPosition);
-                //Debug.Log("officalBoardPosition " + chessBoardGridCo[i].officalBoardPosition);
-            }
 
             for (int j = 1; j < 9; j++)
             {
@@ -116,16 +99,7 @@ public class ModelManager : MonoBehaviour
                 {
                     letterBoard = Convert.ToChar(i);
                     showB = letterBoard.ToString() + j.ToString();
-                    //Debug.Log("showB is " + (chessBoardGridCo.TryGetValue(showB, )));
-                    //if(chessBoardGridCo.ContainsKey(showB))
-                    //{
-                        //Debug.Log("showB is True");
-                    //}
-                    //else
-                    //{
-                        //Debug.Log("showB is False");
-                    //}
-                    /*
+\                    /*
                     Debug.Log("showB is " + showB);
                     Debug.Log("In Main ModelMan; test  White " + chessBoardGridCo[showB].isWhite);
                     Debug.Log("In Main ModelMan; test  type " + chessBoardGridCo[showB].occupiedPieceType);
@@ -176,17 +150,10 @@ public class ModelManager : MonoBehaviour
         pieceObject.transform.SetParent(transform);
         gm.board.LinkPiece(position, pieceObject.GetComponent<Piece>());
 
-        int currentPosition = 0;
-
-        currentPosition = (position.x * 8) + (position.y);
-
-
-
         //adding tags for White and Black pieces. 0-5 index for white, 6-11 index for black. added by george to existing function
         if (index <= 5)
         {
             pieceObject.tag = "White Pieces";
-            //chessBoardGridCo[currentPosition].isWhite = true;
             chessBoardGridCo[Convert.ToString(Convert.ToChar(position.x + 65) + Convert.ToString(position.y + 1))].isWhite = true;
         }
         else 
@@ -199,15 +166,7 @@ public class ModelManager : MonoBehaviour
         chessBoardGridCo[Convert.ToString(Convert.ToChar(position.x + 65) + Convert.ToString(position.y + 1))].occupiedPieceType = piece;
 
         activePieces.Add(pieceObject);
-
-        //updating with starter tile's with occupied, color status, and type.  
-        //chessBoardGridCo[currentPosition].isOccupied = true;
-        //chessBoardGridCo[currentPosition].occupiedPieceType = piece;
-
-        //if (index <= 5)
-        //Debug.Log("Checking currentPosition " + currentPosition);
-        //Debug.Log("Checking v2 position " + chessBoardGridCo[currentPosition].boardPosition);
-        //Debug.Log("Checking Offical Board position " + chessBoardGridCo[currentPosition].officalBoardPosition);    
+    
     }
 
     // Initilization function to spawn all chess pieces
@@ -379,32 +338,6 @@ public class ModelManager : MonoBehaviour
             {
                 letterBoard = '0';
                 showB = "";
-                /*
-                letterBoard = Convert.ToChar(i);
-                showB = letterBoard.ToString() + j.ToString();//place letter before number
-                board = new BoardTile();
-
-                board.isOccupied = false;
-                board.isWhite = false;
-                board.boardPosition.x = i - 65;
-                board.boardPosition.y = j - 1;
-                board.officalBoardPosition = showB;
-                board.occupiedPieceType = "";
-                board.whiteHeuristic = 0;
-                board.blackHeuristic = 0;
-
-                //Debug.Log("boardPosition Before " + board.boardPosition);
-                //Debug.Log("officalBoardPosition Before " + board.officalBoardPosition);
-
-                chessBoardGridCo.Add(board);
-
-                //Debug.Log("boardPosition Post " + chessBoardGridCo[chessBoardGridCo.Count - 1].boardPosition);
-                //Debug.Log("boardPosition Post " + chessBoardGridCo[chessBoardGridCo.Count - 1].officalBoardPosition);
-
-                //chessBoardGridCo[chessBoardGridCo.Count - 1].boardPosition.x = i - 65;
-                //chessBoardGridCo[chessBoardGridCo.Count - 1].boardPosition.y = j - 1;
-                //chessBoardGridCo[chessBoardGridCo.Count - 1].officalBoardPosition = showB;
-                */
 
                 letterBoard = Convert.ToChar(i);
                 showB = letterBoard.ToString() + j.ToString(); //place letter before number
@@ -422,17 +355,6 @@ public class ModelManager : MonoBehaviour
             }
         }
 
-        /*
-        Debug.Log("Size on List for BoardTile " + chessBoardGridCo.Count);
-        for(int i = 0; i < chessBoardGridCo.Count; i++)
-        {
-            Debug.Log("i is " + i);
-            Debug.Log("boardPosition " + chessBoardGridCo[i].boardPosition);
-            Debug.Log("officalBoardPosition " + chessBoardGridCo[i].officalBoardPosition);
-        }
-        */
-        //Debug.Log("find index of a1 " + chessBoardGridCo.Contains(board.officalBoardPosition == "A1"));
-        //Debug.Log("boardPosition " + chessBoardGridCo[chessBoardGridCo.Count - 1].boardPosition);
     }
 
 }
