@@ -88,7 +88,7 @@ public class Heuristics : MonoBehaviour
 
     public void BoardWideHeuristic(ref Dictionary<string, ModelManager.BoardTile> chessBoardGridCo)
     {
-        Debug.Log("BoardWideHeuristic call");
+        //Debug.Log("BoardWideHeuristic call");
 
         char letterBoard = '0';
         string showB = "";
@@ -219,13 +219,13 @@ public class Heuristics : MonoBehaviour
             chessTypes.Add(piece);
         }
 
-        Debug.Log("setup call");
+        //Debug.Log("setup call");
     }
 
     //Applies the set values of each chess piece to pieces array
     public void ChessPieceSetup()
     {
-        Debug.Log("ChessPieceSetup call");
+        //Debug.Log("ChessPieceSetup call");
         //King
         chessTypes[0].pieceType = "King";
         chessTypes[0].typeValue = 5;
@@ -268,7 +268,7 @@ public class Heuristics : MonoBehaviour
     {
         int diff = new int();
 
-        Debug.Log("HeuristicDifficulty call");
+        //Debug.Log("HeuristicDifficulty call");
 
         diff = PlayerPrefs.GetInt("Difficulty"); ;
 
@@ -303,6 +303,71 @@ public class Heuristics : MonoBehaviour
             chessTypes[4].typeValue = 6;
             chessTypes[5].typeValue = 2;
         }
+    }
+
+
+    //return vector 3? x and y for position; z for value
+    public Vector3Int ReturnHighestValueWhite(Dictionary<string, ModelManager.BoardTile> boardPieceValue)
+    {
+        Debug.Log("Call Check ReturnHighestValueWhite in Heur");
+        char letterBoard = '0';
+        string showB = "";
+        Vector2Int[] position = new Vector2Int[64];
+        int index = new int();
+        index = 0;
+        int[] heurValueHolder = new int[64];
+
+        for (int j = 1; j < 9; j++)
+        {
+            for (int i = 65; i < 73; i++)
+            {
+                letterBoard = Convert.ToChar(i);
+                showB = letterBoard.ToString() + j.ToString();
+
+                heurValueHolder[index] = boardPieceValue[showB].whiteHeuristic;
+                position[index] = boardPieceValue[showB].boardPosition;
+
+                /*
+                Debug.Log("showB is " + showB);
+                Debug.Log("In Main ModelMan; test  White " + chessBoardGridCo[showB].isWhite);
+                Debug.Log("In Main ModelMan; test  type " + chessBoardGridCo[showB].occupiedPieceType);
+                Debug.Log("In Main ModelMan; test  Occupied " + chessBoardGridCo[showB].isOccupied);
+                Debug.Log("In Main ModelMan; test Huer White " + chessBoardGridCo[showB].whiteHeuristic);
+                Debug.Log("In Main ModelMan; test Huer Black " + chessBoardGridCo[showB].blackHeuristic);
+                Debug.Log("In Main ModelMan; test v2 position " + chessBoardGridCo[showB].boardPosition);
+                */
+
+                index++;
+            }
+        }
+
+        int highestValueIndex = new int();
+        highestValueIndex = 0;
+        int highestValue = new int();
+        highestValue = 0;
+
+        //Debug.Log("heurValueHolder count " + heurValueHolder.Length);
+        for (int k = 0; k < index; k++)
+        {
+            if(highestValue < heurValueHolder[k])
+            {
+                highestValue = heurValueHolder[k];
+                highestValueIndex = k;
+            }
+        }
+
+        Vector3Int posValue = new Vector3Int();
+
+        posValue.x = position[highestValueIndex].x;
+        posValue.y = position[highestValueIndex].y;
+        posValue.z = highestValue;
+
+        return posValue;
+    }
+
+    public void ReturnHighestValueBlack(Dictionary<string, ModelManager.BoardTile> boardPieceValue)
+    {
+
     }
 
 

@@ -85,6 +85,7 @@ public class ModelManager : MonoBehaviour
         UpdateSelection();
         DrawChessboard();
 
+        /*
         if (Input.GetKeyDown(KeyCode.H))
         {
             heuristics.BoardWideHeuristic(ref chessBoardGridCo);
@@ -99,7 +100,7 @@ public class ModelManager : MonoBehaviour
                 {
                     letterBoard = Convert.ToChar(i);
                     showB = letterBoard.ToString() + j.ToString();
-                    /*
+                    
                     Debug.Log("showB is " + showB);
                     Debug.Log("In Main ModelMan; test  White " + chessBoardGridCo[showB].isWhite);
                     Debug.Log("In Main ModelMan; test  type " + chessBoardGridCo[showB].occupiedPieceType);
@@ -107,9 +108,14 @@ public class ModelManager : MonoBehaviour
                     Debug.Log("In Main ModelMan; test Huer White " + chessBoardGridCo[showB].whiteHeuristic);
                     Debug.Log("In Main ModelMan; test Huer Black " + chessBoardGridCo[showB].blackHeuristic);
                     Debug.Log("In Main ModelMan; test v2 position " + chessBoardGridCo[showB].boardPosition);
-                    */
+                    
                 }
             }
+        }
+        */
+        if(Input.GetKeyDown(KeyCode.H))
+        {
+            heuristics.ReturnHighestValueWhite(chessBoardGridCo);
         }
     }
 
@@ -367,6 +373,17 @@ public class ModelManager : MonoBehaviour
         chessBoardGridCo[Convert.ToString(Convert.ToChar(newPosition.x + 65) + Convert.ToString(newPosition.y + 1))].isOccupied = true;
         chessBoardGridCo[Convert.ToString(Convert.ToChar(newPosition.x + 65) + Convert.ToString(newPosition.y + 1))].isWhite = false;
         chessBoardGridCo[Convert.ToString(Convert.ToChar(newPosition.x + 65) + Convert.ToString(newPosition.y + 1))].occupiedPieceType = "";
+    }
+
+    public Vector3Int GetHighestValueFromBoard()
+    {
+        Vector3Int posValue = new Vector3Int();
+
+        Debug.Log("Call Check GetHighestValueFromBoard in MM");
+        //heuristics.ReturnHighestValueBlack(chessBoardGridCo);
+        posValue = heuristics.ReturnHighestValueWhite(chessBoardGridCo);
+
+        return posValue;
     }
 
 }

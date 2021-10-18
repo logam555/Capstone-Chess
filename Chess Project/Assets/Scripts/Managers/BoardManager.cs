@@ -39,9 +39,17 @@ public class BoardManager : MonoBehaviour
 
     private void Update()
     {
+        /*
         if (Input.GetKeyDown(KeyCode.M))
         {
             Debug.Log("In BoardMangaer; test  Occupied " + boardModel.chessBoardGridCo.Count);
+        }
+        */
+
+        if (Input.GetKeyDown(KeyCode.K))
+        {
+            //Debug.Log("space down");
+            //eval();
         }
     }
 
@@ -74,12 +82,54 @@ public class BoardManager : MonoBehaviour
         Pieces[position.x, position.y] = SelectedPiece;
         SelectedPiece.Position = position;
         GetComponent<AudioSource>().Play();
+
+        bool pieceWhite = new bool();
         
         //update Board with location new and old
+        /*
+        if (SelectedPiece is IsWhite)
+        {
+            pieceWhite = true;
+        }
+        else
+        {
+            pieceWhite = false;
+        }
+        */
+        
+        
+        string pieceTypeStr = "";
+
+        if(SelectedPiece is King)
+        {
+            pieceTypeStr = "King";
+        }
+        else if (SelectedPiece is Queen)
+        {
+            pieceTypeStr = "Queen";
+        }
+        else if (SelectedPiece is Bishop)
+        {
+            pieceTypeStr = "Bishop";
+        }
+        else if (SelectedPiece is Knight)
+        {
+            pieceTypeStr = "Knight";
+        }
+        else if (SelectedPiece is Rook)
+        {
+            pieceTypeStr = "Rook";
+        }
+        else
+        {
+            pieceTypeStr = "Pawn";
+        }
+
         boardModel.BoardTileLocationUpdate(oldPosition, position);
 
         // Call function in board to move the piece game object
         gm.boardModel.MoveObject(SelectedPiece.gameObject, position);
+        
 
         // Reduce number of actions remaining
         SelectedPiece.Commander.commandActions -= 1;

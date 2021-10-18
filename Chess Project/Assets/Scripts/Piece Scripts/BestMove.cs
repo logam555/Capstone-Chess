@@ -14,12 +14,20 @@ public class BestMove
     Heuristics h = new Heuristics();
     Piece piece;
 
+    private ModelManager boardModel;
+
     private void Start()
     {
         GameObject tempGO = new GameObject();
         tempGO = GameObject.Find("Chess Board");
-        ModelManager boardModel = new ModelManager();
+
+        boardModel = new ModelManager();
         boardModel = tempGO.GetComponent<ModelManager>();
+    }
+
+    private void Update()
+    {
+        
     }
 
     public int[] getMove(Piece[,] board, Piece piece, bool isCommander)
@@ -31,11 +39,16 @@ public class BestMove
         return bestLocal();
     }
 
-    public int eval(Vector2Int position) //sends board to heuristic to obtain a score for the move made
+    public int eval() //sends board to heuristic to obtain a score for the move made
     {
-        String p = Convert.ToString(Convert.ToChar(position.x + 65) + Convert.ToString(position.y + 1));
+        //
+        Vector3Int posValue = new Vector3Int();
+        posValue = boardModel.GetHighestValueFromBoard();
+        
+        int highestValue = new int();
+        highestValue = posValue.z;
 
-
+        String p = Convert.ToString(Convert.ToChar(posValue.x + 65) + Convert.ToString(posValue.y + 1));
 
         return 0;
     }
@@ -90,7 +103,7 @@ public class BestMove
 
     public int minimax(int depth, Piece[,] tempBoard, bool maximize, int dice) //uses minimax algorithm to obtain the score
     {
-        int score = eval(piece.Position); //uses heuristic to obtain score
+        int score = eval(); //uses heuristic to obtain score
         int pieceY = 0;
         int pieceX = 0;
 
