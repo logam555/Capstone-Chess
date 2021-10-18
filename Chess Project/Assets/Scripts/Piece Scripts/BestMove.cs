@@ -50,8 +50,8 @@ public class BestMove
                     {
                         if (board[k,d] == piece)
                         {
-                            k = pieceX;
-                            d = pieceY;
+                            pieceX = k;
+                            pieceY = d;
                         }
                     }
                 }
@@ -101,8 +101,8 @@ public class BestMove
                         {
                             if (tempBoard[k,d] == piece) //finds position of board on piece
                             {
-                                k = pieceX;
-                                d = pieceY;
+                                pieceX = k;
+                                pieceY = d;
                             }
                         }
                     }
@@ -134,8 +134,8 @@ public class BestMove
                             if (bm.IsEnemyPieceAt(false,tempBoard[k,d].Position) == true)
                             {
                                 tempPiece = tempBoard[k,d];
-                                k = pieceX;
-                                d = pieceY;
+                                pieceX = k;
+                                pieceY = d;
                             }
                         }
                     }
