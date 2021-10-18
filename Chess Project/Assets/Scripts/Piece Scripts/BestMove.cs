@@ -25,11 +25,9 @@ public class BestMove
 
     public int eval(Vector2Int position) //sends board to heuristic to obtain a score for the move made
     {
-        String p = Convert.ToString(Convert.ToChar(position.x + 65) + Convert.ToString(position.y + 1));
+        int rand = UnityEngine.Random.Range(1, 20);
 
-
-
-        return 0;
+        return rand;
     }
 
     public bool[,] possibleMoves(Piece p) //Uses Bishop script to obtain possible moves for Bishop

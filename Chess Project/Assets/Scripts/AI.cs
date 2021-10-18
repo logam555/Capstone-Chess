@@ -34,14 +34,19 @@ public AI (string name, bool isWhite, List<Commander> commanders) : base(name, i
     }
 
 
-public void Start()
+public void Start(bool first)
     {
-		kingMove = instance.Start(true);
-		moveKing();
-		lBishopMove = lInstance.Start(true, true);
-		movelBishop();
-		rBishopMove = rInstance.Start(true, true);
-		moverBishop();
+		if (first == true)
+		{
+			kingMove = instance.Start(true);
+			moveKing();
+			lBishopMove = lInstance.Start(true, true);
+			movelBishop();
+			rBishopMove = rInstance.Start(true, true);
+			moverBishop();
+		}
+		else
+			Step();
 	}
 
 	public void Step()
