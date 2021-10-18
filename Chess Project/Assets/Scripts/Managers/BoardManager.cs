@@ -20,6 +20,8 @@ public class BoardManager : MonoBehaviour
     public static BoardManager Instance { get; set; }
     private GameManager gm;
 
+    public ModelManager boardModel; 
+
     private void Awake() {
         Pieces = new Piece[8, 8];
     }
@@ -27,7 +29,20 @@ public class BoardManager : MonoBehaviour
     private void Start() {
         gm = GameManager.Instance;
 
+        GameObject tempGO = new GameObject();
+        tempGO = GameObject.Find("Chess Board");
 
+        boardModel = tempGO.GetComponent<ModelManager>();
+
+        
+    }
+
+    private void Update()
+    {
+        if (Input.GetKeyDown(KeyCode.M))
+        {
+            Debug.Log("In BoardMangaer; test  Occupied " + boardModel.chessBoardGridCo.Count);
+        }
     }
 
     #region PIECE INTERACTION FUNCTIONS - Functions that interact with the object representation of the pieces.
@@ -50,11 +65,18 @@ public class BoardManager : MonoBehaviour
             SelectedPiece.Commander.commandActions += 1;
         }
 
+        //store old location
+        Vector2Int oldPosition = new Vector2Int();
+        oldPosition = SelectedPiece.Position;
+
         // Move piece to new position
         Pieces[SelectedPiece.Position.x, SelectedPiece.Position.y] = null;
         Pieces[position.x, position.y] = SelectedPiece;
         SelectedPiece.Position = position;
         GetComponent<AudioSource>().Play();
+        
+        //update Board with location new and old
+        boardModel.BoardTileLocationUpdate(oldPosition, position);
 
         // Call function in board to move the piece game object
         gm.boardModel.MoveObject(SelectedPiece.gameObject, position);
@@ -255,6 +277,7 @@ public class BoardManager : MonoBehaviour
         }
         return arr;
     }
+
     //paramaters Bool isWhite and List<Vector2Int> of locationsAvailable 
     //Example Call: AIScanning(False, Pawn.Instance.LocationsAvailable); 
     //Returns an int[,] array of a given pieces local area scan. 

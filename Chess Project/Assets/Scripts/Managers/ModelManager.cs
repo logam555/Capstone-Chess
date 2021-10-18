@@ -54,7 +54,7 @@ public class ModelManager : MonoBehaviour
     private Material commanderMaterial;
 
     //Dictionary for holding a key for searching Tile; value is custom tile class BoardTile
-    private Dictionary<string, BoardTile> chessBoardGridCo;
+    public Dictionary<string, BoardTile> chessBoardGridCo;
     //removed variable for mouse over highlight
 
     [SerializeField]
@@ -355,6 +355,18 @@ public class ModelManager : MonoBehaviour
             }
         }
 
+    }
+
+    //
+    public void BoardTileLocationUpdate(Vector2Int oldPosition, Vector2Int newPosition)
+    {
+        chessBoardGridCo[Convert.ToString(Convert.ToChar(oldPosition.x + 65) + Convert.ToString(oldPosition.y + 1))].isOccupied = false;
+        chessBoardGridCo[Convert.ToString(Convert.ToChar(oldPosition.x + 65) + Convert.ToString(oldPosition.y + 1))].isWhite = false;
+        chessBoardGridCo[Convert.ToString(Convert.ToChar(oldPosition.x + 65) + Convert.ToString(oldPosition.y + 1))].occupiedPieceType = "";
+
+        chessBoardGridCo[Convert.ToString(Convert.ToChar(newPosition.x + 65) + Convert.ToString(newPosition.y + 1))].isOccupied = true;
+        chessBoardGridCo[Convert.ToString(Convert.ToChar(newPosition.x + 65) + Convert.ToString(newPosition.y + 1))].isWhite = false;
+        chessBoardGridCo[Convert.ToString(Convert.ToChar(newPosition.x + 65) + Convert.ToString(newPosition.y + 1))].occupiedPieceType = "";
     }
 
 }

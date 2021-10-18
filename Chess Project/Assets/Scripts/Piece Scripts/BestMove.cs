@@ -14,6 +14,14 @@ public class BestMove
     Heuristics h = new Heuristics();
     Piece piece;
 
+    private void Start()
+    {
+        GameObject tempGO = new GameObject();
+        tempGO = GameObject.Find("Chess Board");
+        ModelManager boardModel = new ModelManager();
+        boardModel = tempGO.GetComponent<ModelManager>();
+    }
+
     public int[] getMove(Piece[,] board, Piece piece, bool isCommander)
     {
         this.board = board;
