@@ -27,8 +27,6 @@ public class GameManager : MonoBehaviour
     #region PRIVATE PROPERTIES
     private Player user;
     private Player ai;
-    private float waitTime = 3.0f;
-    private float timer = 0.0f;
     private bool isAttacking = false;
     private Vector2Int selectedPositionDice;
     #endregion
