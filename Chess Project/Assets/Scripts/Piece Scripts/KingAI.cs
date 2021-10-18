@@ -12,8 +12,14 @@ public class KingAI
     //private bool isDead = false;
     public Piece bestPiece { get; set; }
     public bool isWhite;
-    private int[,] moves = new int[3, 5];
-    private Piece[,] board = new Piece[8, 8];
+    private int[,] moves;
+    private Piece[,] board;
+
+    public KingAI(BoardManager bm) {
+        this.bm = bm;
+        moves = new int[3, 5];
+        board = new Piece[8, 8];
+    }
 
 
     public int[] Start(bool isWhite)

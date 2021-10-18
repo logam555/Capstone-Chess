@@ -51,29 +51,34 @@ public class GameManager : MonoBehaviour
 
     private void Update() {
         if (!IsGameOver) {
-            if (Input.GetMouseButtonDown(0)) {
-                if (board.SelectedPiece == null) {
-                    board.SelectPiece(boardModel.selection);
+            if(CurrentPlayer == user) {
+                if (Input.GetMouseButtonDown(0)) {
+                    if (board.SelectedPiece == null) {
+                        board.SelectPiece(boardModel.selection);
 
-                } else {
-                    board.CheckMove(boardModel.selection);
-  
+                    } else {
+                        board.CheckMove(boardModel.selection);
+
+                    }
+                }
+
+
+                if (Input.GetKeyDown(KeyCode.Space)) {
+                    PassTurn();
+                }
+
+                if (Input.GetMouseButtonDown(1) && board.SelectedPiece != null) {
+                    board.DelegatePiece();
+                }
+
+                if (EndofTurn()) {
+                    PassTurn();
                 }
             }
-
-
-            if (Input.GetKeyDown(KeyCode.Space)) {
+            else {
+                ((AI)CurrentPlayer).Start();
                 PassTurn();
             }
-
-            if (Input.GetMouseButtonDown(1) && board.SelectedPiece != null) {
-                board.DelegatePiece();
-            }
-
-            if(EndofTurn()) {
-                PassTurn();
-            }
-
         }
     }
 
@@ -186,7 +191,7 @@ public class GameManager : MonoBehaviour
         };
 
         user = new Player("Human", true, new List<Commander>(whiteCommanders));
-        ai = new AI("AI", false, new List<Commander>(blackCommanders));
+        ai = new AI("AI", false, new List<Commander>(blackCommanders), board);
         CurrentPlayer = user;
     }
     #endregion

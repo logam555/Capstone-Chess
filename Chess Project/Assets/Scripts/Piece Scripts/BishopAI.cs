@@ -16,6 +16,10 @@ public class BishopAI
     private int[,] moves = new int[3,5];
     private Piece[,] board = new Piece[8,8];
 
+    public BishopAI(BoardManager bm) {
+        this.bm = bm;
+    }
+
     public int[] Start(bool isWhite, bool left)
     {
         getBoard();

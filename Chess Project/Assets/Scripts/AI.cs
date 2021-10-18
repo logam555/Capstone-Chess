@@ -8,17 +8,18 @@ using UnityEngine;
 public class AI : Player
 {
 	bool isTurn;
-	KingAI instance = new KingAI();
-	BishopAI lInstance = new BishopAI();
+	KingAI instance;
+	BishopAI lInstance;
 	private BoardManager bm;
 	//public Random rand = new Random();
-	BishopAI rInstance = new BishopAI();
-	int[] kingMove = new int[2];
-	int[] lBishopMove = new int[2];
-	int[] rBishopMove = new int[2];
-	int[,] moves = new int[2, 3];
+	BishopAI rInstance;
+	int[] kingMove;
+	int[] lBishopMove;
+	int[] rBishopMove;
+	int[,] moves;
+	bool first;
 
-public AI (string name, bool isWhite, List<Commander> commanders) : base(name, isWhite, commanders)
+public AI (string name, bool isWhite, List<Commander> commanders, BoardManager bm) : base(name, isWhite, commanders)
 	{
         this.name = name;
         this.isWhite = isWhite;
@@ -31,19 +32,30 @@ public AI (string name, bool isWhite, List<Commander> commanders) : base(name, i
         capturedPieces.Add("Knight", 0);
         capturedPieces.Add("Rook", 0);
         capturedPieces.Add("Pawn", 0);
-    }
+
+		this.bm = bm;
+		instance = new KingAI(bm);
+		lInstance = new BishopAI(bm);
+		rInstance = new BishopAI(bm);
+		kingMove = new int[2];
+		lBishopMove = new int[2];
+		rBishopMove = new int[2];
+		moves = new int[2, 3];
+		first = true;
+	}
 
 
-public void Start(bool first)
+public void Start()
     {
 		if (first == true)
 		{
-			kingMove = instance.Start(true);
+			kingMove = instance.Start(this.isWhite);
 			moveKing();
-			lBishopMove = lInstance.Start(true, true);
+			lBishopMove = lInstance.Start(this.isWhite, true);
 			movelBishop();
-			rBishopMove = rInstance.Start(true, true);
+			rBishopMove = rInstance.Start(this.isWhite, false);
 			moverBishop();
+			first = false;
 		}
 		else
 			Step();
