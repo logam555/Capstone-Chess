@@ -31,6 +31,7 @@ public class DiceManager : MonoBehaviour
         hasLanded = false;
         diceObject = this.gameObject;
         diceRb = this.gameObject.GetComponent<Rigidbody>();
+        diceRb.maxAngularVelocity = float.MaxValue;
         diceTransform = this.gameObject.GetComponent<Transform>();
     }
 
@@ -42,19 +43,19 @@ public class DiceManager : MonoBehaviour
         thrown = true;
         diceVelocity = diceRb.velocity;
         //Create a random direction for the torque
-        float dirTorqueX = Random.Range(0, 500);
-        float dirTorqueY = Random.Range(0, 500);
-        float dirTorqueZ = Random.Range(0, 500);
-        float speed = 60;
+        float dirTorqueX = Random.Range(-30, 30);
+        float dirTorqueY = Random.Range(-30, 30);
+        float dirTorqueZ = Random.Range(-30, 30);
+        float speed = 30;
         //Find the center position of the dice zone collider
-        Vector3 centerPostion = diceZoneCollider.Instance.GetComponent<Renderer>().bounds.center;
+        //Vector3 centerPostion = diceZoneCollider.Instance.GetComponent<Renderer>().bounds.center;
         //Create a random force 
-        Vector3 force = transform.forward;
+        Vector3 force = transform.up;
         force = new Vector3(force.x, 1, force.z);
         //Rotate the dice 
         diceTransform.rotation = Random.rotation;
         //Spawn the dice in the center of the dice zone
-        diceTransform.position = new Vector3(centerPostion.x, centerPostion.y + 2f, centerPostion.z);
+        diceTransform.position = new Vector3(-3, 4f, 4);
         //Apply the random force and torque
         diceRb.AddForce(force * speed);
         diceRb.AddTorque(dirTorqueX, dirTorqueY, dirTorqueZ);
