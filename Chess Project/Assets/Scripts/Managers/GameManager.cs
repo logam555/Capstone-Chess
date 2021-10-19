@@ -57,8 +57,17 @@ public class GameManager : MonoBehaviour
                         board.SelectPiece(boardModel.selection);
 
                     } else {
-                        board.CheckMove(boardModel.selection);
-
+                        isAttacking = board.CheckMove(boardModel.selection);
+                        if (isAttacking && !DiceManager.Instance.thrown) {
+                            selectedPositionDice = boardModel.selection;
+                            DiceManager.Instance.RollDice();
+                        }
+                    }
+                }
+                if (isAttacking) {
+                    if (DiceManager.Instance.hasLanded && DiceManager.Instance.GetComponent<Rigidbody>().IsSleeping()) {
+                        board.Attack(selectedPositionDice);
+                        isAttacking = false;
                     }
                 }
 
