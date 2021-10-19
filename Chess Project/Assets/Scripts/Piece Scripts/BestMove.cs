@@ -40,11 +40,9 @@ public class BestMove
 
     public int eval() //sends board to heuristic to obtain a score for the move made
     {
-        Vector3Int posValue = new Vector3Int();
-        posValue = boardModel.GetHighestValueFromBoard();
+        Vector3Int posValue = boardModel.GetHighestValueFromBoard();
         
-        int highestValue = new int();
-        highestValue = posValue.z;
+        int highestValue = posValue.z;
 
         return highestValue;
     }

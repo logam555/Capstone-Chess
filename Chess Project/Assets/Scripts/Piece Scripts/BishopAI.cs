@@ -50,23 +50,18 @@ public class BishopAI
 
         int[] move = new int[2];
         int bestScore = moves[2,0];
+        move[0] = moves[0, 0];
+        move[1] = moves[1, 0];
+        bestPiece = bishop;
 
-        for (int j = 0; j < 5; j++)
+        for (int j = 1; j < 5; j++)
         {
             if (bestScore < moves[2,j])
             {
                 move[0] = moves[0,j];
                 move[1] = moves[1,j];
                 bestScore = moves[2, j];
-
-                if (j == 0)
-                {
-                    bestPiece = bishop;
-                }
-                else
-                {
-                    bestPiece = bishop.subordinates[j - 1];
-                }
+                bestPiece = bishop.subordinates[j - 1];
             }
         }
 
