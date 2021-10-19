@@ -98,7 +98,7 @@ public class ModelManager : MonoBehaviour
         {
             Vector3Int posValue2 = new Vector3Int();
             posValue2 = GetHighestValueFromBoard();
-            Debug.Log("end of get highest test value is " + posValue2);
+            //Debug.Log("end of get highest test value is " + posValue2);
         }
     }
 

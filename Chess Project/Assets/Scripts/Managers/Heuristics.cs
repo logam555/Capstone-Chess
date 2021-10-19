@@ -334,11 +334,10 @@ public class Heuristics : MonoBehaviour
                 Debug.Log("In Main ModelMan; test Huer White " + chessBoardGridCo[showB].whiteHeuristic);
                 Debug.Log("In Main ModelMan; test Huer Black " + chessBoardGridCo[showB].blackHeuristic);
                 Debug.Log("In Main ModelMan; test v2 position " + chessBoardGridCo[showB].boardPosition);
-                */
-                //Debug.Log("white A is " + boardPieceValue[showB].whiteHeuristic);
-                //Debug.Log("white B is " + heurValueHolder[index]);
+                Debug.Log("white A is " + boardPieceValue[showB].whiteHeuristic);
+                Debug.Log("white B is " + heurValueHolder[index]);
                 Debug.Log(boardPieceValue[showB].officalBoardPosition);
-
+                */
                 index ++;
 
             }
@@ -352,12 +351,12 @@ public class Heuristics : MonoBehaviour
         //Debug.Log("heurValueHolder count " + heurValueHolder.Length);
         for (int k = 0; k < index; k++)
         {
-            Debug.Log("current high value" + heurValueHolder[k]);
-            if (highestValue > heurValueHolder[k])
+            //Debug.Log("value in going" + heurValueHolder[k]);
+            if (highestValue < heurValueHolder[k])
             {
                 highestValue = heurValueHolder[k];
                 highestValueIndex = k;
-                Debug.Log("new high value of " + highestValue);
+                //Debug.Log("new high value of " + highestValue);
             }
         }
 

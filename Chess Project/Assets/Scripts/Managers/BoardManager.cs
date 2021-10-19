@@ -21,6 +21,7 @@ public class BoardManager : MonoBehaviour
     private GameManager gm;
 
     public ModelManager boardModel; 
+    private GameObject tempGO;
 
     private void Awake() {
         Pieces = new Piece[8, 8];
@@ -29,7 +30,7 @@ public class BoardManager : MonoBehaviour
     private void Start() {
         gm = GameManager.Instance;
 
-        GameObject tempGO = new GameObject();
+        //GameObject tempGO = new GameObject();
         tempGO = GameObject.Find("Chess Board");
 
         boardModel = tempGO.GetComponent<ModelManager>();

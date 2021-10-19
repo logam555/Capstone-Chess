@@ -15,12 +15,12 @@ public class BestMove
     Piece piece;
 
     private ModelManager boardModel;
-
+    private GameObject tempGO;
 
 
     public BestMove()
     {
-        GameObject tempGO = new GameObject();
+        //GameObject tempGO = new GameObject();
         tempGO = GameObject.Find("Chess Board");
 
         boardModel = new ModelManager();
