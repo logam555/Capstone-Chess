@@ -16,11 +16,9 @@ public class BestMove
 
     private ModelManager boardModel;
 
-<<<<<<< HEAD
-    private void Start()
-=======
+
+
     public BestMove()
->>>>>>> CommandAI-V3
     {
         GameObject tempGO = new GameObject();
         tempGO = GameObject.Find("Chess Board");
@@ -29,16 +27,7 @@ public class BestMove
         boardModel = tempGO.GetComponent<ModelManager>();
     }
 
-<<<<<<< HEAD
-    private void Update()
-    {
-        
-    }
-
-    public int[] getMove(Piece[,] board, Piece piece, bool isCommander)
-=======
     public int[] getMove(Piece[,] board, Piece piece, bool isCommander, BoardManager bm)
->>>>>>> CommandAI-V3
     {
         this.board = board;
         this.piece = piece;
@@ -51,16 +40,9 @@ public class BestMove
 
     public int eval() //sends board to heuristic to obtain a score for the move made
     {
-<<<<<<< HEAD
-        //
         Vector3Int posValue = new Vector3Int();
         posValue = boardModel.GetHighestValueFromBoard();
         
-=======
-        Vector3Int posValue = new Vector3Int();
-        posValue = boardModel.GetHighestValueFromBoard();
-
->>>>>>> CommandAI-V3
         int highestValue = new int();
         highestValue = posValue.z;
 

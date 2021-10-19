@@ -26,7 +26,7 @@ public class GameManager : MonoBehaviour
 {
     #region PRIVATE PROPERTIES
     private Player user;
-    private Player ai;
+    private AI ai;
     private bool isAttacking = false;
     private Vector2Int selectedPositionDice;
     #endregion
@@ -51,26 +51,6 @@ public class GameManager : MonoBehaviour
 
     private void Update() {
         if (!IsGameOver) {
-<<<<<<< HEAD
-            if (Input.GetMouseButtonDown(0)) {
-                if (board.SelectedPiece == null) {
-                    board.SelectPiece(boardModel.selection);
-                } else {
-                     isAttacking = board.CheckMove(boardModel.selection);
-                    if (isAttacking && !DiceManager.Instance.thrown){
-                        selectedPositionDice = boardModel.selection;
-                        DiceManager.Instance.RollDice(); };
-                }
-            }
-            if (isAttacking)
-            {
-                if (DiceManager.Instance.hasLanded && DiceManager.Instance.GetComponent<Rigidbody>().IsSleeping())
-                {
-                    board.Attack(selectedPositionDice);
-                    isAttacking = false;
-                }
-            }
-=======
             if(CurrentPlayer == user) {
                 if (Input.GetMouseButtonDown(0)) {
                     if (board.SelectedPiece == null) {
@@ -81,8 +61,6 @@ public class GameManager : MonoBehaviour
 
                     }
                 }
-
->>>>>>> CommandAI-V3
 
                 if (Input.GetKeyDown(KeyCode.Space)) {
                     PassTurn();
@@ -167,11 +145,8 @@ public class GameManager : MonoBehaviour
         };
 
         user = new Player("Human", true, new List<Commander>(whiteCommanders));
-<<<<<<< HEAD
-        ai = new Player("AI", false, new List<Commander>(blackCommanders));
-=======
         ai = new AI("AI", false, new List<Commander>(blackCommanders), board);
->>>>>>> CommandAI-V3
+
         CurrentPlayer = user;
     }
     #endregion

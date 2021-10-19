@@ -68,11 +68,7 @@ public class ModelManager : MonoBehaviour
         UpdateSelection();
         DrawChessboard();
 
-<<<<<<< HEAD
-        
-=======
-        /*
->>>>>>> CommandAI-V3
+
         if (Input.GetKeyDown(KeyCode.H))
         {
             heuristics.BoardWideHeuristic(ref chessBoardGridCo);
@@ -96,13 +92,9 @@ public class ModelManager : MonoBehaviour
                 }
             }
         }
-<<<<<<< HEAD
+
         
         if(Input.GetKeyDown(KeyCode.I))
-=======
-        */
-        if (Input.GetKeyDown(KeyCode.H))
->>>>>>> CommandAI-V3
         {
             Vector3Int posValue2 = new Vector3Int();
             posValue2 = GetHighestValueFromBoard();
@@ -394,11 +386,7 @@ public class ModelManager : MonoBehaviour
 
     public Vector3Int GetHighestValueFromBoard()
     {
-<<<<<<< HEAD
-        heuristics.BoardWideHeuristic(ref chessBoardGridCo);
 
-=======
->>>>>>> CommandAI-V3
         Vector3Int posValue = new Vector3Int();
 
         Debug.Log("Call Check GetHighestValueFromBoard in MM");

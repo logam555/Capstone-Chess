@@ -338,13 +338,9 @@ public class Heuristics : MonoBehaviour
                 Debug.Log("white A is " + boardPieceValue[showB].whiteHeuristic);
                 Debug.Log("white B is " + heurValueHolder[index]);
                 Debug.Log(boardPieceValue[showB].officalBoardPosition);
-<<<<<<< HEAD
-                index ++;
-                
-=======
-                index++;
 
->>>>>>> CommandAI-V3
+                index ++;
+
             }
         }
 
