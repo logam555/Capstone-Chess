@@ -1,8 +1,7 @@
 /* Written by George Brunner
- Edited by ___
- Last date edited: 09/15/2021
+Edited by ___
+ Last date edited: 09 / 15 / 2021
  Heuristics.cs - Manages the Heuristics of the board and pieces.
-
  Version 1: Created functions to collect Heuristics
 */
 
@@ -36,7 +35,7 @@ public class Heuristics : MonoBehaviour
     [SerializeField]
     private List<chessPiece> chessTypes;//
 
-    
+
 
     // Start is called before the first frame update
     //might need to remove start if runnign through voard script
@@ -54,7 +53,7 @@ public class Heuristics : MonoBehaviour
         //uses the difficulty to send values used by Heuristics
         HeuristicDifficulty();
 
-        
+
     }
 
     // Update is called once per frame
@@ -197,7 +196,7 @@ public class Heuristics : MonoBehaviour
         chessPiece piece = new chessPiece();
         //chessTypes = new List<chessPiece>();
 
-        for (int i = 0; i <6; i++)
+        for (int i = 0; i < 6; i++)
         {
             piece = new chessPiece();
 
@@ -309,7 +308,7 @@ public class Heuristics : MonoBehaviour
     //return vector 3? x and y for position; z for value
     public Vector3Int ReturnHighestValueWhite(Dictionary<string, ModelManager.BoardTile> boardPieceValue)
     {
-        Debug.Log("Call Check ReturnHighestValueWhite in Heur");
+        //Debug.Log("Call Check ReturnHighestValueWhite in Heur");
         char letterBoard = '0';
         string showB = "";
         Vector2Int[] position = new Vector2Int[64];
@@ -335,12 +334,12 @@ public class Heuristics : MonoBehaviour
                 Debug.Log("In Main ModelMan; test Huer White " + chessBoardGridCo[showB].whiteHeuristic);
                 Debug.Log("In Main ModelMan; test Huer Black " + chessBoardGridCo[showB].blackHeuristic);
                 Debug.Log("In Main ModelMan; test v2 position " + chessBoardGridCo[showB].boardPosition);
-                */
                 Debug.Log("white A is " + boardPieceValue[showB].whiteHeuristic);
                 Debug.Log("white B is " + heurValueHolder[index]);
                 Debug.Log(boardPieceValue[showB].officalBoardPosition);
+                */
                 index ++;
-                
+
             }
         }
 
@@ -352,12 +351,12 @@ public class Heuristics : MonoBehaviour
         //Debug.Log("heurValueHolder count " + heurValueHolder.Length);
         for (int k = 0; k < index; k++)
         {
-            Debug.Log("current high value" + heurValueHolder[k]);
-            if (highestValue > heurValueHolder[k])
+            //Debug.Log("value in going" + heurValueHolder[k]);
+            if (highestValue < heurValueHolder[k])
             {
                 highestValue = heurValueHolder[k];
                 highestValueIndex = k;
-                Debug.Log("new high value of " + highestValue);
+                //Debug.Log("new high value of " + highestValue);
             }
         }
 
@@ -369,14 +368,54 @@ public class Heuristics : MonoBehaviour
         posValue.y = position[highestValueIndex].y;
         posValue.z = highestValue;
 
-        Debug.Log("end of get highest test value in Heur call " + posValue);
+        //Debug.Log("end of get highest test value in Heur call " + posValue);
 
         return posValue;
     }
 
-    public void ReturnHighestValueBlack(Dictionary<string, ModelManager.BoardTile> boardPieceValue)
+    public Vector3Int ReturnHighestValueBlack(Dictionary<string, ModelManager.BoardTile> boardPieceValue)
     {
+        //Debug.Log("Call Check ReturnHighestValueBlack in Heur");
+        char letterBoard = '0';
+        string showB = "";
+        Vector2Int[] position = new Vector2Int[64];
+        int index = new int();
+        index = 0;
+        int[] heurValueHolder = new int[64];
 
+        for (int j = 1; j < 9; j++)
+        {
+            for (int i = 65; i < 73; i++)
+            {
+                letterBoard = Convert.ToChar(i);
+                showB = letterBoard.ToString() + j.ToString();
+                heurValueHolder[index] = boardPieceValue[showB].blackHeuristic;
+                position[index] = boardPieceValue[showB].boardPosition;
+                index++;
+            }
+        }
+
+        int highestValueIndex = new int();
+        highestValueIndex = 0;
+        int highestValue = new int();
+        highestValue = 0;
+
+        for (int k = 0; k < index; k++)
+        {
+            if (highestValue < heurValueHolder[k])
+            {
+                highestValue = heurValueHolder[k];
+                highestValueIndex = k;
+            }
+        }
+
+        Vector3Int posValue = new Vector3Int();
+
+        posValue.x = position[highestValueIndex].x;
+        posValue.y = position[highestValueIndex].y;
+        posValue.z = highestValue;
+
+        return posValue;
     }
 
 

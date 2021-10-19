@@ -1,21 +1,3 @@
-/* Written by Braden Stonehill
- Edited by Braden Stonehil
- Last date edited: 10/6/2021
- BoardManager.cs - Manages the instantiation, rendering, and interactions with the board.
-
- Version 1: Created methods to spawn all piece models, select game objects based on interaction with the board,
- and highlight tiles on the board.
-
- Version 1.1g: Edited by George 09/09/2021: Adding Tags to chess pieces, adding base heuirtics, 
- adding in mouse over board hovering highlighting, add in board grid naming, ... .
-
- Version 1.2g Edited by George 09/16/2021: mouse hovering commented out/removed, base heuirtics moved to heuirtics class in seperate script, 
- boarding naming converted into board tile class that can hold each tiles offical position along with basic board tile information.
-
- Version 1.3g Edited by Braden 10/06/2021: Altered functions to link pieces to virtual board through the new board manager object.
- Renamed this class to ModelManager to better represent its functionality.
- */
-
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -63,7 +45,8 @@ public class ModelManager : MonoBehaviour
     private GameManager gm;
     #endregion
 
-    private void Start() {
+    private void Start()
+    {
         gm = GameManager.Instance;
         highlights = new List<GameObject>();
         commanderModel = null;
@@ -85,22 +68,19 @@ public class ModelManager : MonoBehaviour
         UpdateSelection();
         DrawChessboard();
 
-        /*
+
         if (Input.GetKeyDown(KeyCode.H))
         {
             heuristics.BoardWideHeuristic(ref chessBoardGridCo);
-
             char letterBoard = '0';
             string showB = "";
-
-
             for (int j = 1; j < 9; j++)
             {
                 for (int i = 65; i < 73; i++)
                 {
                     letterBoard = Convert.ToChar(i);
                     showB = letterBoard.ToString() + j.ToString();
-                    
+                    /*
                     Debug.Log("showB is " + showB);
                     Debug.Log("In Main ModelMan; test  White " + chessBoardGridCo[showB].isWhite);
                     Debug.Log("In Main ModelMan; test  type " + chessBoardGridCo[showB].occupiedPieceType);
@@ -108,38 +88,45 @@ public class ModelManager : MonoBehaviour
                     Debug.Log("In Main ModelMan; test Huer White " + chessBoardGridCo[showB].whiteHeuristic);
                     Debug.Log("In Main ModelMan; test Huer Black " + chessBoardGridCo[showB].blackHeuristic);
                     Debug.Log("In Main ModelMan; test v2 position " + chessBoardGridCo[showB].boardPosition);
-                    
+                    */
                 }
             }
         }
-        */
-        if(Input.GetKeyDown(KeyCode.H))
+
+        
+        if(Input.GetKeyDown(KeyCode.I))
         {
             Vector3Int posValue2 = new Vector3Int();
             posValue2 = GetHighestValueFromBoard();
-            Debug.Log("end of get highest test value is " + posValue2);
+            //Debug.Log("end of get highest test value is " + posValue2);
         }
     }
 
     #region INTERACTION FUNCTIONS - Functions to select, move, and remove models on the board.
-    public void MoveObject(GameObject pieceObject, Vector2Int position) {
+    public void MoveObject(GameObject pieceObject, Vector2Int position)
+    {
         pieceObject.transform.position = GetTileCenter(position.x, position.y);
     }
 
-    public void RemoveObject(GameObject pieceObject) {
+    public void RemoveObject(GameObject pieceObject)
+    {
         Destroy(pieceObject);
     }
 
     // Function to determine what tile the mouse is hovering over, uses z component of raycast as the board is in the x-z plane
-    private void UpdateSelection() {
+    private void UpdateSelection()
+    {
         if (!Camera.main)
             return;
 
         RaycastHit hit;
-        if(Physics.Raycast(Camera.main.ScreenPointToRay(Input.mousePosition), out hit, 25.0f, LayerMask.GetMask("ChessPlane"))) {
+        if (Physics.Raycast(Camera.main.ScreenPointToRay(Input.mousePosition), out hit, 25.0f, LayerMask.GetMask("ChessPlane")))
+        {
             selection.x = (int)hit.point.x;
             selection.y = (int)hit.point.z;
-        } else {
+        }
+        else
+        {
             selection.x = -1;
             selection.y = -1;
         }
@@ -153,7 +140,8 @@ public class ModelManager : MonoBehaviour
     #region INSTATIATION FUNCTIONS - Functions to instatiate models and populate the board.
     // Function to spawn a piece prefab on a tile and add the object to the list of active objects with correct color tag.
     // Edited By George; added string to function call; added in board tile variables.
-    private void SpawnPiece(int index, Vector2Int position, string piece) {
+    private void SpawnPiece(int index, Vector2Int position, string piece)
+    {
         GameObject pieceObject = Instantiate(piecePrefabs[index], GetTileCenter(position.x, position.y), Quaternion.Euler(-90, 0, 0)) as GameObject;
         pieceObject.transform.SetParent(transform);
         gm.board.LinkPiece(position, pieceObject.GetComponent<Piece>());
@@ -164,8 +152,8 @@ public class ModelManager : MonoBehaviour
             pieceObject.tag = "White Pieces";
             chessBoardGridCo[Convert.ToString(Convert.ToChar(position.x + 65) + Convert.ToString(position.y + 1))].isWhite = true;
         }
-        else 
-        { 
+        else
+        {
             pieceObject.tag = "Black Pieces";
             chessBoardGridCo[Convert.ToString(Convert.ToChar(position.x + 65) + Convert.ToString(position.y + 1))].isWhite = false;
         }
@@ -174,12 +162,13 @@ public class ModelManager : MonoBehaviour
         chessBoardGridCo[Convert.ToString(Convert.ToChar(position.x + 65) + Convert.ToString(position.y + 1))].occupiedPieceType = piece;
 
         activePieces.Add(pieceObject);
-    
+
     }
 
     // Initilization function to spawn all chess pieces
     //Edited By George; added string of piece type to function calls.
-    private void SpawnAllPieces() {
+    private void SpawnAllPieces()
+    {
         activePieces = new List<GameObject>();
 
         // Spawn White Pieces
@@ -237,7 +226,8 @@ public class ModelManager : MonoBehaviour
 
     #region RENDERING FUNCTIONS - Functions for rendering highlights and debug displays
     // Utility function to get the center position of a tile of the board game object
-    private Vector3 GetTileCenter(int x, int y) {
+    private Vector3 GetTileCenter(int x, int y)
+    {
         Vector3 origin = Vector3.zero;
         origin.x += (TILE_SIZE * x) + TILE_OFFSET;
         origin.z += (TILE_SIZE * y) + TILE_OFFSET;
@@ -245,20 +235,24 @@ public class ModelManager : MonoBehaviour
     }
 
     // Utility Debug function for testing raycasting and selection
-    private void DrawChessboard() {
+    private void DrawChessboard()
+    {
         Vector3 widthLine = Vector3.right * 8;
         Vector3 heightLine = Vector3.forward * 8;
 
-        for(int i = 0; i < 9; i++) {
+        for (int i = 0; i < 9; i++)
+        {
             Vector3 start = Vector3.forward * i;
             Debug.DrawLine(start, start + widthLine);
-            for (int j = 0; j < 9; j++) {
+            for (int j = 0; j < 9; j++)
+            {
                 start = Vector3.right * j;
                 Debug.DrawLine(start, start + heightLine);
             }
         }
 
-        if(selection.x >= 0 && selection.y >= 0) {
+        if (selection.x >= 0 && selection.y >= 0)
+        {
             Debug.DrawLine(
                 Vector3.forward * selection.y + Vector3.right * selection.x,
                 Vector3.forward * (selection.y + 1) + Vector3.right * (selection.x + 1));
@@ -269,7 +263,8 @@ public class ModelManager : MonoBehaviour
     }
 
     // Function to highlight all tiles associated with selected piece
-    public void HighlightAllTiles(Vector2Int position, bool[,] availableMoves, List<Vector2Int> enemies, Commander commander) {
+    public void HighlightAllTiles(Vector2Int position, bool[,] availableMoves, List<Vector2Int> enemies, Commander commander)
+    {
         HighlightSelected(position);
         HighlightAvailableMoves(availableMoves);
         HighlightEnemies(enemies);
@@ -277,15 +272,20 @@ public class ModelManager : MonoBehaviour
     }
 
     // Function to highlight the tile of the selected piece
-    private void HighlightSelected(Vector2Int position) {
+    private void HighlightSelected(Vector2Int position)
+    {
         HighlightTile(0, position.x, position.y);
     }
 
     // Function to highlight all available moves with available highlight prefab using a boolean map of the board
-    private void HighlightAvailableMoves(bool[,] moves) {
-        for(int i = 0; i < 8; i++) {
-            for(int j = 0; j < 8; j++) {
-                if(moves[i,j]) {
+    private void HighlightAvailableMoves(bool[,] moves)
+    {
+        for (int i = 0; i < 8; i++)
+        {
+            for (int j = 0; j < 8; j++)
+            {
+                if (moves[i, j])
+                {
                     HighlightTile(1, i, j);
                 }
             }
@@ -293,21 +293,25 @@ public class ModelManager : MonoBehaviour
     }
 
     // Function to highlight all enemies within range for attack
-    private void HighlightEnemies(List<Vector2Int> positions) {
-        foreach(Vector2Int pos in positions) {
+    private void HighlightEnemies(List<Vector2Int> positions)
+    {
+        foreach (Vector2Int pos in positions)
+        {
             HighlightTile(2, pos.x, pos.y);
         }
     }
 
     // Function to highlight commander
-    private void HighlightCommander(Commander commander) {
+    private void HighlightCommander(Commander commander)
+    {
         commanderModel = commander.GetComponent<MeshRenderer>();
         commanderMaterial = commanderModel.material;
         commanderModel.material = commanderHighlightPrefab;
     }
 
     // Utility function to highlight any tile with the selected prefab at the x and y grid position
-    private void HighlightTile(int index, int x, int y) {
+    private void HighlightTile(int index, int x, int y)
+    {
         GameObject highlight = Instantiate(highlightPrefabs[index]);
         highlights.Add(highlight);
         highlight.transform.position = GetTileCenter(x, y) + Vector3.up * (index != 2 ? 0f : 0f);
@@ -317,13 +321,16 @@ public class ModelManager : MonoBehaviour
     //removed function for moving highlight mouse
 
     // Utility function to destroy all highlight game objects
-    public void RemoveHighlights() {
-        foreach(GameObject highlight in highlights) {
+    public void RemoveHighlights()
+    {
+        foreach (GameObject highlight in highlights)
+        {
             Destroy(highlight);
         }
         highlights.Clear();
 
-        if(commanderMaterial != null && commanderModel != null) {
+        if (commanderMaterial != null && commanderModel != null)
+        {
             commanderModel.material = commanderMaterial;
             commanderModel = null;
             commanderMaterial = null;
@@ -379,11 +386,13 @@ public class ModelManager : MonoBehaviour
 
     public Vector3Int GetHighestValueFromBoard()
     {
+        heuristics.BoardWideHeuristic(ref chessBoardGridCo);
         Vector3Int posValue = new Vector3Int();
 
-        Debug.Log("Call Check GetHighestValueFromBoard in MM");
-        //heuristics.ReturnHighestValueBlack(chessBoardGridCo);
-        posValue = heuristics.ReturnHighestValueWhite(chessBoardGridCo);
+        posValue = heuristics.ReturnHighestValueBlack(chessBoardGridCo);
+        //posValue = heuristics.ReturnHighestValueWhite(chessBoardGridCo);
+
+        //Debug.Log("Call Check GetHighestValueFromBoard in MM " + posValue);
 
         return posValue;
     }

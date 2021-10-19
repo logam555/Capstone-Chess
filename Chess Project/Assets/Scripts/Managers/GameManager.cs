@@ -26,7 +26,7 @@ public class GameManager : MonoBehaviour
 {
     #region PRIVATE PROPERTIES
     private Player user;
-    private Player ai;
+    private AI ai;
     private bool isAttacking = false;
     private Vector2Int selectedPositionDice;
     #endregion
@@ -51,34 +51,31 @@ public class GameManager : MonoBehaviour
 
     private void Update() {
         if (!IsGameOver) {
-            if (Input.GetMouseButtonDown(0)) {
-                if (board.SelectedPiece == null) {
-                    board.SelectPiece(boardModel.selection);
-                } else {
-                     isAttacking = board.CheckMove(boardModel.selection);
-                    if (isAttacking && !DiceManager.Instance.thrown){
-                        selectedPositionDice = boardModel.selection;
-                        DiceManager.Instance.RollDice(); };
+            if(CurrentPlayer == user) {
+                if (Input.GetMouseButtonDown(0)) {
+                    if (board.SelectedPiece == null) {
+                        board.SelectPiece(boardModel.selection);
+
+                    } else {
+                        board.CheckMove(boardModel.selection);
+
+                    }
+                }
+
+                if (Input.GetKeyDown(KeyCode.Space)) {
+                    PassTurn();
+                }
+
+                if (Input.GetMouseButtonDown(1) && board.SelectedPiece != null) {
+                    board.DelegatePiece();
+                }
+
+                if (EndofTurn()) {
+                    PassTurn();
                 }
             }
-            if (isAttacking)
-            {
-                if (DiceManager.Instance.hasLanded && DiceManager.Instance.GetComponent<Rigidbody>().IsSleeping())
-                {
-                    board.Attack(selectedPositionDice);
-                    isAttacking = false;
-                }
-            }
-
-            if (Input.GetKeyDown(KeyCode.Space)) {
-                PassTurn();
-            }
-
-            if (Input.GetMouseButtonDown(1) && board.SelectedPiece != null) {
-                board.DelegatePiece();
-            }
-
-            if(EndofTurn()) {
+            else {
+                ((AI)CurrentPlayer).Start();
                 PassTurn();
             }
         }
@@ -148,7 +145,8 @@ public class GameManager : MonoBehaviour
         };
 
         user = new Player("Human", true, new List<Commander>(whiteCommanders));
-        ai = new Player("AI", false, new List<Commander>(blackCommanders));
+        ai = new AI("AI", false, new List<Commander>(blackCommanders), board);
+
         CurrentPlayer = user;
     }
     #endregion
