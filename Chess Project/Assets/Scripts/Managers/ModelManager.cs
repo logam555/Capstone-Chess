@@ -85,7 +85,7 @@ public class ModelManager : MonoBehaviour
         UpdateSelection();
         DrawChessboard();
 
-        /*
+        
         if (Input.GetKeyDown(KeyCode.H))
         {
             heuristics.BoardWideHeuristic(ref chessBoardGridCo);
@@ -112,8 +112,8 @@ public class ModelManager : MonoBehaviour
                 }
             }
         }
-        */
-        if(Input.GetKeyDown(KeyCode.H))
+        
+        if(Input.GetKeyDown(KeyCode.I))
         {
             Vector3Int posValue2 = new Vector3Int();
             posValue2 = GetHighestValueFromBoard();
@@ -379,6 +379,8 @@ public class ModelManager : MonoBehaviour
 
     public Vector3Int GetHighestValueFromBoard()
     {
+        heuristics.BoardWideHeuristic(ref chessBoardGridCo);
+
         Vector3Int posValue = new Vector3Int();
 
         Debug.Log("Call Check GetHighestValueFromBoard in MM");

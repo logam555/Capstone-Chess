@@ -46,7 +46,7 @@ public class BoardManager : MonoBehaviour
         }
         */
 
-        if (Input.GetKeyDown(KeyCode.K))
+        if (Input.GetKeyDown(KeyCode.L))
         {
             //Debug.Log("space down");
             //eval();
