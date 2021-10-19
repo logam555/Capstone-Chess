@@ -46,6 +46,7 @@ public class GameManager : MonoBehaviour
 
     private void Start() {
         IsGameOver = false;
+        ScoreManager.turn = "P1";
     }
 
     private void Update() {
@@ -88,6 +89,7 @@ public class GameManager : MonoBehaviour
     private void PassTurn() {
         board.SelectPiece(new Vector2Int(-1, -1));
         CurrentPlayer.ResetTurn();
+        ScoreManager.turn = CurrentPlayer == user ? "P2" : "P1";
         CurrentPlayer = CurrentPlayer == user ? ai : user;
     }
 
@@ -99,6 +101,11 @@ public class GameManager : MonoBehaviour
 
     // Function to add captured pieces to current player
     public void CapturePiece(Piece captured) {
+        if (CurrentPlayer == user) {
+            ScoreManager.scoreValue1 += 1;
+        } else {
+            ScoreManager.scoreValue2 += 1;
+        }
         if (captured is Pawn) {
             CurrentPlayer.capturedPieces["Pawn"] += 1;
         } else if (captured is Rook) {
