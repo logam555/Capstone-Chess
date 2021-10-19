@@ -48,9 +48,7 @@ public class BestMove
         int highestValue = new int();
         highestValue = posValue.z;
 
-        String p = Convert.ToString(Convert.ToChar(posValue.x + 65) + Convert.ToString(posValue.y + 1));
-
-        return 0;
+        return highestValue;
     }
 
     public bool[,] possibleMoves(Piece p) //Uses Bishop script to obtain possible moves for Bishop
