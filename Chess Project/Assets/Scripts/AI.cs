@@ -75,29 +75,29 @@ public void Start()
     {
 		Vector2Int newPosition = new Vector2Int(0, 0);
 
-		bm.SelectPiece(instance.bestPiece.Position);
+		GameManager.Instance.board.SelectPiece(instance.bestPiece.Position);
 		newPosition.x = kingMove[0];
 		newPosition.y = kingMove[1];
-		bm.CheckMove(newPosition);
+		GameManager.Instance.board.CheckMove(newPosition);
 	}
 
 	public void movelBishop()
     {
 		Vector2Int newPosition = new Vector2Int(0, 0);
 
-		bm.SelectPiece(lInstance.bestPiece.Position);
+		GameManager.Instance.board.SelectPiece(lInstance.bestPiece.Position);
 		newPosition.x = lBishopMove[0];
 		newPosition.y = lBishopMove[1];
-		bm.CheckMove(newPosition);
+		GameManager.Instance.board.CheckMove(newPosition);
 	}
 
 	public void moverBishop()
     {
 		Vector2Int newPosition = new Vector2Int(0, 0);
 
-		bm.SelectPiece(rInstance.bestPiece.Position);
+		GameManager.Instance.board.SelectPiece(rInstance.bestPiece.Position);
 		newPosition.x = rBishopMove[0];
 		newPosition.y = rBishopMove[1];
-		bm.CheckMove(newPosition);
+		GameManager.Instance.board.CheckMove(newPosition);
 	}
 }
