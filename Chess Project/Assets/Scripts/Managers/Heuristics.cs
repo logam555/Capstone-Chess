@@ -308,7 +308,7 @@ public class Heuristics : MonoBehaviour
     //return vector 3? x and y for position; z for value
     public Vector3Int ReturnHighestValueWhite(Dictionary<string, ModelManager.BoardTile> boardPieceValue)
     {
-        Debug.Log("Call Check ReturnHighestValueWhite in Heur");
+        //Debug.Log("Call Check ReturnHighestValueWhite in Heur");
         char letterBoard = '0';
         string showB = "";
         Vector2Int[] position = new Vector2Int[64];
@@ -375,7 +375,7 @@ public class Heuristics : MonoBehaviour
 
     public Vector3Int ReturnHighestValueBlack(Dictionary<string, ModelManager.BoardTile> boardPieceValue)
     {
-        Debug.Log("Call Check ReturnHighestValueBlack in Heur");
+        //Debug.Log("Call Check ReturnHighestValueBlack in Heur");
         char letterBoard = '0';
         string showB = "";
         Vector2Int[] position = new Vector2Int[64];

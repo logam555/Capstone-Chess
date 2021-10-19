@@ -389,9 +389,10 @@ public class ModelManager : MonoBehaviour
         heuristics.BoardWideHeuristic(ref chessBoardGridCo);
         Vector3Int posValue = new Vector3Int();
 
-        Debug.Log("Call Check GetHighestValueFromBoard in MM");
         posValue = heuristics.ReturnHighestValueBlack(chessBoardGridCo);
         //posValue = heuristics.ReturnHighestValueWhite(chessBoardGridCo);
+
+        //Debug.Log("Call Check GetHighestValueFromBoard in MM " + posValue);
 
         return posValue;
     }
