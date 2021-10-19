@@ -373,7 +373,7 @@ public class Heuristics : MonoBehaviour
         return posValue;
     }
 
-    public void ReturnHighestValueBlack(Dictionary<string, ModelManager.BoardTile> boardPieceValue)
+    public Vector3Int ReturnHighestValueBlack(Dictionary<string, ModelManager.BoardTile> boardPieceValue)
     {
         Debug.Log("Call Check ReturnHighestValueBlack in Heur");
         char letterBoard = '0';
