@@ -164,11 +164,11 @@ public class BoardManager : MonoBehaviour
 
     #region BOARD EVALUTATION FUNCTIONS - Functions that scan the board array for pieces and available positions.
     // Function to check if the selected tile is a valid move for the selected piece and perform appropriate action.
-    public void CheckMove(Vector2Int position) {
+    public bool CheckMove(Vector2Int position) {
         // Deselect the selected piece if position is not valid
         if (!ValidPosition(position)) {
             SelectPiece(position);
-            return;
+            return false;
         }
 
 
@@ -181,9 +181,26 @@ public class BoardManager : MonoBehaviour
             MovePiece(position);
 
         } else if (enemies.Contains(position)) {
-            bool isMoving = false;
-            bool attackSuccessful;
+            return true;
+        } else if (IsFriendlyPieceAt(gm.CurrentPlayer.isWhite, position)) {
+            gm.boardModel.RemoveHighlights();
+            SelectPiece(position);
 
+        } else
+            // Deselect the piece
+            SelectPiece(new Vector2Int(-1, -1));
+        return false;
+    }
+    public void Attack(Vector2Int position)
+    {
+        bool isMoving = false;
+        bool attackSuccessful;
+
+        
+
+        if (DiceManager.Instance.hasLanded == true)
+        {
+            DiceManager.Instance.hasLanded = false;
             // Check if selected piece is a knight and is attacking a non-adjacent piece
             if (SelectedPiece is Knight && (Mathf.Abs((position - SelectedPiece.Position).sqrMagnitude) > 2))
                 isMoving = true;
@@ -195,7 +212,8 @@ public class BoardManager : MonoBehaviour
                 attackSuccessful = SelectedPiece.Attack(Pieces[position.x, position.y]);
 
             // Capture piece and remove model if attack is successful
-            if (attackSuccessful) {
+            if (attackSuccessful)
+            {
                 // Remove the captured piece and add to capture pieces
                 Piece enemy = Pieces[position.x, position.y];
                 gm.CapturePiece(enemy);
@@ -204,23 +222,30 @@ public class BoardManager : MonoBehaviour
                 // Move the selected piece
                 MovePiece(position);
 
-            } else {
+            }
+            else
+            {
                 // Move knight next to defending piece if attacking a non-adjacent piece
-                if (SelectedPiece is Knight && isMoving) {
+                if (SelectedPiece is Knight && isMoving)
+                {
                     List<Vector2Int> locations = SelectedPiece.LocationsAvailable();
                     locations.RemoveAll(pos => !ValidPosition(pos));
                     locations.RemoveAll(pos => IsPieceAt(pos));
 
-                    foreach (Vector2Int pos in locations) {
+                    foreach (Vector2Int pos in locations)
+                    {
                         Vector2Int diff = Vector2Int.zero;
                         diff.x = Mathf.Abs(position.x - pos.x);
                         diff.y = Mathf.Abs(position.y - pos.y);
-                        if (diff.sqrMagnitude <= 2 && diff.sqrMagnitude > 0) {
+                        if (diff.sqrMagnitude <= 2 && diff.sqrMagnitude > 0)
+                        {
                             MovePiece(pos);
                             break;
                         }
                     }
-                } else {
+                }
+                else
+                {
                     // Reduce number of actions remaining
                     SelectedPiece.Commander.commandActions -= 1;
 
@@ -228,16 +253,8 @@ public class BoardManager : MonoBehaviour
                     SelectPiece(new Vector2Int(-1, -1));
                 }
             }
-
-        } else if (IsFriendlyPieceAt(gm.CurrentPlayer.isWhite, position)) {
-            gm.boardModel.RemoveHighlights();
-            SelectPiece(position);
-
-        } else
-            // Deselect the piece
-            SelectPiece(new Vector2Int(-1, -1));
+        }
     }
-
     // Function that returns a boolean map of the board with all positions that are available to selected piece.
     public bool[,] AvailableMoves(Piece piece) {
         bool[,] allowedMoves = new bool[8, 8];
