@@ -11,8 +11,19 @@ public class BestMove
     bool[,] pm = new bool[8, 8];
     BoardManager bm;
     bool isCommander;
-    Heuristics h = new Heuristics();
+    //Heuristics h = new Heuristics();
     Piece piece;
+
+    private ModelManager boardModel;
+
+    public BestMove()
+    {
+        GameObject tempGO = new GameObject();
+        tempGO = GameObject.Find("Chess Board");
+
+        boardModel = new ModelManager();
+        boardModel = tempGO.GetComponent<ModelManager>();
+    }
 
     public int[] getMove(Piece[,] board, Piece piece, bool isCommander, BoardManager bm)
     {
@@ -25,11 +36,15 @@ public class BestMove
         return bestLocal();
     }
 
-    public int eval(Vector2Int position) //sends board to heuristic to obtain a score for the move made
+    public int eval() //sends board to heuristic to obtain a score for the move made
     {
-        int rand = UnityEngine.Random.Range(1, 20);
+        Vector3Int posValue = new Vector3Int();
+        posValue = boardModel.GetHighestValueFromBoard();
 
-        return rand;
+        int highestValue = new int();
+        highestValue = posValue.z;
+
+        return highestValue;
     }
 
     public bool[,] possibleMoves(Piece p) //Uses Bishop script to obtain possible moves for Bishop
@@ -104,7 +119,7 @@ public class BestMove
 
     public int minimax(int depth, Piece[,] tempBoard, bool maximize, int dice) //uses minimax algorithm to obtain the score
     {
-        int score = eval(piece.Position); //uses heuristic to obtain score
+        int score = eval(); //uses heuristic to obtain score
         int pieceY = 0;
         int pieceX = 0;
 
