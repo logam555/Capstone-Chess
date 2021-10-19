@@ -375,7 +375,47 @@ public class Heuristics : MonoBehaviour
 
     public void ReturnHighestValueBlack(Dictionary<string, ModelManager.BoardTile> boardPieceValue)
     {
+        Debug.Log("Call Check ReturnHighestValueBlack in Heur");
+        char letterBoard = '0';
+        string showB = "";
+        Vector2Int[] position = new Vector2Int[64];
+        int index = new int();
+        index = 0;
+        int[] heurValueHolder = new int[64];
 
+        for (int j = 1; j < 9; j++)
+        {
+            for (int i = 65; i < 73; i++)
+            {
+                letterBoard = Convert.ToChar(i);
+                showB = letterBoard.ToString() + j.ToString();
+                heurValueHolder[index] = boardPieceValue[showB].blackHeuristic;
+                position[index] = boardPieceValue[showB].boardPosition;
+                index++;
+            }
+        }
+
+        int highestValueIndex = new int();
+        highestValueIndex = 0;
+        int highestValue = new int();
+        highestValue = 0;
+
+        for (int k = 0; k < index; k++)
+        {
+            if (highestValue < heurValueHolder[k])
+            {
+                highestValue = heurValueHolder[k];
+                highestValueIndex = k;
+            }
+        }
+
+        Vector3Int posValue = new Vector3Int();
+
+        posValue.x = position[highestValueIndex].x;
+        posValue.y = position[highestValueIndex].y;
+        posValue.z = highestValue;
+
+        return posValue;
     }
 
 
