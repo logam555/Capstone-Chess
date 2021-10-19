@@ -5,7 +5,10 @@
 
  Version 1.1: Function created to generate random number, calculate target rotation of the model based off
  of the number, and rotate the model over time for basic animation. Removed the raycasting input for moving the
- dice and simplified rotations.*/
+ dice and simplified rotations.
+ Version 2: Modify the code to no longer create a random number, but to apply a random force, a random torque, and a random rotation
+ to make the dice roll more realistic and random.
+ */
 
 using System.Collections;
 using System.Collections.Generic;
@@ -14,77 +17,48 @@ using UnityEngine;
 public class DiceManager : MonoBehaviour
 {
     public static DiceManager Instance { get; set; }
-    public bool isRotating;
-
+    public static Vector3 diceVelocity;
+    public int diceNumber;
+    public bool hasLanded;
+    public bool thrown = false;
+    public DiceCheckZoneScript diceZoneCollider;
+    public Rigidbody diceRb;
     private GameObject diceObject;
-    private float rotationSpeed;
-    private Quaternion targetRotation;
+    private Transform diceTransform;
 
     private void Awake() {
         Instance = this;
-        isRotating = false;
-
+        hasLanded = false;
         diceObject = this.gameObject;
-        rotationSpeed = 12.0f;
-        targetRotation = Quaternion.identity;
+        diceRb = this.gameObject.GetComponent<Rigidbody>();
+        diceTransform = this.gameObject.GetComponent<Transform>();
     }
 
     private void Update() {
-        if(isRotating) {
-            RotateDice(targetRotation);
-        }
-    }
-
-    public int RollDice() {
-        int number =  Random.Range(1, 7);
-        targetRotation = CalculateRotation(number);
-
-        isRotating = true;
-        return number;
-    }
-
-    private void RotateDice(Quaternion targetRotation) {
         
-        if (Vector3.Distance(diceObject.transform.rotation.eulerAngles, targetRotation.eulerAngles) > 0.01f) {
-            diceObject.transform.rotation = Quaternion.Lerp(diceObject.transform.rotation, targetRotation, rotationSpeed * Time.deltaTime);
-        } else {
-            diceObject.transform.rotation = targetRotation;
-            isRotating = false;
-        }
     }
 
-    private Quaternion CalculateRotation(int number) {
-        /* Rotation values for dice faces:
-         * 1 = 270 0 0,
-         * 2 = 0 0 0,
-         * 3 = 0 0 270.
-         * 4 = 0 0 90,
-         * 5 = 180 0 0,
-         * 6 = 90 0 0 */
+    public void RollDice() {
+        thrown = true;
+        diceVelocity = diceRb.velocity;
+        //Create a random direction for the torque
+        float dirTorqueX = Random.Range(0, 500);
+        float dirTorqueY = Random.Range(0, 500);
+        float dirTorqueZ = Random.Range(0, 500);
+        float speed = 60;
+        //Find the center position of the dice zone collider
+        Vector3 centerPostion = diceZoneCollider.Instance.GetComponent<Renderer>().bounds.center;
+        //Create a random force 
+        Vector3 force = transform.forward;
+        force = new Vector3(force.x, 1, force.z);
+        //Rotate the dice 
+        diceTransform.rotation = Random.rotation;
+        //Spawn the dice in the center of the dice zone
+        diceTransform.position = new Vector3(centerPostion.x, centerPostion.y + 2f, centerPostion.z);
+        //Apply the random force and torque
+        diceRb.AddForce(force * speed);
+        diceRb.AddTorque(dirTorqueX, dirTorqueY, dirTorqueZ);
 
-        Quaternion targetRotation = Quaternion.identity;
-
-        switch (number) {
-            case 1:
-                targetRotation = Quaternion.Euler(270, 0, 0);
-                break;
-            case 2:
-                targetRotation = Quaternion.Euler(0, 0, 0);
-                break;
-            case 3:
-                targetRotation = Quaternion.Euler(0, 0, 270);
-                break;
-            case 4:
-                targetRotation = Quaternion.Euler(0, 0, 90);
-                break;
-            case 5:
-                targetRotation = Quaternion.Euler(180, 0, 0);
-                break;
-            case 6:
-                targetRotation = Quaternion.Euler(90, 0, 0);
-                break;
-        }
-
-        return targetRotation;
     }
+   
 }
