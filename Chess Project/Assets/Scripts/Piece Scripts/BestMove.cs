@@ -11,12 +11,16 @@ public class BestMove
     bool[,] pm = new bool[8, 8];
     BoardManager bm;
     bool isCommander;
-    Heuristics h = new Heuristics();
+    //Heuristics h = new Heuristics();
     Piece piece;
 
     private ModelManager boardModel;
 
+<<<<<<< HEAD
     private void Start()
+=======
+    public BestMove()
+>>>>>>> CommandAI-V3
     {
         GameObject tempGO = new GameObject();
         tempGO = GameObject.Find("Chess Board");
@@ -25,26 +29,38 @@ public class BestMove
         boardModel = tempGO.GetComponent<ModelManager>();
     }
 
+<<<<<<< HEAD
     private void Update()
     {
         
     }
 
     public int[] getMove(Piece[,] board, Piece piece, bool isCommander)
+=======
+    public int[] getMove(Piece[,] board, Piece piece, bool isCommander, BoardManager bm)
+>>>>>>> CommandAI-V3
     {
         this.board = board;
         this.piece = piece;
         this.isCommander = isCommander;
+
+        this.bm = bm;
 
         return bestLocal();
     }
 
     public int eval() //sends board to heuristic to obtain a score for the move made
     {
+<<<<<<< HEAD
         //
         Vector3Int posValue = new Vector3Int();
         posValue = boardModel.GetHighestValueFromBoard();
         
+=======
+        Vector3Int posValue = new Vector3Int();
+        posValue = boardModel.GetHighestValueFromBoard();
+
+>>>>>>> CommandAI-V3
         int highestValue = new int();
         highestValue = posValue.z;
 
@@ -71,30 +87,52 @@ public class BestMove
                     {
                         if (board[k,d] == piece)
                         {
-                            k = pieceX;
-                            d = pieceY;
+                            pieceX = k;
+                            pieceY = d;
                         }
                     }
                 }
-                if (board[i,j] == null && possibleMoves(piece)[i,j] == true)
+                if (possibleMoves(piece)[i,j] == true)
                 {
                     
                     Piece temp = board[i,j];
                     board[i,j] = piece;
                     board[pieceX,pieceY] = null;
                     int dice = UnityEngine.Random.Range(1, 6);
-                    int score = minimax(0,board, false, dice);
+                    int score = minimax(0,board, true, dice);
                     board[i,j] = temp;
+                    board[pieceX, pieceY] = piece;
                     
-                    if (score > move[0]) //if score obtained is better than bestLocalScore
+                    if (score > move[2]) //if score obtained is better than bestLocalScore
                     {
                         move[2] = score; //than score obtained is bestLocalScore
                         move[0] = i; //x and y coordinates of best scoring move are recorded
                         move[1] = j;
                     }
                 }
+                
             }
         }
+
+        //if (piece.EnemiesInRange().Count > 0) {
+        //    foreach(Vector2Int pos in piece.EnemiesInRange()) {
+        //        Piece temp = board[pos.x, pos.y];
+        //        board[pos.x, pos.y] = piece;
+        //        board[pieceX, pieceY] = null;
+        //        int dice = UnityEngine.Random.Range(1, 6);
+        //        int score = minimax(0, board, true, dice);
+        //        board[pos.x, pos.y] = temp;
+        //        board[pieceX, pieceY] = piece;
+
+        //        if (score > move[2]) //if score obtained is better than bestLocalScore
+        //        {
+        //            move[2] = score; //than score obtained is bestLocalScore
+        //            move[0] = pos.x; //x and y coordinates of best scoring move are recorded
+        //            move[1] = pos.y;
+        //        }
+        //    }
+           
+        //}
 
         return move;
     }
@@ -122,8 +160,8 @@ public class BestMove
                         {
                             if (tempBoard[k,d] == piece) //finds position of board on piece
                             {
-                                k = pieceX;
-                                d = pieceY;
+                                pieceX = k;
+                                pieceY = d;
                             }
                         }
                     }
@@ -132,7 +170,7 @@ public class BestMove
                         tempBoard[i,j] = piece; //move piece
                         tempBoard[pieceX,pieceY] = null; //move empty space to  pieces previous position
                         dice = UnityEngine.Random.Range(1, 6);
-                        score = Math.Max(score, minimax(depth+1, tempBoard, false, dice));
+                        score = Math.Max(score, minimax(depth, tempBoard, false, dice));
                         tempBoard[i,j] = null;
                         tempBoard[pieceX,pieceY] = piece;
                     }
@@ -152,23 +190,24 @@ public class BestMove
                     {
                         for (int d = 0; d < 8; d++)
                         {
-                            if (bm.IsEnemyPieceAt(false,tempBoard[k,d].Position) == true)
+                            if (bm.IsEnemyPieceAt(piece.IsWhite,new Vector2Int(k,d)) == true)
                             {
                                 tempPiece = tempBoard[k,d];
-                                k = pieceX;
-                                d = pieceY;
+                                pieceX = k;
+                                pieceY = d;
+
+                                if (possibleMoves(tempPiece)[i, j] == true) {
+                                    tempBoard[i, j] = tempPiece;
+                                    tempBoard[pieceX, pieceY] = null;
+                                    dice = UnityEngine.Random.Range(1, 6);
+                                    score = Math.Min(score, minimax(depth + 1, tempBoard, true, dice));
+                                    tempBoard[i, j] = null;
+                                    tempBoard[pieceX, pieceY] = tempPiece;
+                                }
                             }
                         }
                     }
-                    if (possibleMoves(tempPiece)[i, j] == true)
-                    {
-                        tempBoard[i, j] = tempPiece;
-                        tempBoard[pieceX, pieceY] = null;
-                        dice = UnityEngine.Random.Range(1, 6);
-                        score = Math.Min(score, minimax(depth + 1, tempBoard, true, dice));
-                        tempBoard[i, j] = null;
-                        tempBoard[pieceX, pieceY] = tempPiece;
-                    }
+                    
                 }
             }
             return score; 

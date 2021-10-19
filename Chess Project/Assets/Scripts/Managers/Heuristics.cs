@@ -1,8 +1,7 @@
 /* Written by George Brunner
- Edited by ___
- Last date edited: 09/15/2021
+Edited by ___
+ Last date edited: 09 / 15 / 2021
  Heuristics.cs - Manages the Heuristics of the board and pieces.
-
  Version 1: Created functions to collect Heuristics
 */
 
@@ -36,7 +35,7 @@ public class Heuristics : MonoBehaviour
     [SerializeField]
     private List<chessPiece> chessTypes;//
 
-    
+
 
     // Start is called before the first frame update
     //might need to remove start if runnign through voard script
@@ -54,7 +53,7 @@ public class Heuristics : MonoBehaviour
         //uses the difficulty to send values used by Heuristics
         HeuristicDifficulty();
 
-        
+
     }
 
     // Update is called once per frame
@@ -197,7 +196,7 @@ public class Heuristics : MonoBehaviour
         chessPiece piece = new chessPiece();
         //chessTypes = new List<chessPiece>();
 
-        for (int i = 0; i <6; i++)
+        for (int i = 0; i < 6; i++)
         {
             piece = new chessPiece();
 
@@ -339,8 +338,13 @@ public class Heuristics : MonoBehaviour
                 Debug.Log("white A is " + boardPieceValue[showB].whiteHeuristic);
                 Debug.Log("white B is " + heurValueHolder[index]);
                 Debug.Log(boardPieceValue[showB].officalBoardPosition);
+<<<<<<< HEAD
                 index ++;
                 
+=======
+                index++;
+
+>>>>>>> CommandAI-V3
             }
         }
 

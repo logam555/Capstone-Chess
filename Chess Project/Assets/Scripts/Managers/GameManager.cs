@@ -51,6 +51,7 @@ public class GameManager : MonoBehaviour
 
     private void Update() {
         if (!IsGameOver) {
+<<<<<<< HEAD
             if (Input.GetMouseButtonDown(0)) {
                 if (board.SelectedPiece == null) {
                     board.SelectPiece(boardModel.selection);
@@ -69,16 +70,34 @@ public class GameManager : MonoBehaviour
                     isAttacking = false;
                 }
             }
+=======
+            if(CurrentPlayer == user) {
+                if (Input.GetMouseButtonDown(0)) {
+                    if (board.SelectedPiece == null) {
+                        board.SelectPiece(boardModel.selection);
 
-            if (Input.GetKeyDown(KeyCode.Space)) {
-                PassTurn();
+                    } else {
+                        board.CheckMove(boardModel.selection);
+
+                    }
+                }
+
+>>>>>>> CommandAI-V3
+
+                if (Input.GetKeyDown(KeyCode.Space)) {
+                    PassTurn();
+                }
+
+                if (Input.GetMouseButtonDown(1) && board.SelectedPiece != null) {
+                    board.DelegatePiece();
+                }
+
+                if (EndofTurn()) {
+                    PassTurn();
+                }
             }
-
-            if (Input.GetMouseButtonDown(1) && board.SelectedPiece != null) {
-                board.DelegatePiece();
-            }
-
-            if(EndofTurn()) {
+            else {
+                ((AI)CurrentPlayer).Start();
                 PassTurn();
             }
         }
@@ -148,7 +167,11 @@ public class GameManager : MonoBehaviour
         };
 
         user = new Player("Human", true, new List<Commander>(whiteCommanders));
+<<<<<<< HEAD
         ai = new Player("AI", false, new List<Commander>(blackCommanders));
+=======
+        ai = new AI("AI", false, new List<Commander>(blackCommanders), board);
+>>>>>>> CommandAI-V3
         CurrentPlayer = user;
     }
     #endregion
