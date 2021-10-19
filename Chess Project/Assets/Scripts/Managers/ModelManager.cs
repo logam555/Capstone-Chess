@@ -390,8 +390,8 @@ public class ModelManager : MonoBehaviour
         Vector3Int posValue = new Vector3Int();
 
         Debug.Log("Call Check GetHighestValueFromBoard in MM");
-        //heuristics.ReturnHighestValueBlack(chessBoardGridCo);
-        posValue = heuristics.ReturnHighestValueWhite(chessBoardGridCo);
+        posValue = heuristics.ReturnHighestValueBlack(chessBoardGridCo);
+        //posValue = heuristics.ReturnHighestValueWhite(chessBoardGridCo);
 
         return posValue;
     }
