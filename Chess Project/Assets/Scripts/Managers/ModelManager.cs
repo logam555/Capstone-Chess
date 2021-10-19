@@ -115,7 +115,9 @@ public class ModelManager : MonoBehaviour
         */
         if(Input.GetKeyDown(KeyCode.H))
         {
-            heuristics.ReturnHighestValueWhite(chessBoardGridCo);
+            Vector3Int posValue2 = new Vector3Int();
+            posValue2 = GetHighestValueFromBoard();
+            Debug.Log("end of get highest test value is " + posValue2);
         }
     }
 
@@ -364,15 +366,15 @@ public class ModelManager : MonoBehaviour
     }
 
     //
-    public void BoardTileLocationUpdate(Vector2Int oldPosition, Vector2Int newPosition)
+    public void BoardTileLocationUpdate(Vector2Int oldPosition, Vector2Int newPosition, bool isWhiteP, string pieceTypeC)
     {
         chessBoardGridCo[Convert.ToString(Convert.ToChar(oldPosition.x + 65) + Convert.ToString(oldPosition.y + 1))].isOccupied = false;
         chessBoardGridCo[Convert.ToString(Convert.ToChar(oldPosition.x + 65) + Convert.ToString(oldPosition.y + 1))].isWhite = false;
         chessBoardGridCo[Convert.ToString(Convert.ToChar(oldPosition.x + 65) + Convert.ToString(oldPosition.y + 1))].occupiedPieceType = "";
 
         chessBoardGridCo[Convert.ToString(Convert.ToChar(newPosition.x + 65) + Convert.ToString(newPosition.y + 1))].isOccupied = true;
-        chessBoardGridCo[Convert.ToString(Convert.ToChar(newPosition.x + 65) + Convert.ToString(newPosition.y + 1))].isWhite = false;
-        chessBoardGridCo[Convert.ToString(Convert.ToChar(newPosition.x + 65) + Convert.ToString(newPosition.y + 1))].occupiedPieceType = "";
+        chessBoardGridCo[Convert.ToString(Convert.ToChar(newPosition.x + 65) + Convert.ToString(newPosition.y + 1))].isWhite = isWhiteP;
+        chessBoardGridCo[Convert.ToString(Convert.ToChar(newPosition.x + 65) + Convert.ToString(newPosition.y + 1))].occupiedPieceType = pieceTypeC;
     }
 
     public Vector3Int GetHighestValueFromBoard()

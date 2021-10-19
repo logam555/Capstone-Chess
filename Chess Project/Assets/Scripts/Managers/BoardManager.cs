@@ -125,7 +125,7 @@ public class BoardManager : MonoBehaviour
             pieceTypeStr = "Pawn";
         }
 
-        boardModel.BoardTileLocationUpdate(oldPosition, position);
+        boardModel.BoardTileLocationUpdate(oldPosition, position, pieceWhite, pieceTypeStr);
 
         // Call function in board to move the piece game object
         gm.boardModel.MoveObject(SelectedPiece.gameObject, position);
