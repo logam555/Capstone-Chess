@@ -86,8 +86,8 @@ public class BoardManager : MonoBehaviour
         bool pieceWhite = new bool();
         
         //update Board with location new and old
-        /*
-        if (SelectedPiece is IsWhite)
+        
+        if (SelectedPiece.IsWhite)
         {
             pieceWhite = true;
         }
@@ -95,7 +95,7 @@ public class BoardManager : MonoBehaviour
         {
             pieceWhite = false;
         }
-        */
+        
         
         
         string pieceTypeStr = "";
