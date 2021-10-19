@@ -335,8 +335,8 @@ public class Heuristics : MonoBehaviour
                 Debug.Log("In Main ModelMan; test Huer Black " + chessBoardGridCo[showB].blackHeuristic);
                 Debug.Log("In Main ModelMan; test v2 position " + chessBoardGridCo[showB].boardPosition);
                 */
-                Debug.Log("white A is " + boardPieceValue[showB].whiteHeuristic);
-                Debug.Log("white B is " + heurValueHolder[index]);
+                //Debug.Log("white A is " + boardPieceValue[showB].whiteHeuristic);
+                //Debug.Log("white B is " + heurValueHolder[index]);
                 Debug.Log(boardPieceValue[showB].officalBoardPosition);
 
                 index ++;
@@ -369,7 +369,7 @@ public class Heuristics : MonoBehaviour
         posValue.y = position[highestValueIndex].y;
         posValue.z = highestValue;
 
-        Debug.Log("end of get highest test value in Heur call " + posValue);
+        //Debug.Log("end of get highest test value in Heur call " + posValue);
 
         return posValue;
     }
