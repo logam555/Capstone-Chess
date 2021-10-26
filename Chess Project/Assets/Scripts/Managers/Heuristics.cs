@@ -114,7 +114,8 @@ public class Heuristics : MonoBehaviour
                 //attack/type/move/piece
 
                 //Debug.Log("In Main Loop BWH call; First IF is occup " + chessBoardGridCo[showB].isOccupied);
-                //check space
+                
+                //check space Primany Tile
                 if (chessBoardGridCo[showB].isOccupied == true)
                 {
                     //
@@ -175,10 +176,575 @@ public class Heuristics : MonoBehaviour
                             whiteHeurTotal += chessTypes[5].typeValue;
                         }
                     }
-
-
                 }
 
+                //check space Upper Left
+                if (i - 1 >= 65)
+                {
+                    if (j - 1 >= 0)
+                    { 
+                        letterBoard = Convert.ToChar(i);
+                        showB = letterBoard.ToString() + j.ToString();
+                        if (chessBoardGridCo[showB].isOccupied == true)
+                        {
+                            //
+                            //Debug.Log("In Main Loop BWH call; 2nd IF is white " + chessBoardGridCo[showB].isWhite);
+                            if (chessBoardGridCo[showB].isWhite == true)
+                            {
+                                //Debug.Log("In Main Loop BWH call; 3rd IF is Type " + chessBoardGridCo[showB].occupiedPieceType);
+                                if (chessBoardGridCo[showB].occupiedPieceType == "King")
+                                {
+                                    blackHeurTotal += chessTypes[0].typeValue;
+                                }
+                                else if (chessBoardGridCo[showB].occupiedPieceType == "Queen")
+                                {
+                                    blackHeurTotal += chessTypes[1].typeValue;
+                                }
+                                else if (chessBoardGridCo[showB].occupiedPieceType == "Bishop")
+                                {
+                                    blackHeurTotal += chessTypes[2].typeValue;
+                                }
+                                else if (chessBoardGridCo[showB].occupiedPieceType == "Knight")
+                                {
+                                    blackHeurTotal += chessTypes[3].typeValue;
+                                }
+                                else if (chessBoardGridCo[showB].occupiedPieceType == "Rook")
+                                {
+                                    blackHeurTotal += chessTypes[4].typeValue;
+                                }
+                                else if (chessBoardGridCo[showB].occupiedPieceType == "Pawn")
+                                {
+                                    blackHeurTotal += chessTypes[5].typeValue;
+                                }
+                            }
+                            else
+                            {
+                                //Debug.Log("In Main Loop BWH call; 3rd IF is Type " + chessBoardGridCo[showB].occupiedPieceType);
+                                if (chessBoardGridCo[showB].occupiedPieceType == "King")
+                                {
+                                    whiteHeurTotal += chessTypes[0].typeValue;
+                                }
+                                else if (chessBoardGridCo[showB].occupiedPieceType == "Queen")
+                                {
+                                    whiteHeurTotal += chessTypes[1].typeValue;
+                                }
+                                else if (chessBoardGridCo[showB].occupiedPieceType == "Bishop")
+                                {
+                                    whiteHeurTotal += chessTypes[2].typeValue;
+                                }
+                                else if (chessBoardGridCo[showB].occupiedPieceType == "Knight")
+                                {
+                                    whiteHeurTotal += chessTypes[3].typeValue;
+                                }
+                                else if (chessBoardGridCo[showB].occupiedPieceType == "Rook")
+                                {
+                                    whiteHeurTotal += chessTypes[4].typeValue;
+                                }
+                                else if (chessBoardGridCo[showB].occupiedPieceType == "Pawn")
+                                {
+                                    whiteHeurTotal += chessTypes[5].typeValue;
+                                }
+                            }
+                        }
+                    }
+                }
+
+                //check space Upper 
+                if (i - 1 >= 65)
+                {
+                    if (j - 1 >= 0)
+                    {
+                        letterBoard = Convert.ToChar(i);
+                        showB = letterBoard.ToString() + j.ToString();
+                        if (chessBoardGridCo[showB].isOccupied == true)
+                        {
+                            //
+                            //Debug.Log("In Main Loop BWH call; 2nd IF is white " + chessBoardGridCo[showB].isWhite);
+                            if (chessBoardGridCo[showB].isWhite == true)
+                            {
+                                //Debug.Log("In Main Loop BWH call; 3rd IF is Type " + chessBoardGridCo[showB].occupiedPieceType);
+                                if (chessBoardGridCo[showB].occupiedPieceType == "King")
+                                {
+                                    blackHeurTotal += chessTypes[0].typeValue;
+                                }
+                                else if (chessBoardGridCo[showB].occupiedPieceType == "Queen")
+                                {
+                                    blackHeurTotal += chessTypes[1].typeValue;
+                                }
+                                else if (chessBoardGridCo[showB].occupiedPieceType == "Bishop")
+                                {
+                                    blackHeurTotal += chessTypes[2].typeValue;
+                                }
+                                else if (chessBoardGridCo[showB].occupiedPieceType == "Knight")
+                                {
+                                    blackHeurTotal += chessTypes[3].typeValue;
+                                }
+                                else if (chessBoardGridCo[showB].occupiedPieceType == "Rook")
+                                {
+                                    blackHeurTotal += chessTypes[4].typeValue;
+                                }
+                                else if (chessBoardGridCo[showB].occupiedPieceType == "Pawn")
+                                {
+                                    blackHeurTotal += chessTypes[5].typeValue;
+                                }
+                            }
+                            else
+                            {
+                                //Debug.Log("In Main Loop BWH call; 3rd IF is Type " + chessBoardGridCo[showB].occupiedPieceType);
+                                if (chessBoardGridCo[showB].occupiedPieceType == "King")
+                                {
+                                    whiteHeurTotal += chessTypes[0].typeValue;
+                                }
+                                else if (chessBoardGridCo[showB].occupiedPieceType == "Queen")
+                                {
+                                    whiteHeurTotal += chessTypes[1].typeValue;
+                                }
+                                else if (chessBoardGridCo[showB].occupiedPieceType == "Bishop")
+                                {
+                                    whiteHeurTotal += chessTypes[2].typeValue;
+                                }
+                                else if (chessBoardGridCo[showB].occupiedPieceType == "Knight")
+                                {
+                                    whiteHeurTotal += chessTypes[3].typeValue;
+                                }
+                                else if (chessBoardGridCo[showB].occupiedPieceType == "Rook")
+                                {
+                                    whiteHeurTotal += chessTypes[4].typeValue;
+                                }
+                                else if (chessBoardGridCo[showB].occupiedPieceType == "Pawn")
+                                {
+                                    whiteHeurTotal += chessTypes[5].typeValue;
+                                }
+                            }
+                        }
+                    }
+                }
+
+                //check space Upper Right
+                if (i - 1 >= 65)
+                {
+                    if (j - 1 >= 0)
+                    {
+                        letterBoard = Convert.ToChar(i);
+                        showB = letterBoard.ToString() + j.ToString();
+                        if (chessBoardGridCo[showB].isOccupied == true)
+                        {
+                            //
+                            //Debug.Log("In Main Loop BWH call; 2nd IF is white " + chessBoardGridCo[showB].isWhite);
+                            if (chessBoardGridCo[showB].isWhite == true)
+                            {
+                                //Debug.Log("In Main Loop BWH call; 3rd IF is Type " + chessBoardGridCo[showB].occupiedPieceType);
+                                if (chessBoardGridCo[showB].occupiedPieceType == "King")
+                                {
+                                    blackHeurTotal += chessTypes[0].typeValue;
+                                }
+                                else if (chessBoardGridCo[showB].occupiedPieceType == "Queen")
+                                {
+                                    blackHeurTotal += chessTypes[1].typeValue;
+                                }
+                                else if (chessBoardGridCo[showB].occupiedPieceType == "Bishop")
+                                {
+                                    blackHeurTotal += chessTypes[2].typeValue;
+                                }
+                                else if (chessBoardGridCo[showB].occupiedPieceType == "Knight")
+                                {
+                                    blackHeurTotal += chessTypes[3].typeValue;
+                                }
+                                else if (chessBoardGridCo[showB].occupiedPieceType == "Rook")
+                                {
+                                    blackHeurTotal += chessTypes[4].typeValue;
+                                }
+                                else if (chessBoardGridCo[showB].occupiedPieceType == "Pawn")
+                                {
+                                    blackHeurTotal += chessTypes[5].typeValue;
+                                }
+                            }
+                            else
+                            {
+                                //Debug.Log("In Main Loop BWH call; 3rd IF is Type " + chessBoardGridCo[showB].occupiedPieceType);
+                                if (chessBoardGridCo[showB].occupiedPieceType == "King")
+                                {
+                                    whiteHeurTotal += chessTypes[0].typeValue;
+                                }
+                                else if (chessBoardGridCo[showB].occupiedPieceType == "Queen")
+                                {
+                                    whiteHeurTotal += chessTypes[1].typeValue;
+                                }
+                                else if (chessBoardGridCo[showB].occupiedPieceType == "Bishop")
+                                {
+                                    whiteHeurTotal += chessTypes[2].typeValue;
+                                }
+                                else if (chessBoardGridCo[showB].occupiedPieceType == "Knight")
+                                {
+                                    whiteHeurTotal += chessTypes[3].typeValue;
+                                }
+                                else if (chessBoardGridCo[showB].occupiedPieceType == "Rook")
+                                {
+                                    whiteHeurTotal += chessTypes[4].typeValue;
+                                }
+                                else if (chessBoardGridCo[showB].occupiedPieceType == "Pawn")
+                                {
+                                    whiteHeurTotal += chessTypes[5].typeValue;
+                                }
+                            }
+                        }
+                    }
+                }
+
+                //check space Left
+                if (i - 1 >= 65)
+                {
+                    if (j - 1 >= 0)
+                    {
+                        letterBoard = Convert.ToChar(i);
+                        showB = letterBoard.ToString() + j.ToString();
+                        if (chessBoardGridCo[showB].isOccupied == true)
+                        {
+                            //
+                            //Debug.Log("In Main Loop BWH call; 2nd IF is white " + chessBoardGridCo[showB].isWhite);
+                            if (chessBoardGridCo[showB].isWhite == true)
+                            {
+                                //Debug.Log("In Main Loop BWH call; 3rd IF is Type " + chessBoardGridCo[showB].occupiedPieceType);
+                                if (chessBoardGridCo[showB].occupiedPieceType == "King")
+                                {
+                                    blackHeurTotal += chessTypes[0].typeValue;
+                                }
+                                else if (chessBoardGridCo[showB].occupiedPieceType == "Queen")
+                                {
+                                    blackHeurTotal += chessTypes[1].typeValue;
+                                }
+                                else if (chessBoardGridCo[showB].occupiedPieceType == "Bishop")
+                                {
+                                    blackHeurTotal += chessTypes[2].typeValue;
+                                }
+                                else if (chessBoardGridCo[showB].occupiedPieceType == "Knight")
+                                {
+                                    blackHeurTotal += chessTypes[3].typeValue;
+                                }
+                                else if (chessBoardGridCo[showB].occupiedPieceType == "Rook")
+                                {
+                                    blackHeurTotal += chessTypes[4].typeValue;
+                                }
+                                else if (chessBoardGridCo[showB].occupiedPieceType == "Pawn")
+                                {
+                                    blackHeurTotal += chessTypes[5].typeValue;
+                                }
+                            }
+                            else
+                            {
+                                //Debug.Log("In Main Loop BWH call; 3rd IF is Type " + chessBoardGridCo[showB].occupiedPieceType);
+                                if (chessBoardGridCo[showB].occupiedPieceType == "King")
+                                {
+                                    whiteHeurTotal += chessTypes[0].typeValue;
+                                }
+                                else if (chessBoardGridCo[showB].occupiedPieceType == "Queen")
+                                {
+                                    whiteHeurTotal += chessTypes[1].typeValue;
+                                }
+                                else if (chessBoardGridCo[showB].occupiedPieceType == "Bishop")
+                                {
+                                    whiteHeurTotal += chessTypes[2].typeValue;
+                                }
+                                else if (chessBoardGridCo[showB].occupiedPieceType == "Knight")
+                                {
+                                    whiteHeurTotal += chessTypes[3].typeValue;
+                                }
+                                else if (chessBoardGridCo[showB].occupiedPieceType == "Rook")
+                                {
+                                    whiteHeurTotal += chessTypes[4].typeValue;
+                                }
+                                else if (chessBoardGridCo[showB].occupiedPieceType == "Pawn")
+                                {
+                                    whiteHeurTotal += chessTypes[5].typeValue;
+                                }
+                            }
+                        }
+                    }
+                }
+
+                //check space Right
+                if (i - 1 >= 65)
+                {
+                    if (j - 1 >= 0)
+                    {
+                        letterBoard = Convert.ToChar(i);
+                        showB = letterBoard.ToString() + j.ToString();
+                        if (chessBoardGridCo[showB].isOccupied == true)
+                        {
+                            //
+                            //Debug.Log("In Main Loop BWH call; 2nd IF is white " + chessBoardGridCo[showB].isWhite);
+                            if (chessBoardGridCo[showB].isWhite == true)
+                            {
+                                //Debug.Log("In Main Loop BWH call; 3rd IF is Type " + chessBoardGridCo[showB].occupiedPieceType);
+                                if (chessBoardGridCo[showB].occupiedPieceType == "King")
+                                {
+                                    blackHeurTotal += chessTypes[0].typeValue;
+                                }
+                                else if (chessBoardGridCo[showB].occupiedPieceType == "Queen")
+                                {
+                                    blackHeurTotal += chessTypes[1].typeValue;
+                                }
+                                else if (chessBoardGridCo[showB].occupiedPieceType == "Bishop")
+                                {
+                                    blackHeurTotal += chessTypes[2].typeValue;
+                                }
+                                else if (chessBoardGridCo[showB].occupiedPieceType == "Knight")
+                                {
+                                    blackHeurTotal += chessTypes[3].typeValue;
+                                }
+                                else if (chessBoardGridCo[showB].occupiedPieceType == "Rook")
+                                {
+                                    blackHeurTotal += chessTypes[4].typeValue;
+                                }
+                                else if (chessBoardGridCo[showB].occupiedPieceType == "Pawn")
+                                {
+                                    blackHeurTotal += chessTypes[5].typeValue;
+                                }
+                            }
+                            else
+                            {
+                                //Debug.Log("In Main Loop BWH call; 3rd IF is Type " + chessBoardGridCo[showB].occupiedPieceType);
+                                if (chessBoardGridCo[showB].occupiedPieceType == "King")
+                                {
+                                    whiteHeurTotal += chessTypes[0].typeValue;
+                                }
+                                else if (chessBoardGridCo[showB].occupiedPieceType == "Queen")
+                                {
+                                    whiteHeurTotal += chessTypes[1].typeValue;
+                                }
+                                else if (chessBoardGridCo[showB].occupiedPieceType == "Bishop")
+                                {
+                                    whiteHeurTotal += chessTypes[2].typeValue;
+                                }
+                                else if (chessBoardGridCo[showB].occupiedPieceType == "Knight")
+                                {
+                                    whiteHeurTotal += chessTypes[3].typeValue;
+                                }
+                                else if (chessBoardGridCo[showB].occupiedPieceType == "Rook")
+                                {
+                                    whiteHeurTotal += chessTypes[4].typeValue;
+                                }
+                                else if (chessBoardGridCo[showB].occupiedPieceType == "Pawn")
+                                {
+                                    whiteHeurTotal += chessTypes[5].typeValue;
+                                }
+                            }
+                        }
+                    }
+                }
+
+                //check space Lower Left
+                if (i - 1 >= 65)
+                {
+                    if (j - 1 >= 0)
+                    {
+                        letterBoard = Convert.ToChar(i);
+                        showB = letterBoard.ToString() + j.ToString();
+                        if (chessBoardGridCo[showB].isOccupied == true)
+                        {
+                            //
+                            //Debug.Log("In Main Loop BWH call; 2nd IF is white " + chessBoardGridCo[showB].isWhite);
+                            if (chessBoardGridCo[showB].isWhite == true)
+                            {
+                                //Debug.Log("In Main Loop BWH call; 3rd IF is Type " + chessBoardGridCo[showB].occupiedPieceType);
+                                if (chessBoardGridCo[showB].occupiedPieceType == "King")
+                                {
+                                    blackHeurTotal += chessTypes[0].typeValue;
+                                }
+                                else if (chessBoardGridCo[showB].occupiedPieceType == "Queen")
+                                {
+                                    blackHeurTotal += chessTypes[1].typeValue;
+                                }
+                                else if (chessBoardGridCo[showB].occupiedPieceType == "Bishop")
+                                {
+                                    blackHeurTotal += chessTypes[2].typeValue;
+                                }
+                                else if (chessBoardGridCo[showB].occupiedPieceType == "Knight")
+                                {
+                                    blackHeurTotal += chessTypes[3].typeValue;
+                                }
+                                else if (chessBoardGridCo[showB].occupiedPieceType == "Rook")
+                                {
+                                    blackHeurTotal += chessTypes[4].typeValue;
+                                }
+                                else if (chessBoardGridCo[showB].occupiedPieceType == "Pawn")
+                                {
+                                    blackHeurTotal += chessTypes[5].typeValue;
+                                }
+                            }
+                            else
+                            {
+                                //Debug.Log("In Main Loop BWH call; 3rd IF is Type " + chessBoardGridCo[showB].occupiedPieceType);
+                                if (chessBoardGridCo[showB].occupiedPieceType == "King")
+                                {
+                                    whiteHeurTotal += chessTypes[0].typeValue;
+                                }
+                                else if (chessBoardGridCo[showB].occupiedPieceType == "Queen")
+                                {
+                                    whiteHeurTotal += chessTypes[1].typeValue;
+                                }
+                                else if (chessBoardGridCo[showB].occupiedPieceType == "Bishop")
+                                {
+                                    whiteHeurTotal += chessTypes[2].typeValue;
+                                }
+                                else if (chessBoardGridCo[showB].occupiedPieceType == "Knight")
+                                {
+                                    whiteHeurTotal += chessTypes[3].typeValue;
+                                }
+                                else if (chessBoardGridCo[showB].occupiedPieceType == "Rook")
+                                {
+                                    whiteHeurTotal += chessTypes[4].typeValue;
+                                }
+                                else if (chessBoardGridCo[showB].occupiedPieceType == "Pawn")
+                                {
+                                    whiteHeurTotal += chessTypes[5].typeValue;
+                                }
+                            }
+                        }
+                    }
+                }
+
+                //check space Lower
+                if (i - 1 >= 65)
+                {
+                    if (j - 1 >= 0)
+                    {
+                        letterBoard = Convert.ToChar(i);
+                        showB = letterBoard.ToString() + j.ToString();
+                        if (chessBoardGridCo[showB].isOccupied == true)
+                        {
+                            //
+                            //Debug.Log("In Main Loop BWH call; 2nd IF is white " + chessBoardGridCo[showB].isWhite);
+                            if (chessBoardGridCo[showB].isWhite == true)
+                            {
+                                //Debug.Log("In Main Loop BWH call; 3rd IF is Type " + chessBoardGridCo[showB].occupiedPieceType);
+                                if (chessBoardGridCo[showB].occupiedPieceType == "King")
+                                {
+                                    blackHeurTotal += chessTypes[0].typeValue;
+                                }
+                                else if (chessBoardGridCo[showB].occupiedPieceType == "Queen")
+                                {
+                                    blackHeurTotal += chessTypes[1].typeValue;
+                                }
+                                else if (chessBoardGridCo[showB].occupiedPieceType == "Bishop")
+                                {
+                                    blackHeurTotal += chessTypes[2].typeValue;
+                                }
+                                else if (chessBoardGridCo[showB].occupiedPieceType == "Knight")
+                                {
+                                    blackHeurTotal += chessTypes[3].typeValue;
+                                }
+                                else if (chessBoardGridCo[showB].occupiedPieceType == "Rook")
+                                {
+                                    blackHeurTotal += chessTypes[4].typeValue;
+                                }
+                                else if (chessBoardGridCo[showB].occupiedPieceType == "Pawn")
+                                {
+                                    blackHeurTotal += chessTypes[5].typeValue;
+                                }
+                            }
+                            else
+                            {
+                                //Debug.Log("In Main Loop BWH call; 3rd IF is Type " + chessBoardGridCo[showB].occupiedPieceType);
+                                if (chessBoardGridCo[showB].occupiedPieceType == "King")
+                                {
+                                    whiteHeurTotal += chessTypes[0].typeValue;
+                                }
+                                else if (chessBoardGridCo[showB].occupiedPieceType == "Queen")
+                                {
+                                    whiteHeurTotal += chessTypes[1].typeValue;
+                                }
+                                else if (chessBoardGridCo[showB].occupiedPieceType == "Bishop")
+                                {
+                                    whiteHeurTotal += chessTypes[2].typeValue;
+                                }
+                                else if (chessBoardGridCo[showB].occupiedPieceType == "Knight")
+                                {
+                                    whiteHeurTotal += chessTypes[3].typeValue;
+                                }
+                                else if (chessBoardGridCo[showB].occupiedPieceType == "Rook")
+                                {
+                                    whiteHeurTotal += chessTypes[4].typeValue;
+                                }
+                                else if (chessBoardGridCo[showB].occupiedPieceType == "Pawn")
+                                {
+                                    whiteHeurTotal += chessTypes[5].typeValue;
+                                }
+                            }
+                        }
+                    }
+                }
+
+                //check space Lower Right
+                if (i - 1 >= 65)
+                {
+                    if (j - 1 >= 0)
+                    {
+                        letterBoard = Convert.ToChar(i);
+                        showB = letterBoard.ToString() + j.ToString();
+                        if (chessBoardGridCo[showB].isOccupied == true)
+                        {
+                            //
+                            //Debug.Log("In Main Loop BWH call; 2nd IF is white " + chessBoardGridCo[showB].isWhite);
+                            if (chessBoardGridCo[showB].isWhite == true)
+                            {
+                                //Debug.Log("In Main Loop BWH call; 3rd IF is Type " + chessBoardGridCo[showB].occupiedPieceType);
+                                if (chessBoardGridCo[showB].occupiedPieceType == "King")
+                                {
+                                    blackHeurTotal += chessTypes[0].typeValue;
+                                }
+                                else if (chessBoardGridCo[showB].occupiedPieceType == "Queen")
+                                {
+                                    blackHeurTotal += chessTypes[1].typeValue;
+                                }
+                                else if (chessBoardGridCo[showB].occupiedPieceType == "Bishop")
+                                {
+                                    blackHeurTotal += chessTypes[2].typeValue;
+                                }
+                                else if (chessBoardGridCo[showB].occupiedPieceType == "Knight")
+                                {
+                                    blackHeurTotal += chessTypes[3].typeValue;
+                                }
+                                else if (chessBoardGridCo[showB].occupiedPieceType == "Rook")
+                                {
+                                    blackHeurTotal += chessTypes[4].typeValue;
+                                }
+                                else if (chessBoardGridCo[showB].occupiedPieceType == "Pawn")
+                                {
+                                    blackHeurTotal += chessTypes[5].typeValue;
+                                }
+                            }
+                            else
+                            {
+                                //Debug.Log("In Main Loop BWH call; 3rd IF is Type " + chessBoardGridCo[showB].occupiedPieceType);
+                                if (chessBoardGridCo[showB].occupiedPieceType == "King")
+                                {
+                                    whiteHeurTotal += chessTypes[0].typeValue;
+                                }
+                                else if (chessBoardGridCo[showB].occupiedPieceType == "Queen")
+                                {
+                                    whiteHeurTotal += chessTypes[1].typeValue;
+                                }
+                                else if (chessBoardGridCo[showB].occupiedPieceType == "Bishop")
+                                {
+                                    whiteHeurTotal += chessTypes[2].typeValue;
+                                }
+                                else if (chessBoardGridCo[showB].occupiedPieceType == "Knight")
+                                {
+                                    whiteHeurTotal += chessTypes[3].typeValue;
+                                }
+                                else if (chessBoardGridCo[showB].occupiedPieceType == "Rook")
+                                {
+                                    whiteHeurTotal += chessTypes[4].typeValue;
+                                }
+                                else if (chessBoardGridCo[showB].occupiedPieceType == "Pawn")
+                                {
+                                    whiteHeurTotal += chessTypes[5].typeValue;
+                                }
+                            }
+                        }
+                    }
+                }
                 //Debug.Log("In Main Loop BWH call; test temp Huer White " + whiteHeurTotal);
                 //Debug.Log("In Main Loop BWH call; test temp Huer Black " + blackHeurTotal);
 
@@ -189,7 +755,7 @@ public class Heuristics : MonoBehaviour
                 //Debug.Log("In Main Loop BWH call; test Huer Black " + chessBoardGridCo[showB].blackHeuristic);
             }
         }
-    }
+}
 
     public void HeuristicSetup()
     {
