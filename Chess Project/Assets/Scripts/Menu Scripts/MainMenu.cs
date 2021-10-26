@@ -10,14 +10,29 @@ using UnityEngine.SceneManagement;
 public class MainMenu : MonoBehaviour
 {
 
-    //Starts the Game
-    public void StartGame()
+    //Starts the Game On easy
+    public void StartGameEasy()
     {
+        PlayerPrefs.SetInt("Difficulty", 1);
+        SceneManager.LoadScene(1);
+    }
+
+    //Starts the Game on Normal
+    public void StartGameNorm()
+    {
+        PlayerPrefs.SetInt("Difficulty", 2);
+        SceneManager.LoadScene(1);
+    }
+
+    //Starts the Game on Hard
+    public void StartGameHard()
+    {
+        PlayerPrefs.SetInt("Difficulty", 3);
         SceneManager.LoadScene(1);
     }
 
     // Exits the Game
-      public void ExitGame()
+    public void ExitGame()
     {
         Application.Quit();
         

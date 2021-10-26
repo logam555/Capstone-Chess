@@ -181,7 +181,7 @@ public class Heuristics : MonoBehaviour
                 //check space Upper Left
                 if (i - 1 >= 65)
                 {
-                    if (j - 1 >= 0)
+                    if (j + 1 >= 0)
                     { 
                         letterBoard = Convert.ToChar(i);
                         showB = letterBoard.ToString() + j.ToString();
@@ -250,9 +250,9 @@ public class Heuristics : MonoBehaviour
                 }
 
                 //check space Upper 
-                if (i - 1 >= 65)
+                if (i  >= 65)
                 {
-                    if (j - 1 >= 0)
+                    if (j + 1 >= 0)
                     {
                         letterBoard = Convert.ToChar(i);
                         showB = letterBoard.ToString() + j.ToString();
@@ -321,9 +321,9 @@ public class Heuristics : MonoBehaviour
                 }
 
                 //check space Upper Right
-                if (i - 1 >= 65)
+                if (i + 1 >= 65)
                 {
-                    if (j - 1 >= 0)
+                    if (j + 1 >= 0)
                     {
                         letterBoard = Convert.ToChar(i);
                         showB = letterBoard.ToString() + j.ToString();
@@ -394,7 +394,7 @@ public class Heuristics : MonoBehaviour
                 //check space Left
                 if (i - 1 >= 65)
                 {
-                    if (j - 1 >= 0)
+                    if (j  >= 0)
                     {
                         letterBoard = Convert.ToChar(i);
                         showB = letterBoard.ToString() + j.ToString();
@@ -463,9 +463,9 @@ public class Heuristics : MonoBehaviour
                 }
 
                 //check space Right
-                if (i - 1 >= 65)
+                if (i + 1 >= 65)
                 {
-                    if (j - 1 >= 0)
+                    if (j  >= 0)
                     {
                         letterBoard = Convert.ToChar(i);
                         showB = letterBoard.ToString() + j.ToString();
@@ -605,7 +605,7 @@ public class Heuristics : MonoBehaviour
                 }
 
                 //check space Lower
-                if (i - 1 >= 65)
+                if (i  >= 65)
                 {
                     if (j - 1 >= 0)
                     {
@@ -676,7 +676,7 @@ public class Heuristics : MonoBehaviour
                 }
 
                 //check space Lower Right
-                if (i - 1 >= 65)
+                if (i + 1 >= 65)
                 {
                     if (j - 1 >= 0)
                     {
@@ -751,8 +751,8 @@ public class Heuristics : MonoBehaviour
                 chessBoardGridCo[showB].whiteHeuristic = whiteHeurTotal;
                 chessBoardGridCo[showB].blackHeuristic = blackHeurTotal;
 
-                //Debug.Log("In Main Loop BWH call; test Huer White " + chessBoardGridCo[showB].whiteHeuristic);
-                //Debug.Log("In Main Loop BWH call; test Huer Black " + chessBoardGridCo[showB].blackHeuristic);
+                //Debug.Log("In Main Loop BWH call; test Huer White at " + chessBoardGridCo[showB].officalBoardPosition + " " + chessBoardGridCo[showB].whiteHeuristic);
+                //Debug.Log("In Main Loop BWH call; test Huer Black at " + chessBoardGridCo[showB].officalBoardPosition + " " + chessBoardGridCo[showB].blackHeuristic);
             }
         }
 }
@@ -833,9 +833,9 @@ public class Heuristics : MonoBehaviour
     {
         int diff = new int();
 
-        //Debug.Log("HeuristicDifficulty call");
+        //Debug.Log("HeuristicDifficulty call and Level Chosen " + PlayerPrefs.GetInt("Difficulty"));
 
-        diff = PlayerPrefs.GetInt("Difficulty"); ;
+        diff = PlayerPrefs.GetInt("Difficulty"); 
 
         //base/Easy
         chessTypes[0].typeValue = 5;
