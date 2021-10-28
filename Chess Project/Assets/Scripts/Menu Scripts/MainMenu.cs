@@ -10,11 +10,14 @@ using UnityEngine.SceneManagement;
 public class MainMenu : MonoBehaviour
 {
 
+    private GameObject root;
+
     //Starts the Game On easy
     public void StartGameEasy()
     {
         PlayerPrefs.SetInt("Difficulty", 1);
         SceneManager.LoadScene(1);
+        Time.timeScale = 1f;
     }
 
     //Starts the Game on Normal
@@ -22,6 +25,7 @@ public class MainMenu : MonoBehaviour
     {
         PlayerPrefs.SetInt("Difficulty", 2);
         SceneManager.LoadScene(1);
+        Time.timeScale = 1f;
     }
 
     //Starts the Game on Hard
@@ -29,6 +33,7 @@ public class MainMenu : MonoBehaviour
     {
         PlayerPrefs.SetInt("Difficulty", 3);
         SceneManager.LoadScene(1);
+        Time.timeScale = 1f;
     }
 
     // Exits the Game
@@ -40,5 +45,12 @@ public class MainMenu : MonoBehaviour
         //UnityEditor.EditorApplication.isPlaying = false;
     }
 
-
+    // Returns to game scene if it exists
+    public void ResumeGame()
+    {
+        SceneManager.UnloadSceneAsync(0); 
+        root = PauseMenu.Root;
+        root.SetActive(true);
+        Time.timeScale = 1f;
+    }
 }
