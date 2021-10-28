@@ -48,9 +48,12 @@ public class MainMenu : MonoBehaviour
     // Returns to game scene if it exists
     public void ResumeGame()
     {
-        SceneManager.UnloadSceneAsync(0); 
-        root = PauseMenu.Root;
-        root.SetActive(true);
-        Time.timeScale = 1f;
+        if (PauseMenu.Root != null)
+        {
+            SceneManager.UnloadSceneAsync(0);
+            root = PauseMenu.Root;
+            root.SetActive(true);
+            Time.timeScale = 1f;
+        }
     }
 }
