@@ -152,7 +152,7 @@ public class BestMove
 
 
                         //board tile location update
-                        //boardModel.BoardTileLocationUpdate(Convert.);
+                        boardModel.BoardTileLocationUpdate(new Vector2Int(pieceX,pieceY), new Vector2Int(i,j),false,"");
                         //board wide huer tile only update
 
 
