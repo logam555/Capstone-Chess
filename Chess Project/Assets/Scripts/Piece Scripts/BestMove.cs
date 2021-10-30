@@ -130,9 +130,9 @@ public class BestMove
 
         if (maximize == true) //if maximizing (AIs turn)
         {
-            for (int i = 0; i < 8; i++)
+            for (int i = 0; i < 8; i++)//x value of board
             {
-                for (int j = 0; j < 8; j++) //Iteratate through board
+                for (int j = 0; j < 8; j++) //Iteratate through board, y value of board
                 {
                     for (int k = 0; k < 8; k++)
                     {
@@ -149,6 +149,13 @@ public class BestMove
                     {
                         tempBoard[i,j] = piece; //move piece
                         tempBoard[pieceX,pieceY] = null; //move empty space to  pieces previous position
+
+
+                        //board tile location update
+                        //boardModel.BoardTileLocationUpdate(Convert.);
+                        //board wide huer tile only update
+
+
                         dice = UnityEngine.Random.Range(1, 6);
                         score = Math.Max(score, minimax(depth, tempBoard, false, dice));
                         tempBoard[i,j] = null;
@@ -162,9 +169,9 @@ public class BestMove
         if (maximize == false)
         {
             Piece tempPiece = tempBoard[0,0];
-            for (int i = 0; i < 8; i++)
+            for (int i = 0; i < 8; i++)//x value of board
             {
-                for (int j = 0; j < 8; j++)
+                for (int j = 0; j < 8; j++)//y value of board
                 {
                     for (int k = 0; k < 8; k++)
                     {

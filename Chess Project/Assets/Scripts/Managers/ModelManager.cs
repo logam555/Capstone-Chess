@@ -386,7 +386,12 @@ public class ModelManager : MonoBehaviour
 
     public Vector3Int GetHighestValueFromBoard()
     {
-        heuristics.BoardWideHeuristic(ref chessBoardGridCo);
+        //entire heur board wide check
+
+        //heuristics.BoardWideHeuristic(ref chessBoardGridCo);
+        //heuristics.BoardWideHeuristicTile(chessBoardGridCo, );
+
+
         Vector3Int posValue = new Vector3Int();
 
         posValue = heuristics.ReturnHighestValueBlack(chessBoardGridCo);

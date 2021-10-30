@@ -105,7 +105,7 @@ public class Heuristics : MonoBehaviour
                 holderV2I.x = 0;
                 holderV2I.y = 0;
 
-                holderV2I = BoardWideHeuristic(chessBoardGridCo, j, i);
+                holderV2I = BoardWideHeuristicTile(chessBoardGridCo, j, i);
 
                 chessBoardGridCo[showB].whiteHeuristic = holderV2I.x;
                 chessBoardGridCo[showB].blackHeuristic = holderV2I.y;
@@ -343,7 +343,7 @@ public class Heuristics : MonoBehaviour
         return posValue;
     }
 
-    public Vector2Int BoardWideHeuristic(Dictionary<string, ModelManager.BoardTile> chessBoardGridCo, int j, int i)
+    public Vector2Int BoardWideHeuristicTile(Dictionary<string, ModelManager.BoardTile> chessBoardGridCo, int j, int i)
     {
         int whiteHeurTotal = new int();
         int blackHeurTotal = new int();
