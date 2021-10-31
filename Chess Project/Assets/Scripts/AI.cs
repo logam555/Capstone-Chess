@@ -19,7 +19,10 @@ public class AI : Player
 	int[,] moves;
 	bool first;
 
-public AI (string name, bool isWhite, List<Commander> commanders, BoardManager bm) : base(name, isWhite, commanders)
+	private ModelManager boardModel;
+	private GameObject tempGO;
+
+	public AI (string name, bool isWhite, List<Commander> commanders, BoardManager bm) : base(name, isWhite, commanders)
 	{
         this.name = name;
         this.isWhite = isWhite;
@@ -47,6 +50,13 @@ public AI (string name, bool isWhite, List<Commander> commanders, BoardManager b
 
 public void Start()
     {
+		tempGO = GameObject.Find("Chess Board");
+
+		boardModel = new ModelManager();
+		boardModel = tempGO.GetComponent<ModelManager>();
+
+		boardModel.BoardWideHeuristicCall();
+
 		if (first == true)
 		{
 			kingMove = instance.Start(this.isWhite);

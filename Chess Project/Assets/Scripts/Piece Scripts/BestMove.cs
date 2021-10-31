@@ -150,11 +150,50 @@ public class BestMove
                         tempBoard[i,j] = piece; //move piece
                         tempBoard[pieceX,pieceY] = null; //move empty space to  pieces previous position
 
+                        //board tile location update values to send to board update
+                        bool pieceWhite = new bool();
 
-                        //board tile location update
-                        boardModel.BoardTileLocationUpdate(new Vector2Int(pieceX,pieceY), new Vector2Int(i,j),false,"");
+                        if (piece.IsWhite)
+                        {
+                            pieceWhite = true;
+                        }
+                        else
+                        {
+                            pieceWhite = false;
+                        }
+
+                        string pieceTypeStr = "";
+
+                        if (piece is King)
+                        {
+                            pieceTypeStr = "King";
+                        }
+                        else if (piece is Queen)
+                        {
+                            pieceTypeStr = "Queen";
+                        }
+                        else if (piece is Bishop)
+                        {
+                            pieceTypeStr = "Bishop";
+                        }
+                        else if (piece is Knight)
+                        {
+                            pieceTypeStr = "Knight";
+                        }
+                        else if (piece is Rook)
+                        {
+                            pieceTypeStr = "Rook";
+                        }
+                        else
+                        {
+                            pieceTypeStr = "Pawn";
+                        }
+
+                        //update board with temp move to check values in min/max
+                        boardModel.BoardTileLocationUpdate(new Vector2Int(pieceX,pieceY), new Vector2Int(i,j), pieceWhite, pieceTypeStr);
+
                         //board wide huer tile only update
-
+                        boardModel.BoardWideHeuristicTileCall(i,j);
 
                         dice = UnityEngine.Random.Range(1, 6);
                         score = Math.Max(score, minimax(depth, tempBoard, false, dice));

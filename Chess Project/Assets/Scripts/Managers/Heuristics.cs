@@ -15,7 +15,6 @@ public class Heuristics : MonoBehaviour
     private class chessPiece
     {
         public string pieceType;
-        //public bool isWhite;
         public int typeValue;
         public int moveRange;
         public int attackRange;
@@ -28,14 +27,11 @@ public class Heuristics : MonoBehaviour
         public bool canAttack;
         public bool friendlyCommanderCloseby;
         public bool hostileCommanderCloseby;
-
     }
 
 
     [SerializeField]
     private List<chessPiece> chessTypes;//
-
-
 
     // Start is called before the first frame update
     //might need to remove start if runnign through voard script
@@ -52,8 +48,6 @@ public class Heuristics : MonoBehaviour
 
         //uses the difficulty to send values used by Heuristics
         HeuristicDifficulty();
-
-
     }
 
     // Update is called once per frame
@@ -87,17 +81,15 @@ public class Heuristics : MonoBehaviour
 
     public void BoardWideHeuristic(ref Dictionary<string, ModelManager.BoardTile> chessBoardGridCo)
     {
-        //Debug.Log("BoardWideHeuristic call");
-
         char letterBoard = '0';
         string showB = "";
 
         Vector2Int holderV2I = new Vector2Int();
         
         //setting up tiles and adding to dictionary default values
-        for (int j = 1; j < 9; j++)
+        for (int j = 1; j < 9; j++)//y value
         {
-            for (int i = 65; i < 73; i++)
+            for (int i = 65; i < 73; i++)//x value for letter
             {
                 letterBoard = Convert.ToChar(i);
                 showB = letterBoard.ToString() + j.ToString();
@@ -109,9 +101,6 @@ public class Heuristics : MonoBehaviour
 
                 chessBoardGridCo[showB].whiteHeuristic = holderV2I.x;
                 chessBoardGridCo[showB].blackHeuristic = holderV2I.y;
-
-                //Debug.Log("In Main Loop BWH call; test Huer White at " + chessBoardGridCo[showB].officalBoardPosition + " " + chessBoardGridCo[showB].whiteHeuristic);
-                //Debug.Log("In Main Loop BWH call; test Huer Black at " + chessBoardGridCo[showB].officalBoardPosition + " " + chessBoardGridCo[showB].blackHeuristic);
             }
         }
 }
