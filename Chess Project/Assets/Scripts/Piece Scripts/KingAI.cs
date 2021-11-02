@@ -17,7 +17,7 @@ public class KingAI
 
     public KingAI(BoardManager bm) {
         this.bm = bm;
-        moves = new int[3, 6];
+        moves = new int[3, 16];
         board = new Piece[8, 8];
     }
 

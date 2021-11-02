@@ -79,7 +79,7 @@ public class BestMove
                     board[i,j] = piece;
                     board[pieceX,pieceY] = null;
                     int dice = UnityEngine.Random.Range(1, 6);
-                    int score = minimax(0,board, true, dice);
+                    int score = minimax(0,board, true, dice, int.MinValue, int.MaxValue);
                     board[i,j] = temp;
                     board[pieceX, pieceY] = piece;
                     
@@ -117,11 +117,12 @@ public class BestMove
         return move;
     }
 
-    public int minimax(int depth, Piece[,] tempBoard, bool maximize, int dice) //uses minimax algorithm to obtain the score
+    public int minimax(int depth, Piece[,] tempBoard, bool maximize, int dice, int alpha, int beta) //uses minimax algorithm to obtain the score
     {
         int score = eval(); //uses heuristic to obtain score
         int pieceY = 0;
         int pieceX = 0;
+        int bestVal = score;
 
         if(depth == 1)
         {
@@ -130,6 +131,7 @@ public class BestMove
 
         if (maximize == true) //if maximizing (AIs turn)
         {
+            bestVal = int.MinValue;
             for (int i = 0; i < 8; i++)//x value of board
             {
                 for (int j = 0; j < 8; j++) //Iteratate through board, y value of board
@@ -196,17 +198,24 @@ public class BestMove
                         boardModel.BoardWideHeuristicTileCall(i,j);
 
                         dice = UnityEngine.Random.Range(1, 6);
-                        score = Math.Max(score, minimax(depth, tempBoard, false, dice));
+                        score = minimax(depth, tempBoard, false, dice,alpha,beta);
+                        bestVal = Math.Max(bestVal, score);
+                        alpha = Math.Max(alpha, bestVal);
                         tempBoard[i,j] = null;
                         tempBoard[pieceX,pieceY] = piece;
                     }
+                    if(beta <= alpha)
+                    {
+                        return bestVal;
+                    }
                 }
             }
-            return score;
+            return bestVal;
         }
 
         if (maximize == false)
         {
+            bestVal = int.MaxValue;
             Piece tempPiece = tempBoard[0,0];
             for (int i = 0; i < 8; i++)//x value of board
             {
@@ -222,23 +231,73 @@ public class BestMove
                                 pieceX = k;
                                 pieceY = d;
 
+                                bool pieceWhite = new bool();
+
+                                if (tempPiece.IsWhite)
+                                {
+                                    pieceWhite = true;
+                                }
+                                else
+                                {
+                                    pieceWhite = false;
+                                }
+
+                                string pieceTypeStr = "";
+
+                                if (tempPiece is King)
+                                {
+                                    pieceTypeStr = "King";
+                                }
+                                else if (tempPiece is Queen)
+                                {
+                                    pieceTypeStr = "Queen";
+                                }
+                                else if (tempPiece is Bishop)
+                                {
+                                    pieceTypeStr = "Bishop";
+                                }
+                                else if (tempPiece is Knight)
+                                {
+                                    pieceTypeStr = "Knight";
+                                }
+                                else if (tempPiece is Rook)
+                                {
+                                    pieceTypeStr = "Rook";
+                                }
+                                else
+                                {
+                                    pieceTypeStr = "Pawn";
+                                }
+
+                                //update board with temp move to check values in min/max
+                                boardModel.BoardTileLocationUpdate(new Vector2Int(pieceX, pieceY), new Vector2Int(i, j), pieceWhite, pieceTypeStr);
+
+                                //board wide huer tile only update
+                                boardModel.BoardWideHeuristicTileCall(i, j);
+
                                 if (possibleMoves(tempPiece)[i, j] == true) {
                                     tempBoard[i, j] = tempPiece;
                                     tempBoard[pieceX, pieceY] = null;
                                     dice = UnityEngine.Random.Range(1, 6);
-                                    score = Math.Min(score, minimax(depth + 1, tempBoard, true, dice));
+                                    score = minimax(depth + 1, tempBoard, true, dice, alpha, beta);
+                                    bestVal = Math.Min(bestVal, score);
+                                    beta = Math.Min(beta, bestVal);
                                     tempBoard[i, j] = null;
                                     tempBoard[pieceX, pieceY] = tempPiece;
                                 }
                             }
                         }
+                        if(beta <= alpha)
+                        {
+                            return bestVal;
+                        }
                     }
                     
                 }
             }
-            return score; 
+            return bestVal; 
         }
 
-        return score;
+        return bestVal;
     }
 }
