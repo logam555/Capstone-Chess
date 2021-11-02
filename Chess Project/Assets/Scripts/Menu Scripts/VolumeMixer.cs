@@ -16,8 +16,18 @@ public class VolumeMixer : MonoBehaviour
     
      void Start()
     {
-        LoadValue();
+        //LoadValue();
+        volSlider.value = AudioListener.volume;
     }
+
+    public void SetVolume(float volume)
+    {
+        //PlayerPrefs.SetFloat("volume", volume);
+        //LoadValue();
+        AudioListener.volume = volume;
+
+    }
+
     // Allows the slider to change the volume of the audio
     public void ChangeVolume()
     {
