@@ -38,13 +38,17 @@ public class BestMove
         return bestLocal();
     }
 
-    public int eval() //sends board to heuristic to obtain a score for the move made
+    //add Piece p into eval call
+    public Vector3Int eval() //sends board to heuristic to obtain a score for the move made
     {
         Vector3Int posValue = boardModel.GetHighestValueFromBoard();
-        
-        int highestValue = posValue.z;
 
-        return highestValue;
+        //change to be made below
+        //Vector3Int posValue = GetHighestValueFromTileMoveRange(p);
+
+        //int highestValue = posValue.z;
+
+        return posValue;
     }
 
     public bool[,] possibleMoves(Piece p) //Uses Bishop script to obtain possible moves for Bishop
@@ -119,7 +123,9 @@ public class BestMove
 
     public int minimax(int depth, Piece[,] tempBoard, bool maximize, int dice, int alpha, int beta) //uses minimax algorithm to obtain the score
     {
-        int score = eval(); //uses heuristic to obtain score
+        Vector3Int evalsV3 = eval(); //uses heuristic to obtain score
+        //Vector3Int evalsV3 = eval(piece); //uses heuristic to obtain score
+        int score = evalsV3.z;
         int pieceY = 0;
         int pieceX = 0;
         int bestVal = score;
