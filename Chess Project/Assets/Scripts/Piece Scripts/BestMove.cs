@@ -29,7 +29,7 @@ public class BestMove
 
     public int[] getMove(Piece[,] board, Piece piece, bool isCommander, BoardManager bm)
     {
-        this.board = board;
+        this.board = bm.Pieces;
         this.piece = piece;
         this.isCommander = isCommander;
 
@@ -93,27 +93,6 @@ public class BestMove
                 
             }
         }
-
-        //if (piece.EnemiesInRange().Count > 0) {
-        //    foreach(Vector2Int pos in piece.EnemiesInRange()) {
-        //        Piece temp = board[pos.x, pos.y];
-        //        board[pos.x, pos.y] = piece;
-        //        board[pieceX, pieceY] = null;
-        //        int dice = UnityEngine.Random.Range(1, 6);
-        //        int score = minimax(0, board, true, dice);
-        //        board[pos.x, pos.y] = temp;
-        //        board[pieceX, pieceY] = piece;
-
-        //        if (score > move[2]) //if score obtained is better than bestLocalScore
-        //        {
-        //            move[2] = score; //than score obtained is bestLocalScore
-        //            move[0] = pos.x; //x and y coordinates of best scoring move are recorded
-        //            move[1] = pos.y;
-        //        }
-        //    }
-           
-        //}
-
         return move;
     }
 
@@ -124,7 +103,7 @@ public class BestMove
         int pieceX = 0;
         int bestVal = score;
 
-        if(depth == 1)
+        if(depth == 2)
         {
             return score; //if specified depth is hit return score
         }
@@ -203,8 +182,12 @@ public class BestMove
                         alpha = Math.Max(alpha, bestVal);
                         tempBoard[i,j] = null;
                         tempBoard[pieceX,pieceY] = piece;
+                        
+                        boardModel.BoardTileLocationUpdate(new Vector2Int(i, j), new Vector2Int(pieceX, pieceY), pieceWhite, pieceTypeStr);
+                        boardModel.BoardWideHeuristicTileCall(pieceX, pieceY);
+
                     }
-                    if(beta <= alpha)
+                    if (beta <= alpha)
                     {
                         return bestVal;
                     }
@@ -284,6 +267,8 @@ public class BestMove
                                     beta = Math.Min(beta, bestVal);
                                     tempBoard[i, j] = null;
                                     tempBoard[pieceX, pieceY] = tempPiece;
+                                    boardModel.BoardTileLocationUpdate(new Vector2Int(i, j), new Vector2Int(pieceX, pieceY), pieceWhite, pieceTypeStr);
+                                    boardModel.BoardWideHeuristicTileCall(pieceX, pieceY);
                                 }
                             }
                         }
