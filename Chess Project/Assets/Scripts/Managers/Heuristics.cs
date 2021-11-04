@@ -85,7 +85,7 @@ public class Heuristics : MonoBehaviour
         string showB = "";
 
         Vector2Int holderV2I = new Vector2Int();
-        
+
         //setting up tiles and adding to dictionary default values
         for (int j = 1; j < 9; j++)//y value
         {
@@ -103,7 +103,7 @@ public class Heuristics : MonoBehaviour
                 chessBoardGridCo[showB].blackHeuristic = holderV2I.y;
             }
         }
-}
+    }
 
     public void HeuristicSetup()
     {
@@ -183,7 +183,7 @@ public class Heuristics : MonoBehaviour
 
         //Debug.Log("HeuristicDifficulty call and Level Chosen " + PlayerPrefs.GetInt("Difficulty"));
 
-        diff = PlayerPrefs.GetInt("Difficulty"); 
+        diff = PlayerPrefs.GetInt("Difficulty");
 
         //base/Easy
         chessTypes[0].typeValue = 5;
@@ -252,7 +252,7 @@ public class Heuristics : MonoBehaviour
                 Debug.Log("white B is " + heurValueHolder[index]);
                 Debug.Log(boardPieceValue[showB].officalBoardPosition);
                 */
-                index ++;
+                index++;
 
             }
         }
@@ -330,6 +330,21 @@ public class Heuristics : MonoBehaviour
         posValue.z = highestValue;
 
         return posValue;
+    }
+
+    //checks movement range for value value; use boardmanager AvailableMoves bool list returned check
+    public void ReturnHighestValueOnePieceRange(Dictionary<string, ModelManager.BoardTile> boardPieceValue, Vector2Int pLoc)
+    {
+
+
+        //return best tile in local area
+        //return 0;
+    }
+
+    //function to cal difference black to white on board. piece.enemiesinrange vector 2 list returned will grab all enemies in range of attack
+    public void AdjustBoardHeuristicOffDefWhiBla()
+    {
+        
     }
 
     public Vector2Int BoardWideHeuristicTile(Dictionary<string, ModelManager.BoardTile> chessBoardGridCo, int j, int i)

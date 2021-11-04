@@ -15,6 +15,7 @@ public class ModelManager : MonoBehaviour
         public string occupiedPieceType;
         public int whiteHeuristic;
         public int blackHeuristic;
+
     }
 
     #region PROPERTIES
@@ -393,6 +394,21 @@ public class ModelManager : MonoBehaviour
         Vector3Int posValue = new Vector3Int();
 
         posValue = heuristics.ReturnHighestValueBlack(chessBoardGridCo);
+        //posValue = heuristics.ReturnHighestValueWhite(chessBoardGridCo);
+
+        return posValue;
+    }
+
+    //pieces move range check
+    public Vector3Int GetHighestValueFromTileMoveRange(Piece p)
+    {
+        Vector2Int pLocV2 = new Vector2Int();
+
+        //pLocV2 = p.Postion;
+
+        Vector3Int posValue = new Vector3Int();
+
+        //posValue = heuristics.ReturnHighestValueOnePieceRange(chessBoardGridCo, pLocV2);
         //posValue = heuristics.ReturnHighestValueWhite(chessBoardGridCo);
 
         return posValue;
