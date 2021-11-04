@@ -56,6 +56,11 @@ public class BestMove
         return bm.AvailableMoves(p);
     }
 
+    public bool possibleAttack(int x, int y)
+    {
+        return bm.CheckMove(new Vector2Int(x, y));
+    }
+
     public int[] bestLocal() //obtains best possible move for Bishop
     {
         int[] move = new int[3];
@@ -76,7 +81,7 @@ public class BestMove
                         }
                     }
                 }
-                if (possibleMoves(piece)[i,j] == true)
+                if (possibleMoves(piece)[i,j] == true || possibleAttack(i,j) == true)
                 {
                     
                     Piece temp = board[i,j];
@@ -109,7 +114,7 @@ public class BestMove
         int pieceX = 0;
         int bestVal = score;
 
-        if(depth == 2)
+        if(depth == 1)
         {
             return score; //if specified depth is hit return score
         }
