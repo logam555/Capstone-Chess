@@ -6173,7 +6173,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: 'Varient Chess '
+  m_Text: 'Variant Chess '
 --- !u!222 &1573602369
 CanvasRenderer:
   m_ObjectHideFlags: 0
