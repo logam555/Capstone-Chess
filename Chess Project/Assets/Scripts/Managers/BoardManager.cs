@@ -6,7 +6,9 @@
 
  Version 1.0:
   - Moved Functions that dealt with interaction with the virtual board to this class from the Game Manager
-  - Added the place piece sound (tommy oh) */
+  - Added the place piece sound (tommy oh)
+  - Modied MovePiece to animate the piece movements (David Corredor)*/
+
 
 using System.Collections;
 using System.Collections.Generic;
@@ -129,8 +131,9 @@ public class BoardManager : MonoBehaviour
         boardModel.BoardTileLocationUpdate(oldPosition, position, pieceWhite, pieceTypeStr);
 
         // Call function in board to move the piece game object
-        gm.boardModel.MoveObject(SelectedPiece.gameObject, position);
-        
+        gm.boardModel.pieceObject = SelectedPiece.gameObject;
+        gm.boardModel.position = position;
+        gm.boardModel.duration = 5;
 
         // Reduce number of actions remaining
         SelectedPiece.Commander.commandActions -= 1;

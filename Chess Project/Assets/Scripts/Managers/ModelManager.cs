@@ -64,6 +64,10 @@ public class ModelManager : MonoBehaviour
 
     }
 
+    public GameObject pieceObject { get; set; }
+    public Vector2Int position { get; set; }
+    public float duration { get; set; }
+
     private void Update()
     {
         UpdateSelection();
@@ -103,12 +107,15 @@ public class ModelManager : MonoBehaviour
             posValue2 = GetHighestValueFromBoard();
             //Debug.Log("end of get highest test value is " + posValue2);
         }
+
+            MoveObject(pieceObject, position, duration);
     }
 
     #region INTERACTION FUNCTIONS - Functions to select, move, and remove models on the board.
-    public void MoveObject(GameObject pieceObject, Vector2Int position)
+    public void MoveObject(GameObject pieceObject, Vector2Int position, float duration)
     {
-        pieceObject.transform.position = GetTileCenter(position.x, position.y);
+        float step = duration * Time.deltaTime;
+        pieceObject.transform.position = Vector3.Lerp(pieceObject.transform.position, GetTileCenter(position.x, position.y), step);
     }
 
     public void RemoveObject(GameObject pieceObject)
@@ -381,7 +388,7 @@ public class ModelManager : MonoBehaviour
         chessBoardGridCo[Convert.ToString(Convert.ToChar(oldPosition.x + 65) + Convert.ToString(oldPosition.y + 1))].isOccupied = false;
         chessBoardGridCo[Convert.ToString(Convert.ToChar(oldPosition.x + 65) + Convert.ToString(oldPosition.y + 1))].isWhite = false;
         chessBoardGridCo[Convert.ToString(Convert.ToChar(oldPosition.x + 65) + Convert.ToString(oldPosition.y + 1))].occupiedPieceType = "";
-
+        
         chessBoardGridCo[Convert.ToString(Convert.ToChar(newPosition.x + 65) + Convert.ToString(newPosition.y + 1))].isOccupied = true;
         chessBoardGridCo[Convert.ToString(Convert.ToChar(newPosition.x + 65) + Convert.ToString(newPosition.y + 1))].isWhite = isWhiteP;
         chessBoardGridCo[Convert.ToString(Convert.ToChar(newPosition.x + 65) + Convert.ToString(newPosition.y + 1))].occupiedPieceType = pieceTypeC;
