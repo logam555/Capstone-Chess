@@ -11,7 +11,6 @@ GameObject:
   - component: {fileID: 4000011301568552}
   - component: {fileID: 33000014251192462}
   - component: {fileID: 23000013641408362}
-  - component: {fileID: 8469857233146610186}
   m_Layer: 0
   m_Name: Chess King White
   m_TagString: Untagged
@@ -82,22 +81,3 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!114 &8469857233146610186
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1000013557280178}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6ad4419d682374d0cbb0a1eb6d1994f5, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  isWhite: 1
-  subordinates: []
-  commandActions: 1
-  usedFreeMovement: 0
-  leftBishop: {fileID: 0}
-  rightBishop: {fileID: 0}
-  usedDelegation: 0
