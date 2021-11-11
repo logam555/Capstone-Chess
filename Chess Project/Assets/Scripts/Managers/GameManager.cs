@@ -83,7 +83,7 @@ public class GameManager : MonoBehaviour
     }
 
     private bool EndofTurn() {
-        if (CurrentPlayer.TotalActionsRemaining() <= 0 /*&& CurrentPlayer.UsedAllFreeMovements()*/)
+        if (CurrentPlayer.TotalActionsRemaining() <= 0 && CurrentPlayer.UsedAllFreeMovements())
             return true;
         return false;
     }
