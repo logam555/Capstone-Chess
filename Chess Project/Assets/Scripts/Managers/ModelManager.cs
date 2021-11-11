@@ -30,6 +30,9 @@ public class ModelManager : MonoBehaviour
     private MeshRenderer commanderModel;
     private Material commanderMaterial;
     private Dictionary<ChessPiece, GameObject> pieceLinks;
+    public ChessPiece pieceObject { get; set; }
+    public Vector2Int position { get; set; }
+    public float duration { get; set; }
     #endregion
 
     private void Awake() {
@@ -55,6 +58,7 @@ public class ModelManager : MonoBehaviour
 
     private void Update() {
         UpdateSelection();
+        MoveObject(pieceObject, position, duration);
         //DrawChessboard();
     }
 
@@ -226,8 +230,10 @@ public class ModelManager : MonoBehaviour
         }
     }
 
-    public void MoveObject(ChessPiece piece, Vector2Int position) {
-        pieceLinks[piece].transform.position = GetTileCenter(position.x, position.y);
+    public void MoveObject(ChessPiece piece, Vector2Int position, float duration) {
+        //pieceLinks[piece].transform.position = GetTileCenter(position.x, position.y);
+        float step = duration * Time.deltaTime;
+        pieceLinks[piece].transform.position = Vector3.Lerp(pieceLinks[piece].transform.position, GetTileCenter(position.x, position.y), step);
     }
 
     public void RemoveObject(ChessPiece piece) {
