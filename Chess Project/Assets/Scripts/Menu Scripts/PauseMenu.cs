@@ -69,7 +69,7 @@ public class PauseMenu : MonoBehaviour
         isGamePaused = false;
     }
 
-    public void  Quit()
+    public void Quit()
     {
         Application.Quit();
     }
