@@ -16,6 +16,8 @@ public class GameManager : MonoBehaviour
     [SerializeField]
     private Player ai;
 
+    public ScoreManager score;
+
     private bool aiRunning;
     #endregion
 
@@ -97,12 +99,28 @@ public class GameManager : MonoBehaviour
         }
         if (captured is Pawn) {
             CurrentPlayer.capturedPieces["Pawn"] += 1;
+            if (CurrentPlayer == user)
+                score.AddImgPieces(ScoreManager.pieceType.goldpawn);
+            else
+                score.AddImgPieces(ScoreManager.pieceType.sliverpawn);
         } else if (captured is Rook) {
             CurrentPlayer.capturedPieces["Rook"] += 1;
+            if (CurrentPlayer == user)
+                score.AddImgPieces(ScoreManager.pieceType.goldrook);
+            else
+                score.AddImgPieces(ScoreManager.pieceType.sliverrook);
         } else if (captured is Knight) {
             CurrentPlayer.capturedPieces["Knight"] += 1;
+            if (CurrentPlayer == user)
+                score.AddImgPieces(ScoreManager.pieceType.goldknight);
+            else
+                score.AddImgPieces(ScoreManager.pieceType.sliverknight);
         } else if (captured is Bishop) {
             CurrentPlayer.capturedPieces["Bishop"] += 1;
+            if (CurrentPlayer == user)
+                score.AddImgPieces(ScoreManager.pieceType.goldbishop);
+            else
+                score.AddImgPieces(ScoreManager.pieceType.sliverbishop);
             Bishop bishop = (Bishop)captured;
             bishop.DelegatePieces();
 
@@ -113,8 +131,16 @@ public class GameManager : MonoBehaviour
 
         } else if (captured is Queen) {
             CurrentPlayer.capturedPieces["Queen"] += 1;
+            if (CurrentPlayer == user)
+                score.AddImgPieces(ScoreManager.pieceType.goldqueen);
+            else
+                score.AddImgPieces(ScoreManager.pieceType.sliverqueen);
         } else if (captured is King) {
             CurrentPlayer.capturedPieces["King"] += 1;
+            if (CurrentPlayer == user)
+                score.AddImgPieces(ScoreManager.pieceType.goldking);
+            else
+                score.AddImgPieces(ScoreManager.pieceType.sliverking);
             IsGameOver = true;
         }
     }
