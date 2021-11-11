@@ -141,7 +141,7 @@ public class Heuristics : MonoBehaviour
         //Debug.Log("ChessPieceSetup call");
         //King
         chessTypes[0].pieceType = "King";
-        chessTypes[0].typeValue = 5;
+        chessTypes[0].typeValue = 20;
         chessTypes[0].moveRange = 5;
         chessTypes[0].attackRange = 5;
 
@@ -153,7 +153,7 @@ public class Heuristics : MonoBehaviour
 
         //Bishop
         chessTypes[2].pieceType = "Bishop";
-        chessTypes[2].typeValue = 4;
+        chessTypes[2].typeValue = 10;
         chessTypes[2].moveRange = 5;
         chessTypes[2].attackRange = 5;
 
@@ -181,14 +181,12 @@ public class Heuristics : MonoBehaviour
     {
         int diff = new int();
 
-        //Debug.Log("HeuristicDifficulty call and Level Chosen " + PlayerPrefs.GetInt("Difficulty"));
-
         diff = PlayerPrefs.GetInt("Difficulty");
 
         //base/Easy
-        chessTypes[0].typeValue = 5;
+        chessTypes[0].typeValue = 20;
         chessTypes[1].typeValue = 5;
-        chessTypes[2].typeValue = 4;
+        chessTypes[2].typeValue = 10;
         chessTypes[3].typeValue = 3;
         chessTypes[4].typeValue = 2;
         chessTypes[5].typeValue = 1;
@@ -197,32 +195,31 @@ public class Heuristics : MonoBehaviour
         if (diff == 2)
         {
             //scale
-            chessTypes[0].typeValue = 10;
-            chessTypes[1].typeValue = 10;
-            chessTypes[2].typeValue = 8;
-            chessTypes[3].typeValue = 6;
-            chessTypes[4].typeValue = 4;
-            chessTypes[5].typeValue = 1;
+            chessTypes[0].typeValue *= 2;
+            chessTypes[1].typeValue *= 2;
+            chessTypes[2].typeValue *= 2;
+            chessTypes[3].typeValue *= 2;
+            chessTypes[4].typeValue *= 2;
+            chessTypes[5].typeValue *= 2;
         }
 
         //hard
         if (diff == 3)
         {
             //scale
-            chessTypes[0].typeValue = 15;
-            chessTypes[1].typeValue = 15;
-            chessTypes[2].typeValue = 12;
-            chessTypes[3].typeValue = 9;
-            chessTypes[4].typeValue = 6;
-            chessTypes[5].typeValue = 2;
+            chessTypes[0].typeValue *= 4;
+            chessTypes[1].typeValue *= 4;
+            chessTypes[2].typeValue *= 4;
+            chessTypes[3].typeValue *= 4;
+            chessTypes[4].typeValue *= 4;
+            chessTypes[5].typeValue *= 4;
         }
     }
 
 
-    //return vector 3? x and y for position; z for value
+    //return vector 3: x and y for position; z for value for Highest White Huer
     public Vector3Int ReturnHighestValueWhite(Dictionary<string, ModelManager.BoardTile> boardPieceValue)
     {
-        //Debug.Log("Call Check ReturnHighestValueWhite in Heur");
         char letterBoard = '0';
         string showB = "";
         Vector2Int[] position = new Vector2Int[64];
@@ -237,23 +234,19 @@ public class Heuristics : MonoBehaviour
                 letterBoard = Convert.ToChar(i);
                 showB = letterBoard.ToString() + j.ToString();
 
-                heurValueHolder[index] = boardPieceValue[showB].whiteHeuristic;
-                position[index] = boardPieceValue[showB].boardPosition;
-
-                /*
-                Debug.Log("showB is " + showB);
-                Debug.Log("In Main ModelMan; test  White " + chessBoardGridCo[showB].isWhite);
-                Debug.Log("In Main ModelMan; test  type " + chessBoardGridCo[showB].occupiedPieceType);
-                Debug.Log("In Main ModelMan; test  Occupied " + chessBoardGridCo[showB].isOccupied);
-                Debug.Log("In Main ModelMan; test Huer White " + chessBoardGridCo[showB].whiteHeuristic);
-                Debug.Log("In Main ModelMan; test Huer Black " + chessBoardGridCo[showB].blackHeuristic);
-                Debug.Log("In Main ModelMan; test v2 position " + chessBoardGridCo[showB].boardPosition);
-                Debug.Log("white A is " + boardPieceValue[showB].whiteHeuristic);
-                Debug.Log("white B is " + heurValueHolder[index]);
-                Debug.Log(boardPieceValue[showB].officalBoardPosition);
-                */
+                if(boardPieceValue[showB].isWhite == true)
+                {
+                    heurValueHolder[index] = boardPieceValue[showB].whiteHeuristic;
+                    position[index] = boardPieceValue[showB].boardPosition;
+                }
+                else
+                {
+                    heurValueHolder[index] = -1;
+                    position[index].x = -1;
+                    position[index].y = -1;
+                }
+                
                 index++;
-
             }
         }
 
@@ -262,19 +255,14 @@ public class Heuristics : MonoBehaviour
         int highestValue = new int();
         highestValue = 0;
 
-        //Debug.Log("heurValueHolder count " + heurValueHolder.Length);
         for (int k = 0; k < index; k++)
         {
-            //Debug.Log("value in going" + heurValueHolder[k]);
             if (highestValue < heurValueHolder[k])
             {
                 highestValue = heurValueHolder[k];
                 highestValueIndex = k;
-                //Debug.Log("new high value of " + highestValue);
             }
         }
-
-
 
         Vector3Int posValue = new Vector3Int();
 
@@ -282,14 +270,12 @@ public class Heuristics : MonoBehaviour
         posValue.y = position[highestValueIndex].y;
         posValue.z = highestValue;
 
-        //Debug.Log("end of get highest test value in Heur call " + posValue);
-
         return posValue;
     }
 
+    //return vector 3: x and y for position; z for value for Highest Black Huer
     public Vector3Int ReturnHighestValueBlack(Dictionary<string, ModelManager.BoardTile> boardPieceValue)
     {
-        //Debug.Log("Call Check ReturnHighestValueBlack in Heur");
         char letterBoard = '0';
         string showB = "";
         Vector2Int[] position = new Vector2Int[64];
@@ -303,8 +289,19 @@ public class Heuristics : MonoBehaviour
             {
                 letterBoard = Convert.ToChar(i);
                 showB = letterBoard.ToString() + j.ToString();
-                heurValueHolder[index] = boardPieceValue[showB].blackHeuristic;
-                position[index] = boardPieceValue[showB].boardPosition;
+
+                if (boardPieceValue[showB].isWhite == false)
+                {
+                    heurValueHolder[index] = boardPieceValue[showB].blackHeuristic;
+                    position[index] = boardPieceValue[showB].boardPosition;
+                }
+                else
+                {
+                    heurValueHolder[index] = -1;
+                    position[index].x = -1;
+                    position[index].y = -1;
+                }
+
                 index++;
             }
         }
@@ -332,19 +329,122 @@ public class Heuristics : MonoBehaviour
         return posValue;
     }
 
-    //checks movement range for value value; use boardmanager AvailableMoves bool list returned check
-    public void ReturnHighestValueOnePieceRange(Dictionary<string, ModelManager.BoardTile> boardPieceValue, Vector2Int pLoc)
+    //return vector 3: x and y for position; z for value for Lowest White Huer
+    public Vector3Int ReturnLowestValueWhite(Dictionary<string, ModelManager.BoardTile> boardPieceValue)
     {
+        char letterBoard = '0';
+        string showB = "";
+        Vector2Int[] position = new Vector2Int[64];
+        int index = new int();
+        index = 0;
+        int[] heurValueHolder = new int[64];
 
+        for (int j = 1; j < 9; j++)
+        {
+            for (int i = 65; i < 73; i++)
+            {
+                letterBoard = Convert.ToChar(i);
+                showB = letterBoard.ToString() + j.ToString();
 
-        //return best tile in local area
-        //return 0;
+                if (boardPieceValue[showB].isWhite == true)
+                {
+                    heurValueHolder[index] = boardPieceValue[showB].blackHeuristic;
+                    position[index] = boardPieceValue[showB].boardPosition;
+                }
+                else
+                {
+                    heurValueHolder[index] = -1;
+                    position[index].x = -1;
+                    position[index].y = -1;
+                }
+
+                index++;
+            }
+        }
+
+        int lowestValueIndex = new int();
+        lowestValueIndex = 0;
+        int lowestValue = new int();
+        lowestValue = 0;
+
+        for (int k = 0; k < index; k++)
+        {
+            if (lowestValue > heurValueHolder[k])
+            {
+                if(lowestValue > 0)
+                {
+                    lowestValue = heurValueHolder[k];
+                    lowestValueIndex = k;
+                }
+            }
+        }
+
+        Vector3Int posValue = new Vector3Int();
+
+        posValue.x = position[lowestValueIndex].x;
+        posValue.y = position[lowestValueIndex].y;
+        posValue.z = lowestValue;
+
+        return posValue;
     }
 
-    //function to cal difference black to white on board. piece.enemiesinrange vector 2 list returned will grab all enemies in range of attack
-    public void AdjustBoardHeuristicOffDefWhiBla()
+    //return vector 3: x and y for position; z for value for Lowest Black Huer
+    public Vector3Int ReturnLowestValueBlack(Dictionary<string, ModelManager.BoardTile> boardPieceValue)
     {
-        
+        char letterBoard = '0';
+        string showB = "";
+        Vector2Int[] position = new Vector2Int[64];
+        int index = new int();
+        index = 0;
+        int[] heurValueHolder = new int[64];
+
+        for (int j = 1; j < 9; j++)
+        {
+            for (int i = 65; i < 73; i++)
+            {
+                letterBoard = Convert.ToChar(i);
+                showB = letterBoard.ToString() + j.ToString();
+
+                if (boardPieceValue[showB].isWhite == false)
+                {
+                    heurValueHolder[index] = boardPieceValue[showB].blackHeuristic;
+                    position[index] = boardPieceValue[showB].boardPosition;
+                }
+                else
+                {
+                    heurValueHolder[index] = -1;
+                    position[index].x = -1;
+                    position[index].y = -1;
+                }
+
+                index++;
+            }
+        }
+
+        int lowestValueIndex = new int();
+        lowestValueIndex = 0;
+        int lowestValue = new int();
+        lowestValue = 0;
+
+        for (int k = 0; k < index; k++)
+        {
+            if (lowestValue > heurValueHolder[k])
+            {
+                if (lowestValue > 0)
+                {
+                    lowestValue = heurValueHolder[k];
+                    lowestValueIndex = k;
+                }
+            }
+        }
+
+        Vector3Int posValue = new Vector3Int();
+
+        posValue.x = position[lowestValueIndex].x;
+        posValue.y = position[lowestValueIndex].y;
+        posValue.z = lowestValue;
+
+        return posValue;
     }
 
     public Vector2Int BoardWideHeuristicTile(Dictionary<string, ModelManager.BoardTile> chessBoardGridCo, int j, int i)
@@ -364,6 +464,7 @@ public class Heuristics : MonoBehaviour
         letterBoard = Convert.ToChar(i);
         showB = letterBoard.ToString() + j.ToString();
 
+        #region Tile Calc
         //check space Primany Tile
         if (chessBoardGridCo[showB].isOccupied == true)
         {
@@ -966,6 +1067,8 @@ public class Heuristics : MonoBehaviour
                 }
             }
         }
+        #endregion
+
 
         holderV2I.x = whiteHeurTotal;
         holderV2I.y = blackHeurTotal;

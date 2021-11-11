@@ -104,7 +104,7 @@ public class ModelManager : MonoBehaviour
         if(Input.GetKeyDown(KeyCode.I))
         {
             Vector3Int posValue2 = new Vector3Int();
-            posValue2 = GetHighestValueFromBoard();
+            //posValue2 = GetHighestValueFromBoard();
             //Debug.Log("end of get highest test value is " + posValue2);
         }
 
@@ -394,29 +394,42 @@ public class ModelManager : MonoBehaviour
         chessBoardGridCo[Convert.ToString(Convert.ToChar(newPosition.x + 65) + Convert.ToString(newPosition.y + 1))].occupiedPieceType = pieceTypeC;
     }
 
-    public Vector3Int GetHighestValueFromBoard()
+    //return vector 3: x and y for position; z for value for Highest White Huer
+    public Vector3Int GetHighestValueFromBoardWhite()
     {
-        //entire heur board wide check
-
         Vector3Int posValue = new Vector3Int();
 
-        posValue = heuristics.ReturnHighestValueBlack(chessBoardGridCo);
-        //posValue = heuristics.ReturnHighestValueWhite(chessBoardGridCo);
+        posValue = heuristics.ReturnHighestValueWhite(chessBoardGridCo);
 
         return posValue;
     }
 
-    //pieces move range check
-    public Vector3Int GetHighestValueFromTileMoveRange(Piece p)
+    //return vector 3: x and y for position; z for value for Highest Black Huer
+    public Vector3Int GetHighestValueFromBoardBlack()
     {
-        Vector2Int pLocV2 = new Vector2Int();
-
-        //pLocV2 = p.Postion;
-
         Vector3Int posValue = new Vector3Int();
 
-        //posValue = heuristics.ReturnHighestValueOnePieceRange(chessBoardGridCo, pLocV2);
-        //posValue = heuristics.ReturnHighestValueWhite(chessBoardGridCo);
+        posValue = heuristics.ReturnHighestValueBlack(chessBoardGridCo);
+
+        return posValue;
+    }
+
+    //return vector 3: x and y for position; z for value for Lowest White Huer
+    public Vector3Int GetLowestValueFromBoardWhite()
+    {
+        Vector3Int posValue = new Vector3Int();
+
+        posValue = heuristics.ReturnLowestValueWhite(chessBoardGridCo);
+
+        return posValue;
+    }
+
+    //return vector 3: x and y for position; z for value for Lowest Black Huer
+    public Vector3Int GetLowestValueFromBoardBlack()
+    {
+        Vector3Int posValue = new Vector3Int();
+
+        posValue = heuristics.ReturnLowestValueBlack(chessBoardGridCo);
 
         return posValue;
     }

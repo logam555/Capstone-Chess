@@ -41,7 +41,7 @@ public class BestMove
     //add Piece p into eval call
     public Vector3Int eval() //sends board to heuristic to obtain a score for the move made
     {
-        Vector3Int posValue = boardModel.GetHighestValueFromBoard();
+        Vector3Int posValue = boardModel.GetHighestValueFromBoardWhite();
 
         //change to be made below
         //Vector3Int posValue = GetHighestValueFromTileMoveRange(p);
@@ -81,7 +81,8 @@ public class BestMove
                         }
                     }
                 }
-                if (possibleMoves(piece)[i,j] == true || possibleAttack(i,j) == true)
+                //if (possibleMoves(piece)[i,j] == true || possibleAttack(i,j) == true)
+                if (possibleMoves(piece)[i,j] == true)
                 {
                     
                     Piece temp = board[i,j];
