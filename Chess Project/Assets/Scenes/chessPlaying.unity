@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.3731193, g: 0.38073996, b: 0.35872698, a: 1}
+  m_IndirectSpecularColor: {r: 0.37311953, g: 0.38074014, b: 0.3587274, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -441,7 +441,7 @@ Transform:
   - {fileID: 2124612364}
   - {fileID: 940572974}
   m_Father: {fileID: 0}
-  m_RootOrder: 3
+  m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!4 &244706501 stripped
 Transform:
@@ -1119,7 +1119,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2192606676377992025, guid: 4a66292bbef09401a90de5918564dae9, type: 3}
       propertyPath: m_RootOrder
-      value: 7
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 2192606676377992025, guid: 4a66292bbef09401a90de5918564dae9, type: 3}
       propertyPath: m_LocalScale.x
@@ -1352,10 +1352,10 @@ MonoBehaviour:
   m_GameObject: {fileID: 494208622}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: cb10daeec81cbb146b9bbf0b1eda9610, type: 3}
+  m_Script: {fileID: 11500000, guid: 1c6e01efc2df0004ea423b5e6e5591b4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  boardModel: {fileID: 0}
+  audio: {fileID: 494208624}
 --- !u!82 &494208624
 AudioSource:
   m_ObjectHideFlags: 0
@@ -1464,7 +1464,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 2
+  m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &592348107
 PrefabInstance:
@@ -1960,7 +1960,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 5
+  m_RootOrder: 6
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &840666926
 PrefabInstance:
@@ -2678,10 +2678,10 @@ MonoBehaviour:
   m_GameObject: {fileID: 1197809107}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 812eecaf458935f408f47b2e85459ab9, type: 3}
+  m_Script: {fileID: 11500000, guid: 29669d2cb2adf3e4da176faa9e5060a0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  selection: {x: -1, y: -1}
+  selection: {x: 0, y: 0}
   piecePrefabs:
   - {fileID: 1000013557280178, guid: d992acfff4e84c44e97513dc227b06b7, type: 3}
   - {fileID: 1000011613667446, guid: c9476b5c23fb4634485fcb52734c04d5, type: 3}
@@ -2700,7 +2700,7 @@ MonoBehaviour:
   - {fileID: 1555274435638532, guid: 2dffad96abe2048edaeed7ce746da9b4, type: 3}
   - {fileID: 1341371675672656, guid: 47a494f88904440cbbdd71a062103351, type: 3}
   commanderHighlightPrefab: {fileID: 2100000, guid: 87a240bf62ee1ea46b6ca79fe48711eb, type: 2}
-  heuristics: {fileID: 0}
+  heuristics: {fileID: 1197809110}
 --- !u!114 &1197809110
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2713,6 +2713,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 269cf93ec42820242a4d16fac3847ae9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  chessTypes: []
 --- !u!1 &1225712588
 GameObject:
   m_ObjectHideFlags: 0
@@ -3114,6 +3115,8 @@ GameObject:
   m_Component:
   - component: {fileID: 1511761433}
   - component: {fileID: 1511761432}
+  - component: {fileID: 1511761435}
+  - component: {fileID: 1511761434}
   m_Layer: 0
   m_Name: GameManager
   m_TagString: Untagged
@@ -3130,11 +3133,11 @@ MonoBehaviour:
   m_GameObject: {fileID: 1511761431}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 1e449ed08e130804db9989528edd2e4e, type: 3}
+  m_Script: {fileID: 11500000, guid: 94a14346b68bfb348a7c364de69231f1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  boardModel: {fileID: 1197809108}
-  board: {fileID: 494208623}
+  user: {fileID: 1511761435}
+  ai: {fileID: 1511761434}
 --- !u!4 &1511761433
 Transform:
   m_ObjectHideFlags: 0
@@ -3147,8 +3150,36 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 1
+  m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1511761434
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1511761431}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 76d2b9ddfeaf8e242b6af219c34b974e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  name: AI
+  isWhite: 0
+--- !u!114 &1511761435
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1511761431}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ac0c9fce7290b4040912f35d87438aac, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  name: Human
+  isWhite: 1
 --- !u!1 &1526411381
 GameObject:
   m_ObjectHideFlags: 0
@@ -4900,7 +4931,7 @@ RectTransform:
   - {fileID: 2084412021}
   - {fileID: 488453141}
   m_Father: {fileID: 0}
-  m_RootOrder: 4
+  m_RootOrder: 5
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
@@ -5254,7 +5285,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4297161465912944, guid: 440d9e69d5aceca4a89f47c4f96043ac, type: 3}
       propertyPath: m_RootOrder
-      value: 6
+      value: 7
       objectReference: {fileID: 0}
     - target: {fileID: 4297161465912944, guid: 440d9e69d5aceca4a89f47c4f96043ac, type: 3}
       propertyPath: m_LocalScale.x

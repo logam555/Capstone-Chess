@@ -5,35 +5,23 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class KingAI
+public class KingAI : CommanderAI
 {
     private Commander King;
-    private BoardManager bm;
     //private bool isDead = false;
-    public Piece bestPiece { get; set; }
+    public ChessPiece bestPiece { get; set; }
     public bool isWhite;
     private int[,] moves;
-    private Piece[,] board;
+    private ChessPiece[,] board;
 
-    public KingAI(BoardManager bm) {
-        this.bm = bm;
+    private void Start() {
         moves = new int[3, 16];
-        board = new Piece[8, 8];
-    }
-
-
-    public int[] Start(bool isWhite)
-    {
         getBoard();
-
-        this.isWhite = isWhite;
-
+        isWhite = FindObjectOfType<AI>().isWhite;
         getCommander();
-        
-        return bestGlobal();
     }
 
-    public int[] Step()
+    public override int[] Step()
     {
         getBoard();
 
@@ -42,25 +30,18 @@ public class KingAI
 
     public void getBoard() //Obtains board from GameManager
     {
-        board = (Piece[,])bm.Pieces.Clone();
+        board = (ChessPiece[,])ChessBoard.Instance.Board.Clone();
     }
 
     public void getCommander()
     {
-        Vector2Int position = new Vector2Int(0, 0);
         if (isWhite == false)
         {
-            position.x = 4;
-            position.y = 7;
-
-            King = (Commander)bm.PieceAt(position);
+            King = (Commander)ChessBoard.Instance.PieceAt(new Vector2Int(4,7), board);
         }
         if (isWhite == true)
         {
-            position.x = 4;
-            position.y = 0;
-
-            King = (Commander)bm.PieceAt(position);
+            King = (Commander)ChessBoard.Instance.PieceAt(new Vector2Int(4, 0), board);
         }
     }
 
@@ -70,7 +51,7 @@ public class KingAI
 
         for (int i = 0; i < King.subordinates.Count; i++)
         {
-            int[] bl = local.getMove(board, King.subordinates[i], false, bm);
+            int[] bl = local.getMove(board, King.subordinates[i], false);
 
             moves[0, i+1] = bl[0]; //x and y coordinates of best scoring move are recorded
             moves[1, i+1] = bl[1];
@@ -109,7 +90,7 @@ public class KingAI
     {
         BestMove local = new BestMove();
 
-        int[] bl = local.getMove(board, King, true, bm);
+        int[] bl = local.getMove(board, King, true);
 
         moves[0,0] = bl[0]; //x and y coordinates of best scoring move are recorded
         moves[1,0] = bl[1];

@@ -6,32 +6,36 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class BishopAI 
+public class BishopAI : CommanderAI
 {
-    private BoardManager bm;
     //private bool isDead = false;
     public bool isWhite;
     private Commander bishop;
-    public Piece bestPiece { get; set; }
-    private int[,] moves = new int[3,5];
-    private Piece[,] board = new Piece[8,8];
+    public ChessPiece bestPiece { get; set; }
+    private int[,] moves;
+    private ChessPiece[,] board;
 
-    public BishopAI(BoardManager bm) {
-        this.bm = bm;
+    private bool initialized;
+    public bool leftBishop;
+
+    private void Awake() {
+        initialized = false;
     }
 
-    public int[] Start(bool isWhite, bool left)
-    {
+    private void Start() {
+        moves = new int[3, 16];
         getBoard();
-
-        this.isWhite = isWhite;
-
-        getCommander(left);
-
-        return bestGlobal();
+        isWhite = FindObjectOfType<AI>().isWhite;
+        getCommander(leftBishop);
     }
 
-    public int[] Step()
+    private void Update() {
+        if(initialized && bishop.isDead) {
+            Destroy(this.gameObject);
+        }
+    }
+
+    public override int[] Step()
     {
         getBoard();
 
@@ -40,7 +44,7 @@ public class BishopAI
 
     public void getBoard() //Obtains board from BoardManager
     {
-        board = (Piece[,])bm.Pieces.Clone();
+        board = (ChessPiece[,])ChessBoard.Instance.Board.Clone();
     }
 
     public int[] bestGlobal() //obtains the best move possible in corp and returns x and y coordinates and return as array
@@ -72,7 +76,7 @@ public class BishopAI
     {
         BestMove local = new BestMove();
 
-        int[] bl = local.getMove(board, bishop,true, bm);
+        int[] bl = local.getMove(board, bishop,true);
 
         moves[0,0] = bl[0]; //x and y coordinates of best scoring move are recorded
         moves[1,0] = bl[1];
@@ -85,7 +89,7 @@ public class BishopAI
 
         for (int i = 0; i < bishop.subordinates.Count; i++)
         {
-            int[] bl = local.getMove(board, bishop.subordinates[i], false, bm);
+            int[] bl = local.getMove(board, bishop.subordinates[i], false);
 
             moves[0, i + 1] = bl[0]; //x and y coordinates of best scoring move are recorded
             moves[1, i + 1] = bl[1];
@@ -101,28 +105,30 @@ public class BishopAI
             position.x = 2;
             position.y = 7;
 
-            bishop = (Commander) bm.PieceAt(position);
+            bishop = (Commander) ChessBoard.Instance.PieceAt(position, board);
         }
         if (isWhite == false && lBishop == false)
         {
             position.x = 5;
             position.y = 7;
 
-            bishop = (Commander) bm.PieceAt(position);
+            bishop = (Commander) ChessBoard.Instance.PieceAt(position, board);
         }
         if (isWhite == true && lBishop == true)
         {
             position.x = 2;
             position.y = 0;
 
-            bishop = (Commander) bm.PieceAt(position);
+            bishop = (Commander) ChessBoard.Instance.PieceAt(position, board);
         }
         if (isWhite == true && lBishop == false)
         {
             position.x = 5;
             position.y = 0;
 
-            bishop = (Commander) bm.PieceAt(position);
+            bishop = (Commander) ChessBoard.Instance.PieceAt(position, board);
         }
+
+        initialized = true;
     }
 }

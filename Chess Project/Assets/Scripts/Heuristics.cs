@@ -12,6 +12,7 @@ using UnityEngine;
 
 public class Heuristics : MonoBehaviour
 {
+    [Serializable]
     private class chessPiece
     {
         public string pieceType;
@@ -35,7 +36,7 @@ public class Heuristics : MonoBehaviour
 
     // Start is called before the first frame update
     //might need to remove start if runnign through voard script
-    void Start()
+    void Awake()
     {
         //list for holding chess piece types
         chessTypes = new List<chessPiece>();
@@ -79,7 +80,7 @@ public class Heuristics : MonoBehaviour
         //need commander game logic
     }
 
-    public void BoardWideHeuristic(ref Dictionary<string, ModelManager.BoardTile> chessBoardGridCo)
+    public void BoardWideHeuristic(ref Dictionary<string, BoardTile> chessBoardGridCo)
     {
         char letterBoard = '0';
         string showB = "";
@@ -220,7 +221,7 @@ public class Heuristics : MonoBehaviour
 
 
     //return vector 3? x and y for position; z for value
-    public Vector3Int ReturnHighestValueWhite(Dictionary<string, ModelManager.BoardTile> boardPieceValue)
+    public Vector3Int ReturnHighestValueWhite(Dictionary<string, BoardTile> boardPieceValue)
     {
         //Debug.Log("Call Check ReturnHighestValueWhite in Heur");
         char letterBoard = '0';
@@ -287,7 +288,7 @@ public class Heuristics : MonoBehaviour
         return posValue;
     }
 
-    public Vector3Int ReturnHighestValueBlack(Dictionary<string, ModelManager.BoardTile> boardPieceValue)
+    public Vector3Int ReturnHighestValueBlack(Dictionary<string, BoardTile> boardPieceValue)
     {
         //Debug.Log("Call Check ReturnHighestValueBlack in Heur");
         char letterBoard = '0';
@@ -333,7 +334,7 @@ public class Heuristics : MonoBehaviour
     }
 
     //checks movement range for value value; use boardmanager AvailableMoves bool list returned check
-    public void ReturnHighestValueOnePieceRange(Dictionary<string, ModelManager.BoardTile> boardPieceValue, Vector2Int pLoc)
+    public void ReturnHighestValueOnePieceRange(Dictionary<string, BoardTile> boardPieceValue, Vector2Int pLoc)
     {
 
 
@@ -347,7 +348,7 @@ public class Heuristics : MonoBehaviour
         
     }
 
-    public Vector2Int BoardWideHeuristicTile(Dictionary<string, ModelManager.BoardTile> chessBoardGridCo, int j, int i)
+    public Vector2Int BoardWideHeuristicTile(Dictionary<string, BoardTile> chessBoardGridCo, int j, int i)
     {
         int whiteHeurTotal = new int();
         int blackHeurTotal = new int();

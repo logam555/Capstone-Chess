@@ -72,7 +72,7 @@ public struct FuzzyLogic {
     #endregion
 
     #region STATIC METHODS
-    private static int FindNumberKing(Piece pieceToAttack) {
+    private static int FindNumberKing(ChessPiece pieceToAttack) {
         if (pieceToAttack is King) {
             return (int)AttackKing.King;
         } else if (pieceToAttack is Queen) {
@@ -88,7 +88,7 @@ public struct FuzzyLogic {
         }
         return 0;
     }
-    private static int FindNumberQueen(Piece pieceToAttack) {
+    private static int FindNumberQueen(ChessPiece pieceToAttack) {
         if (pieceToAttack is King ) {
             return (int)FuzzyLogic.AttackQueen.King;
         } else if (pieceToAttack is Queen ) {
@@ -106,7 +106,7 @@ public struct FuzzyLogic {
 
 
     }
-    private static int FindNumberBishop(Piece pieceToAttack) {
+    private static int FindNumberBishop(ChessPiece pieceToAttack) {
         if (pieceToAttack is King ) {
             return (int)FuzzyLogic.AttackBishop.King;
         } else if (pieceToAttack is Queen ) {
@@ -123,7 +123,7 @@ public struct FuzzyLogic {
         return 0;
 
     }
-    private static int FindNumberRook(Piece pieceToAttack) {
+    private static int FindNumberRook(ChessPiece pieceToAttack) {
         if (pieceToAttack is King) {
             return (int)FuzzyLogic.AttackRook.King;
         } else if (pieceToAttack is Queen ) {
@@ -140,7 +140,7 @@ public struct FuzzyLogic {
         return 0;
 
     }
-    private static int FindNumberKnight(Piece pieceToAttack) {
+    private static int FindNumberKnight(ChessPiece pieceToAttack) {
         if (pieceToAttack is King) {
             return (int)FuzzyLogic.AttackKnight.King;
         } else if (pieceToAttack is Queen ) {
@@ -157,7 +157,7 @@ public struct FuzzyLogic {
         return 0;
 
     }
-    private static int FindNumberPawn(Piece pieceToAttack) {
+    private static int FindNumberPawn(ChessPiece pieceToAttack) {
         if (pieceToAttack is King) {
             return (int)FuzzyLogic.AttackPawn.King;
         } else if (pieceToAttack is Queen ) {
@@ -175,7 +175,7 @@ public struct FuzzyLogic {
 
     }
 
-    public static int FindFuzzyNumber(Piece attacker, Piece defender) {
+    public static int FindFuzzyNumber(ChessPiece attacker, ChessPiece defender) {
         if (attacker is King)
             return FindNumberKing(defender);
         else if (attacker is Queen)
