@@ -266,7 +266,6 @@ class ChessBoard : MonoBehaviour {
         ModelManager.Instance.BoardTileLocationUpdate(oldPosition, position, SelectedPiece.IsWhite, SelectedPiece.GetType().Name); ;
 
         // Call function in board to move the piece game object
-        //ModelManager.Instance.MoveObject(SelectedPiece, position);
         ModelManager.Instance.pieceObject = SelectedPiece;
         ModelManager.Instance.position = position;
         ModelManager.Instance.duration = 5;

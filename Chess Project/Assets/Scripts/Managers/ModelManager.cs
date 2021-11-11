@@ -231,9 +231,9 @@ public class ModelManager : MonoBehaviour
     }
 
     public void MoveObject(ChessPiece piece, Vector2Int position, float duration) {
-        //pieceLinks[piece].transform.position = GetTileCenter(position.x, position.y);
         float step = duration * Time.deltaTime;
-        pieceLinks[piece].transform.position = Vector3.Lerp(pieceLinks[piece].transform.position, GetTileCenter(position.x, position.y), step);
+        if (piece != null)
+            pieceLinks[piece].transform.position = Vector3.Lerp(pieceLinks[piece].transform.position, GetTileCenter(position.x, position.y), step);
     }
 
     public void RemoveObject(ChessPiece piece) {
