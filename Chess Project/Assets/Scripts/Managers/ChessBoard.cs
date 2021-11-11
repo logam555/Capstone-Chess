@@ -13,7 +13,7 @@ class ChessBoard : MonoBehaviour {
     public ChessPiece SelectedPiece { get; set; }
 
     [SerializeField]
-    private AudioSource audio;
+    private AudioSource sound;
 
     private bool isAttacking;
     private Vector2Int selectedPos;
@@ -165,15 +165,15 @@ class ChessBoard : MonoBehaviour {
     }
 
     // Function that returns the object at board position
-    public ChessPiece PieceAt(Vector2Int position) {
+    public ChessPiece PieceAt(Vector2Int position, ChessPiece[,] board) {
         if (ValidPosition(position))
-            return Board[position.x, position.y];
+            return board[position.x, position.y];
         return null;
     }
 
     // Function that returns true if space is occupied by an enemy piece
-    public bool IsEnemyPieceAt(bool isWhite, Vector2Int position) {
-        ChessPiece piece = PieceAt(position);
+    public bool IsEnemyPieceAt(bool isWhite, Vector2Int position, ChessPiece[,] board) {
+        ChessPiece piece = PieceAt(position, board);
 
         if (piece == null)
             return false;
@@ -185,8 +185,8 @@ class ChessBoard : MonoBehaviour {
     }
 
     // Function that returns true if space is occupied by a friendly piece
-    public bool IsFriendlyPieceAt(bool isWhite, Vector2Int position) {
-        ChessPiece piece = PieceAt(position);
+    public bool IsFriendlyPieceAt(bool isWhite, Vector2Int position, ChessPiece[,] board) {
+        ChessPiece piece = PieceAt(position, board);
 
         if (piece == null)
             return false;
@@ -198,8 +198,8 @@ class ChessBoard : MonoBehaviour {
     }
 
     // Function that returns true if space is occupied
-    public bool IsPieceAt(Vector2Int position) {
-        ChessPiece piece = PieceAt(position);
+    public bool IsPieceAt(Vector2Int position, ChessPiece[,] board) {
+        ChessPiece piece = PieceAt(position, board);
 
         if (piece == null)
             return false;
@@ -208,21 +208,21 @@ class ChessBoard : MonoBehaviour {
     }
 
     // Function to filter tiles in movement range to valid positions
-    public List<Vector2Int> FilterMoveRange(ChessPiece piece) {
-        List<Vector2Int> possibleMoves = piece.MoveRange();
+    public List<Vector2Int> FilterMoveRange(ChessPiece piece, ChessPiece[,] board) {
+        List<Vector2Int> possibleMoves = piece.MoveRange(board);
 
         possibleMoves.RemoveAll(pos => !ValidPosition(pos));
-        possibleMoves.RemoveAll(pos => IsPieceAt(pos));
+        possibleMoves.RemoveAll(pos => IsPieceAt(pos, board));
 
         return possibleMoves;
     }
 
     // Function to filter tiles in attack range to valid positions
-    public List<Vector2Int> FilterAttackRange(ChessPiece piece) {
-        List<Vector2Int> possibleMoves = piece.AttackRange();
+    public List<Vector2Int> FilterAttackRange(ChessPiece piece, ChessPiece[,] board) {
+        List<Vector2Int> possibleMoves = piece.AttackRange(board);
 
         possibleMoves.RemoveAll(pos => !ValidPosition(pos));
-        possibleMoves.RemoveAll(pos => !IsEnemyPieceAt(piece.IsWhite, pos));
+        possibleMoves.RemoveAll(pos => !IsEnemyPieceAt(piece.IsWhite, pos, board));
 
         return possibleMoves;
     }
@@ -231,9 +231,9 @@ class ChessBoard : MonoBehaviour {
     #region INTERACTION
     // Function to select a valid piece and highlight all possible moves.
     public void SelectPiece(Vector2Int position) {
-        if(IsPieceAt(position) && PieceAt(position).IsWhite == GameManager.Instance.CurrentPlayer.isWhite) {
+        if(IsPieceAt(position, Board) && PieceAt(position, Board).IsWhite == GameManager.Instance.CurrentPlayer.isWhite) {
             SelectedPiece = Board[position.x, position.y];
-            ModelManager.Instance.HighlightAllTiles(position, FilterMoveRange(SelectedPiece), FilterAttackRange(SelectedPiece), SelectedPiece is Subordinate ? ((Subordinate)SelectedPiece).Commander : (Commander)SelectedPiece);
+            ModelManager.Instance.HighlightAllTiles(position, FilterMoveRange(SelectedPiece, Board), FilterAttackRange(SelectedPiece, Board), SelectedPiece is Subordinate ? ((Subordinate)SelectedPiece).Commander : (Commander)SelectedPiece);
         }
         else {
             SelectedPiece = null;
@@ -261,7 +261,7 @@ class ChessBoard : MonoBehaviour {
         Board[SelectedPiece.Position.x, SelectedPiece.Position.y] = null;
         Board[position.x, position.y] = SelectedPiece;
         SelectedPiece.Position = position;
-        audio.Play();
+        sound.Play();
 
         ModelManager.Instance.BoardTileLocationUpdate(oldPosition, position, SelectedPiece.IsWhite, SelectedPiece.GetType().Name); ;
 
@@ -306,7 +306,7 @@ class ChessBoard : MonoBehaviour {
         } else {
             // Move knight next to defending piece if attacking a non-adjacent piece
             if (SelectedPiece is Knight && isMoving) {
-                List<Vector2Int> locations = FilterMoveRange(SelectedPiece);
+                List<Vector2Int> locations = FilterMoveRange(SelectedPiece, Board);
 
                 foreach (Vector2Int pos in locations) {
                     Vector2Int diff = Vector2Int.zero;
@@ -355,17 +355,17 @@ class ChessBoard : MonoBehaviour {
     }
 
     // Function to check if the selected tile is a valid move for the selected piece and perform appropriate action.
-    public void PerformAction(Vector2Int position) {
+    public bool PerformAction(Vector2Int position) {
         // Deselect the selected piece if position is not valid
         if (!ValidPosition(position)) {
             SelectPiece(position);
-            return;
+            return false;
         }
 
 
         // Get all available positions to move and list of enemy positions in range
-        List<Vector2Int> availableMoves = FilterMoveRange(SelectedPiece);
-        List<Vector2Int> enemies = FilterAttackRange(SelectedPiece);
+        List<Vector2Int> availableMoves = FilterMoveRange(SelectedPiece, Board);
+        List<Vector2Int> enemies = FilterAttackRange(SelectedPiece, Board);
 
         // Move piece if position is in available moves, attack enemy piece if position contains enemy, or change selection if position contains a friendly piece
         if (availableMoves.Contains(position)) {
@@ -374,13 +374,16 @@ class ChessBoard : MonoBehaviour {
         } else if (enemies.Contains(position)) {
             isAttacking = true;
             selectedPos = position;
-        } else if (IsFriendlyPieceAt(SelectedPiece.IsWhite, position)) {
+            return true;
+        } else if (IsFriendlyPieceAt(SelectedPiece.IsWhite, position, Board)) {
             ModelManager.Instance.RemoveHighlights();
             SelectPiece(position);
 
         } else
             // Deselect the piece
             SelectPiece(new Vector2Int(-1, -1));
+
+        return false;
     }
     #endregion
 }

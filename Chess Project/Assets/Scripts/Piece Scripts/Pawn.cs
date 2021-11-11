@@ -9,7 +9,7 @@ public class Pawn : Subordinate {
 
     public Pawn(bool isWhite, Vector2Int position, Commander commander, string name) : base(isWhite, position, commander, name) { }
 
-    public override List<Vector2Int> MoveRange() {
+    public override List<Vector2Int> MoveRange(ChessPiece[,] board) {
         List<Vector2Int> positions = new List<Vector2Int>();
         int forwardDirection = IsWhite ? 1 : -1;
 
@@ -27,8 +27,8 @@ public class Pawn : Subordinate {
         return positions;
     }
 
-    public override List<Vector2Int> AttackRange() {
-        return MoveRange();
+    public override List<Vector2Int> AttackRange(ChessPiece[,] board) {
+        return MoveRange(board);
     }
 
 }

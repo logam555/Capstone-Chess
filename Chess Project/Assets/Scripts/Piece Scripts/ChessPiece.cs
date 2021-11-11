@@ -31,13 +31,13 @@ public abstract class ChessPiece {
     }
 
     // Determines what positions are available to move to based on pieces movement restriction
-    public abstract List<Vector2Int> MoveRange();
+    public abstract List<Vector2Int> MoveRange(ChessPiece[,] board);
 
     // Function to determine if enemies are withing attacking range
-    public abstract List<Vector2Int> AttackRange();
+    public abstract List<Vector2Int> AttackRange(ChessPiece[,] board);
 
     // Recursive function for nonlinear movement range
-    public List<Vector2Int> RecursiveMoveRange(Vector2Int currentPos, int range) {
+    public List<Vector2Int> RecursiveMoveRange(Vector2Int currentPos, int range, ChessPiece[,] board) {
         List<Vector2Int> positions = new List<Vector2Int>();
 
         if (range > 0) {
@@ -49,9 +49,9 @@ public abstract class ChessPiece {
 
                 positions.Add(nextPos);
 
-                if (ChessBoard.Instance.IsPieceAt(nextPos))
+                if (ChessBoard.Instance.IsPieceAt(nextPos, board))
                     continue;
-                positions = positions.Union(RecursiveMoveRange(nextPos, range - 1)).ToList();
+                positions = positions.Union(RecursiveMoveRange(nextPos, range - 1, board)).ToList();
             }
         }
 
@@ -63,11 +63,13 @@ public abstract class Commander : ChessPiece {
     public List<Subordinate> subordinates;
     public int commandActions;
     public bool usedFreeMovement;
+    public bool isDead;
 
     public Commander(bool isWhite, Vector2Int position, string name) : base(isWhite, position, name) {
         subordinates = new List<Subordinate>();
         commandActions = 1;
         usedFreeMovement = false;
+        isDead = false;
     }
 
     public abstract void Reset();

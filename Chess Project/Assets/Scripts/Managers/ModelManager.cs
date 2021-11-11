@@ -241,10 +241,12 @@ public class ModelManager : MonoBehaviour
     #region RENDERING
     // Function to highlight all tiles associated with selected piece
     public void HighlightAllTiles(Vector2Int position, List<Vector2Int> availableMoves, List<Vector2Int> enemies, Commander commander) {
-        HighlightSelected(position);
-        HighlightAvailableMoves(availableMoves);
-        HighlightEnemies(enemies);
-        HighlightCommander(commander);
+        if (commander.IsWhite) {
+            HighlightSelected(position);
+            HighlightAvailableMoves(availableMoves);
+            HighlightEnemies(enemies);
+            HighlightCommander(commander);
+        }
     }
 
     // Function to highlight the tile of the selected piece

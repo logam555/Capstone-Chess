@@ -5,7 +5,7 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class KingAI : MonoBehaviour
+public class KingAI : CommanderAI
 {
     private Commander King;
     //private bool isDead = false;
@@ -21,7 +21,7 @@ public class KingAI : MonoBehaviour
         getCommander();
     }
 
-    public int[] Step()
+    public override int[] Step()
     {
         getBoard();
 
@@ -37,11 +37,11 @@ public class KingAI : MonoBehaviour
     {
         if (isWhite == false)
         {
-            King = (Commander)ChessBoard.Instance.PieceAt(new Vector2Int(4,7));
+            King = (Commander)ChessBoard.Instance.PieceAt(new Vector2Int(4,7), board);
         }
         if (isWhite == true)
         {
-            King = (Commander)ChessBoard.Instance.PieceAt(new Vector2Int(4, 0));
+            King = (Commander)ChessBoard.Instance.PieceAt(new Vector2Int(4, 0), board);
         }
     }
 

@@ -12,21 +12,22 @@ public class Bishop : Commander {
         King = king;
     }
 
-    public override List<Vector2Int> MoveRange() {
+    public override List<Vector2Int> MoveRange(ChessPiece[,] board) {
         if (commandActions <= 0)
             return new List<Vector2Int>();
-        return RecursiveMoveRange(Position, 2);
+        return RecursiveMoveRange(Position, 2, board);
     }
 
-    public override List<Vector2Int> AttackRange() {
+    public override List<Vector2Int> AttackRange(ChessPiece[,] board) {
         if (commandActions <= 0)
             return new List<Vector2Int>();
-        return RecursiveMoveRange(Position, 1);
+        return RecursiveMoveRange(Position, 1, board);
     }
 
     public void DelegatePieces() {
         King.subordinates = King.subordinates.Union(subordinates).ToList();
         subordinates.Clear();
+        isDead = true;
     }
 
     public override void Reset() {

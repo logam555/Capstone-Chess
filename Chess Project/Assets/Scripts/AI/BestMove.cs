@@ -3,6 +3,7 @@
 //V2.0
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public class BestMove
@@ -42,13 +43,8 @@ public class BestMove
 
     public List<Vector2Int> possibleMoves(ChessPiece p) //Uses Bishop script to obtain possible moves for Bishop
     {
-        return ChessBoard.Instance.FilterMoveRange(p);
+        return ChessBoard.Instance.FilterMoveRange(p, board).Union(ChessBoard.Instance.FilterAttackRange(p, board)).ToList();
     }
-
-    //public bool possibleAttack(int x, int y)
-    //{
-    //    return bm.CheckMove(new Vector2Int(x, y));
-    //}
 
     public int[] bestLocal() //obtains best possible move for Bishop
     {
@@ -61,14 +57,13 @@ public class BestMove
             {
                 pieceX = piece.Position.x;
                 pieceY = piece.Position.y;
-                if (possibleMoves(piece).Contains(new Vector2Int(i,j)) /*|| possibleAttack(i,j) == true*/)
+                if (possibleMoves(piece).Contains(new Vector2Int(i,j)))
                 {
                     
                     ChessPiece temp = board[i,j];
                     board[i,j] = piece;
                     board[pieceX,pieceY] = null;
-                    int dice = UnityEngine.Random.Range(1, 6);
-                    int score = minimax(0,board, true, dice, int.MinValue, int.MaxValue);
+                    int score = minimax(0,board, true, int.MinValue, int.MaxValue);
                     board[i,j] = temp;
                     board[pieceX, pieceY] = piece;
                     
@@ -85,7 +80,7 @@ public class BestMove
         return move;
     }
 
-    public int minimax(int depth, ChessPiece[,] tempBoard, bool maximize, int dice, int alpha, int beta) //uses minimax algorithm to obtain the score
+    public int minimax(int depth, ChessPiece[,] tempBoard, bool maximize, int alpha, int beta) //uses minimax algorithm to obtain the score
     {
         Vector3Int evalsV3 = eval(); //uses heuristic to obtain score
         //Vector3Int evalsV3 = eval(piece); //uses heuristic to obtain score
@@ -106,19 +101,11 @@ public class BestMove
             {
                 for (int j = 0; j < 8; j++) //Iteratate through board, y value of board
                 {
-                    for (int k = 0; k < 8; k++)
-                    {
-                        for (int d = 0; d < 8; d++) //Iterate through board
-                        {
-                            if (tempBoard[k,d] == piece) //finds position of board on piece
-                            {
-                                pieceX = k;
-                                pieceY = d;
-                            }
-                        }
-                    }
+                    pieceX = piece.Position.x;
+                    pieceY = piece.Position.y;
                     if (possibleMoves(piece).Contains(new Vector2Int(i,j))) //If space is available
                     {
+                        ChessPiece temp = tempBoard[i, j];
                         tempBoard[i,j] = piece; //move piece
                         tempBoard[pieceX,pieceY] = null; //move empty space to  pieces previous position
 
@@ -167,11 +154,10 @@ public class BestMove
                         //board wide huer tile only update
                         ModelManager.Instance.BoardWideHeuristicTileCall(i,j);
 
-                        dice = UnityEngine.Random.Range(1, 6);
-                        score = minimax(depth, tempBoard, false, dice,alpha,beta);
+                        score = minimax(depth, tempBoard, false,alpha,beta);
                         bestVal = Math.Max(bestVal, score);
                         alpha = Math.Max(alpha, bestVal);
-                        tempBoard[i,j] = null;
+                        tempBoard[i,j] = temp;
                         tempBoard[pieceX,pieceY] = piece;
                         
                         ModelManager.Instance.BoardTileLocationUpdate(new Vector2Int(i, j), new Vector2Int(pieceX, pieceY), pieceWhite, pieceTypeStr);
@@ -195,80 +181,73 @@ public class BestMove
             {
                 for (int j = 0; j < 8; j++)//y value of board
                 {
-                    for (int k = 0; k < 8; k++)
+                    if (ChessBoard.Instance.IsEnemyPieceAt(piece.IsWhite,new Vector2Int(i,j), board))
                     {
-                        for (int d = 0; d < 8; d++)
+                        tempPiece = tempBoard[i,j];
+                        pieceX = i;
+                        pieceY = j;
+
+                        bool pieceWhite = new bool();
+
+                        if (tempPiece.IsWhite)
                         {
-                            if (ChessBoard.Instance.IsEnemyPieceAt(piece.IsWhite,new Vector2Int(k,d)))
-                            {
-                                tempPiece = tempBoard[k,d];
-                                pieceX = k;
-                                pieceY = d;
-
-                                bool pieceWhite = new bool();
-
-                                if (tempPiece.IsWhite)
-                                {
-                                    pieceWhite = true;
-                                }
-                                else
-                                {
-                                    pieceWhite = false;
-                                }
-
-                                string pieceTypeStr = "";
-
-                                if (tempPiece is King)
-                                {
-                                    pieceTypeStr = "King";
-                                }
-                                else if (tempPiece is Queen)
-                                {
-                                    pieceTypeStr = "Queen";
-                                }
-                                else if (tempPiece is Bishop)
-                                {
-                                    pieceTypeStr = "Bishop";
-                                }
-                                else if (tempPiece is Knight)
-                                {
-                                    pieceTypeStr = "Knight";
-                                }
-                                else if (tempPiece is Rook)
-                                {
-                                    pieceTypeStr = "Rook";
-                                }
-                                else
-                                {
-                                    pieceTypeStr = "Pawn";
-                                }
-
-                                //update board with temp move to check values in min/max
-                                ModelManager.Instance.BoardTileLocationUpdate(new Vector2Int(pieceX, pieceY), new Vector2Int(i, j), pieceWhite, pieceTypeStr);
-
-                                //board wide huer tile only update
-                                ModelManager.Instance.BoardWideHeuristicTileCall(i, j);
-
-                                if (possibleMoves(tempPiece).Contains(new Vector2Int(i,j))) {
-                                    tempBoard[i, j] = tempPiece;
-                                    tempBoard[pieceX, pieceY] = null;
-                                    dice = UnityEngine.Random.Range(1, 6);
-                                    score = minimax(depth + 1, tempBoard, true, dice, alpha, beta);
-                                    bestVal = Math.Min(bestVal, score);
-                                    beta = Math.Min(beta, bestVal);
-                                    tempBoard[i, j] = null;
-                                    tempBoard[pieceX, pieceY] = tempPiece;
-                                    ModelManager.Instance.BoardTileLocationUpdate(new Vector2Int(i, j), new Vector2Int(pieceX, pieceY), pieceWhite, pieceTypeStr);
-                                    ModelManager.Instance.BoardWideHeuristicTileCall(pieceX, pieceY);
-                                }
-                            }
+                            pieceWhite = true;
                         }
-                        if(beta <= alpha)
+                        else
                         {
-                            return bestVal;
+                            pieceWhite = false;
+                        }
+
+                        string pieceTypeStr = "";
+
+                        if (tempPiece is King)
+                        {
+                            pieceTypeStr = "King";
+                        }
+                        else if (tempPiece is Queen)
+                        {
+                            pieceTypeStr = "Queen";
+                        }
+                        else if (tempPiece is Bishop)
+                        {
+                            pieceTypeStr = "Bishop";
+                        }
+                        else if (tempPiece is Knight)
+                        {
+                            pieceTypeStr = "Knight";
+                        }
+                        else if (tempPiece is Rook)
+                        {
+                            pieceTypeStr = "Rook";
+                        }
+                        else
+                        {
+                            pieceTypeStr = "Pawn";
+                        }
+
+                        //update board with temp move to check values in min/max
+                        ModelManager.Instance.BoardTileLocationUpdate(new Vector2Int(pieceX, pieceY), new Vector2Int(i, j), pieceWhite, pieceTypeStr);
+
+                        //board wide huer tile only update
+                        ModelManager.Instance.BoardWideHeuristicTileCall(i, j);
+
+                        if (possibleMoves(tempPiece).Contains(new Vector2Int(i,j))) {
+                            ChessPiece temp = tempBoard[i, j];
+                            tempBoard[i, j] = tempPiece;
+                            tempBoard[pieceX, pieceY] = null;
+                            score = minimax(depth + 1, tempBoard, true, alpha, beta);
+                            bestVal = Math.Min(bestVal, score);
+                            beta = Math.Min(beta, bestVal);
+                            tempBoard[i, j] = temp;
+                            tempBoard[pieceX, pieceY] = tempPiece;
+                            ModelManager.Instance.BoardTileLocationUpdate(new Vector2Int(i, j), new Vector2Int(pieceX, pieceY), pieceWhite, pieceTypeStr);
+                            ModelManager.Instance.BoardWideHeuristicTileCall(pieceX, pieceY);
                         }
                     }
-                    
+                }
+                if(beta <= alpha)
+                {
+                    return bestVal;
                 }
             }
             return bestVal; 

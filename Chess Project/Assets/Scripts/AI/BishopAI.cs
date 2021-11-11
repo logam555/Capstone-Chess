@@ -6,7 +6,7 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class BishopAI : MonoBehaviour
+public class BishopAI : CommanderAI
 {
     //private bool isDead = false;
     public bool isWhite;
@@ -15,13 +15,27 @@ public class BishopAI : MonoBehaviour
     private int[,] moves;
     private ChessPiece[,] board;
 
+    private bool initialized;
+    public bool leftBishop;
+
+    private void Awake() {
+        initialized = false;
+    }
+
     private void Start() {
         moves = new int[3, 16];
         getBoard();
         isWhite = FindObjectOfType<AI>().isWhite;
+        getCommander(leftBishop);
     }
 
-    public int[] Step()
+    private void Update() {
+        if(initialized && bishop.isDead) {
+            Destroy(this.gameObject);
+        }
+    }
+
+    public override int[] Step()
     {
         getBoard();
 
@@ -91,28 +105,30 @@ public class BishopAI : MonoBehaviour
             position.x = 2;
             position.y = 7;
 
-            bishop = (Commander) ChessBoard.Instance.PieceAt(position);
+            bishop = (Commander) ChessBoard.Instance.PieceAt(position, board);
         }
         if (isWhite == false && lBishop == false)
         {
             position.x = 5;
             position.y = 7;
 
-            bishop = (Commander) ChessBoard.Instance.PieceAt(position);
+            bishop = (Commander) ChessBoard.Instance.PieceAt(position, board);
         }
         if (isWhite == true && lBishop == true)
         {
             position.x = 2;
             position.y = 0;
 
-            bishop = (Commander) ChessBoard.Instance.PieceAt(position);
+            bishop = (Commander) ChessBoard.Instance.PieceAt(position, board);
         }
         if (isWhite == true && lBishop == false)
         {
             position.x = 5;
             position.y = 0;
 
-            bishop = (Commander) ChessBoard.Instance.PieceAt(position);
+            bishop = (Commander) ChessBoard.Instance.PieceAt(position, board);
         }
+
+        initialized = true;
     }
 }

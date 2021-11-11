@@ -15,12 +15,15 @@ public class GameManager : MonoBehaviour
     private Player user;
     [SerializeField]
     private Player ai;
+
+    private bool aiRunning;
     #endregion
 
     private void Awake() {
         Instance = this;
         IsGameOver = false;
         CurrentPlayer = user;
+        aiRunning = false;
     }
 
     private void Start() {
@@ -38,8 +41,10 @@ public class GameManager : MonoBehaviour
                     PassTurn();
                 }
             } else {
-                ((AI)CurrentPlayer).Step();
-                PassTurn();
+                if (!aiRunning) {
+                    aiRunning = true;
+                    ((AI)CurrentPlayer).Step();
+                }
             }
         }
     }
@@ -67,15 +72,16 @@ public class GameManager : MonoBehaviour
 
     #region TURN VALIDATION
     // Function to pass the turn to the next player
-    private void PassTurn() {
+    public void PassTurn() {
         ChessBoard.Instance.SelectPiece(new Vector2Int(-1, -1));
         CurrentPlayer.ResetTurn();
         ScoreManager.turn = CurrentPlayer == user ? "P2" : "P1";
         CurrentPlayer = CurrentPlayer == user ? ai : user;
+        aiRunning = false;
     }
 
     private bool EndofTurn() {
-        if (CurrentPlayer.TotalActionsRemaining() <= 0 && CurrentPlayer.UsedAllFreeMovements())
+        if (CurrentPlayer.TotalActionsRemaining() <= 0 /*&& CurrentPlayer.UsedAllFreeMovements()*/)
             return true;
         return false;
     }
@@ -111,6 +117,13 @@ public class GameManager : MonoBehaviour
             CurrentPlayer.capturedPieces["King"] += 1;
             IsGameOver = true;
         }
+    }
+
+    public IEnumerator StartAI() {
+        aiRunning = true;
+        ((AI)CurrentPlayer).Step();
+        yield return new WaitForSeconds(10);
+        PassTurn();
     }
     #endregion
 }

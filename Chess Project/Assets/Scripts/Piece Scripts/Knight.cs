@@ -8,13 +8,13 @@ using UnityEngine;
 public class Knight : Subordinate {
     public Knight(bool isWhite, Vector2Int position, Commander commander, string name) : base(isWhite, position, commander, name) { }
 
-    public override List<Vector2Int> MoveRange() {
+    public override List<Vector2Int> MoveRange(ChessPiece[,] board) {
         if (Commander.commandActions <= 0)
             return new List<Vector2Int>();
-        return RecursiveMoveRange(Position, 4);
+        return RecursiveMoveRange(Position, 4, board);
     }
 
-    public override List<Vector2Int> AttackRange() {
-        return MoveRange();
+    public override List<Vector2Int> AttackRange(ChessPiece[,] board) {
+        return MoveRange(board);
     }
 }
