@@ -35,8 +35,10 @@ public class GameManager : MonoBehaviour
     public static GameManager Instance { get; set; }
     public ModelManager boardModel; // Not instantiated, value is populated in the editor
     public BoardManager board; // Not instantiated, value is populated in the editor
+    public ScoreManager score;
     
     public Player CurrentPlayer { get; set; }
+
     public bool IsGameOver { get; set; }
     #endregion
 
@@ -95,7 +97,7 @@ public class GameManager : MonoBehaviour
     private void PassTurn() {
         board.SelectPiece(new Vector2Int(-1, -1));
         CurrentPlayer.ResetTurn();
-        ScoreManager.turn = CurrentPlayer == user ? "P2" : "P1";
+        score.ChangeTurn(CurrentPlayer == user ? "P2" : "P1");
         CurrentPlayer = CurrentPlayer == user ? ai : user;
     }
 
@@ -107,22 +109,39 @@ public class GameManager : MonoBehaviour
 
     // Function to add captured pieces to current player
     public void CapturePiece(Piece captured) {
-        if (CurrentPlayer == user) {
-            ScoreManager.scoreValue1 += 1;
-        } else {
-            ScoreManager.scoreValue2 += 1;
-        }
+
         if (captured is Pawn) {
             CurrentPlayer.capturedPieces["Pawn"] += 1;
+            if (CurrentPlayer == user) {
+                score.AddImgPieces(ScoreManager.pieceType.goldpawn);
+            } else {
+                score.AddImgPieces(ScoreManager.pieceType.sliverpawn);
+            }  
         } else if (captured is Rook) {
             CurrentPlayer.capturedPieces["Rook"] += 1;
+            if (CurrentPlayer == user) {
+                score.AddImgPieces(ScoreManager.pieceType.goldrook);
+            } else {
+                score.AddImgPieces(ScoreManager.pieceType.sliverrook);
+            }     
         } else if (captured is Knight) {
             CurrentPlayer.capturedPieces["Knight"] += 1;
+            if (CurrentPlayer == user) {
+                score.AddImgPieces(ScoreManager.pieceType.goldknight);
+            } else {
+                score.AddImgPieces(ScoreManager.pieceType.sliverknight);
+            } 
+            
         } else if (captured is Bishop) {
             CurrentPlayer.capturedPieces["Bishop"] += 1;
+            if (CurrentPlayer == user) {
+                score.AddImgPieces(ScoreManager.pieceType.goldbishop);
+            } else {
+                score.AddImgPieces(ScoreManager.pieceType.sliverbishop);
+            } 
             Bishop bishop = (Bishop)captured;
             bishop.DelegatePieces();
-
+            
             if (CurrentPlayer == user)
                 ai.commanders.Remove(bishop);
             else
@@ -130,8 +149,20 @@ public class GameManager : MonoBehaviour
 
         } else if (captured is Queen) {
             CurrentPlayer.capturedPieces["Queen"] += 1;
+            if (CurrentPlayer == user) {
+                score.AddImgPieces(ScoreManager.pieceType.goldqueen);
+            } else {
+                score.AddImgPieces(ScoreManager.pieceType.sliverqueen);
+            } 
+            
         } else if (captured is King) {
             CurrentPlayer.capturedPieces["King"] += 1;
+            if (CurrentPlayer == user) {
+                score.AddImgPieces(ScoreManager.pieceType.goldking);
+            } else {
+                score.AddImgPieces(ScoreManager.pieceType.sliverking);
+            } 
+            
             IsGameOver = true;
         }
     }
