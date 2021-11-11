@@ -1,102 +1,85 @@
-/* Written by David Corredor
- Edited by Braden Stonehill, David Corredor
- Last date edited: 10/06/2021
- GameManager.cs - Manages the rules, turn order, tracking and moving pieces, and checking the state of the pieces on
- the board and the players.
-
- Version 2.0:
-  - Moved functions to a separate BoardManager class specifically for handling the virtual board.
- Changed the name of the original boardmanager to ModelManager to better represent its functionality.
-
-  - Added functions to assign pieces to their commanders. Added functions for instantiation of players.
-
-  - Added functionality for passing turn, tracking players and captured pieces, and support for three actions per turn.
-
-  - Removed functions that dealt with board and object manipulation as that is handled in the BoardManager.
- Moved attack functions to indiviudal pieces. Edited several functions to accomodate for new board system and altered
- piece scripts. Combined and simplified scripts that checked positions of all, friendly, and enemy pieces and capturing
- pieces. Removed two square movement from initial movements of pawns.*/
-
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using System;
 
 public class GameManager : MonoBehaviour
 {
-    #region PRIVATE PROPERTIES
-    private Player user;
-    private AI ai;
-    private bool isAttacking = false;
-    private Vector2Int selectedPositionDice;
-    #endregion
-
-    #region PUBLIC PROPERTIES
+    #region PROPERTIES
     public static GameManager Instance { get; set; }
-    public ModelManager boardModel; // Not instantiated, value is populated in the editor
-    public BoardManager board; // Not instantiated, value is populated in the editor
-    
+
     public Player CurrentPlayer { get; set; }
+
     public bool IsGameOver { get; set; }
+
+    [SerializeField]
+    private Player user;
+    [SerializeField]
+    private Player ai;
+
+    public ScoreManager score;
+
+    private bool aiRunning;
     #endregion
 
     private void Awake() {
         Instance = this;
+        IsGameOver = false;
+        CurrentPlayer = user;
+        aiRunning = false;
     }
 
     private void Start() {
-        IsGameOver = false;
         ScoreManager.turn = "P1";
     }
 
     private void Update() {
         if (!IsGameOver) {
-            if(CurrentPlayer == user) {
-                if (Input.GetMouseButtonDown(0)) {
-                    if (board.SelectedPiece == null) {
-                        board.SelectPiece(boardModel.selection);
-
-                    } else {
-                        isAttacking = board.CheckMove(boardModel.selection);
-                        if (isAttacking && !DiceManager.Instance.thrown) {
-                            selectedPositionDice = boardModel.selection;
-                            DiceManager.Instance.RollDice();
-                        }
-                    }
-                }
-                if (isAttacking) {
-                    if (DiceManager.Instance.hasLanded && DiceManager.Instance.GetComponent<Rigidbody>().IsSleeping()) {
-                        board.Attack(selectedPositionDice);
-                        isAttacking = false;
-                    }
-                }
-
+            if (CurrentPlayer.name == "Human") {
                 if (Input.GetKeyDown(KeyCode.Space)) {
                     PassTurn();
-                }
-
-                if (Input.GetMouseButtonDown(1) && board.SelectedPiece != null) {
-                    board.DelegatePiece();
                 }
 
                 if (EndofTurn()) {
                     PassTurn();
                 }
-            }
-            else {
-                ((AI)CurrentPlayer).Start();
-                PassTurn();
+            } else {
+                if (!aiRunning) {
+                    aiRunning = true;
+                    ((AI)CurrentPlayer).Step();
+                }
             }
         }
     }
 
-    #region TURN VALIDATION FUNCTIONS - Functions that handle condition checking for turn orders and number of actions in turn.
+    #region INSTANTIATION
+    // Function to create the players
+    public void LinkCommanders(ChessPiece[,] board) {
+        // create collection of commanders
+        Commander[] whiteCommanders = {
+            (Commander)board[4,0],
+            (Commander)board[2,0],
+            (Commander)board[5,0],
+        };
+
+        Commander[] blackCommanders = {
+            (Commander)board[4,7],
+            (Commander)board[2,7],
+            (Commander)board[5,7],
+        };
+
+        user.commanders = new List<Commander>(whiteCommanders);
+        ai.commanders = new List<Commander>(blackCommanders);
+    }
+    #endregion
+
+    #region TURN VALIDATION
     // Function to pass the turn to the next player
-    private void PassTurn() {
-        board.SelectPiece(new Vector2Int(-1, -1));
+    public void PassTurn() {
+        ChessBoard.Instance.SelectPiece(new Vector2Int(-1, -1));
         CurrentPlayer.ResetTurn();
         ScoreManager.turn = CurrentPlayer == user ? "P2" : "P1";
         CurrentPlayer = CurrentPlayer == user ? ai : user;
+        aiRunning = false;
     }
 
     private bool EndofTurn() {
@@ -104,9 +87,11 @@ public class GameManager : MonoBehaviour
             return true;
         return false;
     }
+    #endregion
 
+    #region INTERACTION
     // Function to add captured pieces to current player
-    public void CapturePiece(Piece captured) {
+    public void CapturePiece(ChessPiece captured) {
         if (CurrentPlayer == user) {
             ScoreManager.scoreValue1 += 1;
         } else {
@@ -114,12 +99,28 @@ public class GameManager : MonoBehaviour
         }
         if (captured is Pawn) {
             CurrentPlayer.capturedPieces["Pawn"] += 1;
+            if (CurrentPlayer == user)
+                score.AddImgPieces(ScoreManager.pieceType.goldpawn);
+            else
+                score.AddImgPieces(ScoreManager.pieceType.sliverpawn);
         } else if (captured is Rook) {
             CurrentPlayer.capturedPieces["Rook"] += 1;
+            if (CurrentPlayer == user)
+                score.AddImgPieces(ScoreManager.pieceType.goldrook);
+            else
+                score.AddImgPieces(ScoreManager.pieceType.sliverrook);
         } else if (captured is Knight) {
             CurrentPlayer.capturedPieces["Knight"] += 1;
+            if (CurrentPlayer == user)
+                score.AddImgPieces(ScoreManager.pieceType.goldknight);
+            else
+                score.AddImgPieces(ScoreManager.pieceType.sliverknight);
         } else if (captured is Bishop) {
             CurrentPlayer.capturedPieces["Bishop"] += 1;
+            if (CurrentPlayer == user)
+                score.AddImgPieces(ScoreManager.pieceType.goldbishop);
+            else
+                score.AddImgPieces(ScoreManager.pieceType.sliverbishop);
             Bishop bishop = (Bishop)captured;
             bishop.DelegatePieces();
 
@@ -130,34 +131,25 @@ public class GameManager : MonoBehaviour
 
         } else if (captured is Queen) {
             CurrentPlayer.capturedPieces["Queen"] += 1;
+            if (CurrentPlayer == user)
+                score.AddImgPieces(ScoreManager.pieceType.goldqueen);
+            else
+                score.AddImgPieces(ScoreManager.pieceType.sliverqueen);
         } else if (captured is King) {
             CurrentPlayer.capturedPieces["King"] += 1;
+            if (CurrentPlayer == user)
+                score.AddImgPieces(ScoreManager.pieceType.goldking);
+            else
+                score.AddImgPieces(ScoreManager.pieceType.sliverking);
             IsGameOver = true;
         }
     }
-    #endregion
 
-    #region INSTANTIATION FUNCTIONS - Functions that instatiate objects and run at beginning of game.
-    // Function to create the players
-    public void CreatePlayers() {
-        // create collection of commanders
-        Commander[] whiteCommanders = {
-            (Commander)board.PieceAt(new Vector2Int(4,0)),
-            (Commander)board.PieceAt(new Vector2Int(2,0)),
-            (Commander)board.PieceAt(new Vector2Int(5,0)),
-        };
-
-        Commander[] blackCommanders = {
-            (Commander)board.PieceAt(new Vector2Int(4,7)),
-            (Commander)board.PieceAt(new Vector2Int(2,7)),
-            (Commander)board.PieceAt(new Vector2Int(5,7)),
-        };
-
-        user = new Player("Human", true, new List<Commander>(whiteCommanders));
-        ai = new AI("AI", false, new List<Commander>(blackCommanders), board);
-
-        CurrentPlayer = user;
+    public IEnumerator StartAI() {
+        aiRunning = true;
+        ((AI)CurrentPlayer).Step();
+        yield return new WaitForSeconds(10);
+        PassTurn();
     }
     #endregion
-
 }

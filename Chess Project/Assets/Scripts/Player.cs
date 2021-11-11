@@ -14,19 +14,16 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Player
+public class Player : MonoBehaviour
 {
     public Dictionary<string, int> capturedPieces;
     public string name;
     public bool isWhite;
     public List<Commander> commanders;
 
-    public Player(string name, bool isWhite, List<Commander> commanders)
+    private void Awake()
     {
-        this.name = name;
-        this.isWhite = isWhite;
-        this.commanders = commanders;
-
+        commanders = new List<Commander>();
         capturedPieces = new Dictionary<string, int>();
         capturedPieces.Add("King", 0);
         capturedPieces.Add("Queen", 0);
@@ -48,13 +45,7 @@ public class Player
 
     public void ResetTurn() {
         foreach (Commander commander in commanders) {
-            commander.commandActions = 1;
-            commander.usedFreeMovement = false;
-
-            if(commander is King) {
-                King king = (King)commander;
-                king.usedDelegation = false;
-            }
+            commander.Reset();
         }
     }
 

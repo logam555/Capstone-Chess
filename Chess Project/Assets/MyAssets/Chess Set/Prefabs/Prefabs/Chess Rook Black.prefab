@@ -11,7 +11,6 @@ GameObject:
   - component: {fileID: 4000012489383122}
   - component: {fileID: 33000012288121122}
   - component: {fileID: 23000012475157416}
-  - component: {fileID: 5116315333059475238}
   m_Layer: 0
   m_Name: Chess Rook Black
   m_TagString: Untagged
@@ -82,16 +81,3 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!114 &5116315333059475238
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1000013351177638}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3a80239f8d0914c9cb07dd15d315b344, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  isWhite: 0

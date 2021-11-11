@@ -11,7 +11,6 @@ GameObject:
   - component: {fileID: 4000013856553714}
   - component: {fileID: 33000014186096576}
   - component: {fileID: 23000014241094794}
-  - component: {fileID: 192350623294678398}
   m_Layer: 0
   m_Name: Chess Bishop Black
   m_TagString: Untagged
@@ -82,20 +81,3 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!114 &192350623294678398
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1000012633253314}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: eec5a0a4087b943028ce6350eab5e822, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  isWhite: 0
-  subordinates: []
-  commandActions: 1
-  usedFreeMovement: 0
-  superCommander: {fileID: 0}

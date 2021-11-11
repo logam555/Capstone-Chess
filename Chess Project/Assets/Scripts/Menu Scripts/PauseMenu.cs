@@ -12,6 +12,18 @@ public class PauseMenu : MonoBehaviour
 {
     public bool isGamePaused = false;
     public GameObject pauseMenuUI;
+
+    [SerializeField]
+    private GameObject root;
+
+    public static GameObject Root { get; private set; }
+
+    void Awake()
+    {
+        PauseMenu.Root = root;
+    }
+
+
     // Start is called before the first frame update
     void Start()
     {
@@ -52,11 +64,12 @@ public class PauseMenu : MonoBehaviour
 
     public void MainMenu()
     {
-        SceneManager.LoadScene(0);
-        Time.timeScale = 1f;
+        SceneManager.LoadScene(0, LoadSceneMode.Additive);
+        pauseMenuUI.SetActive(false);
+        isGamePaused = false;
     }
 
-    public void  Quit()
+    public void Quit()
     {
         Application.Quit();
     }
