@@ -486,7 +486,7 @@ public class ModelManager : MonoBehaviour
 
     public Vector3Int BoardTileHeuristicValueReturn(int x, int y)
     {
-        Vector3Int holderV2I = new Vector2Int();
+        Vector3Int holderV2I = new Vector3Int();
         holderV2I.x = 0;
         holderV2I.y = 0;
         holderV2I.z = 0;
