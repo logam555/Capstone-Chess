@@ -301,6 +301,7 @@ class ChessBoard : MonoBehaviour {
             ChessPiece enemy = Board[position.x, position.y];
             GameManager.Instance.CapturePiece(enemy);
             ModelManager.Instance.RemoveObject(enemy);
+            ((Subordinate)enemy).Commander.subordinates.Remove((Subordinate)enemy);
 
             // Move the selected piece
             MovePiece(position);
