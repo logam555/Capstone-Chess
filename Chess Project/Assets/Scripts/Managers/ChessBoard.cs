@@ -356,6 +356,37 @@ class ChessBoard : MonoBehaviour {
         }
     }
 
+    public void DelegatePieceAI(Vector2Int position)
+    {
+        if (SelectedPiece is Commander)
+            return;
+
+        Subordinate pieceToDelegate = (Subordinate)SelectedPiece;
+        SelectPiece(new Vector2Int(-1, -1));
+        SelectPiece(position);
+
+        if (SelectedPiece == (ChessPiece)pieceToDelegate)
+        {
+            if (pieceToDelegate.Delegated)
+            {
+                King king = (King)GameManager.Instance.CurrentPlayer.commanders.Find(commander => commander is King);
+                king.RecallPiece(pieceToDelegate);
+            }
+
+            SelectPiece(new Vector2Int(-1, -1));
+        }
+        else
+        {
+            if (SelectedPiece is Commander && !(SelectedPiece is King) && pieceToDelegate.Commander is King)
+            {
+                King king = (King)pieceToDelegate.Commander;
+                king.DelegatePiece(pieceToDelegate, (Commander)SelectedPiece);
+            }
+
+            SelectPiece(new Vector2Int(-1, -1));
+        }
+    }
+
     // Function to check if the selected tile is a valid move for the selected piece and perform appropriate action.
     public bool PerformAction(Vector2Int position) {
         // Deselect the selected piece if position is not valid
