@@ -29,7 +29,7 @@ public class GameManager : MonoBehaviour
     }
 
     private void Start() {
-        ScoreManager.turn = "P1";
+        score.ChangeTurn("P1");
     }
 
     private void Update() {
@@ -77,7 +77,7 @@ public class GameManager : MonoBehaviour
     public void PassTurn() {
         ChessBoard.Instance.SelectPiece(new Vector2Int(-1, -1));
         CurrentPlayer.ResetTurn();
-        ScoreManager.turn = CurrentPlayer == user ? "P2" : "P1";
+        score.ChangeTurn(CurrentPlayer == user ? "P2" : "P1");
         CurrentPlayer = CurrentPlayer == user ? ai : user;
         aiRunning = false;
     }
@@ -92,11 +92,6 @@ public class GameManager : MonoBehaviour
     #region INTERACTION
     // Function to add captured pieces to current player
     public void CapturePiece(ChessPiece captured) {
-        if (CurrentPlayer == user) {
-            ScoreManager.scoreValue1 += 1;
-        } else {
-            ScoreManager.scoreValue2 += 1;
-        }
         if (captured is Pawn) {
             CurrentPlayer.capturedPieces["Pawn"] += 1;
             if (CurrentPlayer == user)
