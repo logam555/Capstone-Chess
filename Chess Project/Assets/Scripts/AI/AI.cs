@@ -17,6 +17,9 @@ public class AI : Player
 	int[] lBishopMove;
 	int[] rBishopMove;
 	int[,] moves;
+	int lBishopCount;
+	int rBishopCount;
+	int kingCount;
 	bool first;
 
     private void Awake()
@@ -49,6 +52,11 @@ public class AI : Player
 
     public void Step()
     {
+		lBishopCount = lInstance.bishop.subordinates.Count;
+		rBishopCount = rInstance.bishop.subordinates.Count;
+		kingCount = instance.King.subordinates.Count;
+
+		kingDelegate();
 		List<Thread> threads = new List<Thread>();
 
 		threads.Add(new Thread(() => {
@@ -75,6 +83,49 @@ public class AI : Player
         }
 
 		StartCoroutine(TakeTurn());
+	}
+
+	public void kingDelegate()
+    {
+		Debug.Log("Left Bishop Count: " + lBishopCount + " Right Bishop Count: " + rBishopCount + " King Count: " + kingCount);
+		if (lBishopCount < (kingCount-1) && lBishopCount < rBishopCount)
+        {
+			ChessBoard.Instance.SelectPiece(instance.King.subordinates[kingCount - 1].Position);
+			ChessBoard.Instance.DelegatePieceAI(lInstance.bishop.Position);
+			Debug.Log("lb delegated: " + lInstance.bishop.subordinates[lBishopCount].Name);
+		}
+		else if (rBishopCount < (kingCount-1) && rBishopCount <= lBishopCount)
+		{
+			ChessBoard.Instance.SelectPiece(instance.King.subordinates[kingCount - 1].Position);
+			ChessBoard.Instance.DelegatePieceAI(rInstance.bishop.Position);
+			Debug.Log("rb delegated: " + rInstance.bishop.subordinates[rBishopCount].Name);
+		}
+		else if(kingCount < lBishopCount && lBishopCount > rBishopCount)
+        {
+			for(int i = 0; i < lBishopCount; i++)
+            {
+				if(lInstance.bishop.subordinates[i].Delegated)
+                {
+					ChessBoard.Instance.SelectPiece(lInstance.bishop.subordinates[i].Position);
+					ChessBoard.Instance.DelegatePieceAI(lInstance.bishop.subordinates[i].Position);
+					break;
+                }
+            }
+        }
+		else if (kingCount < rBishopCount && lBishopCount < rBishopCount)
+		{
+			for (int i = 0; i < rBishopCount; i++)
+			{
+				if (rInstance.bishop.subordinates[i].Delegated)
+				{
+					ChessBoard.Instance.SelectPiece(rInstance.bishop.subordinates[i].Position);
+					ChessBoard.Instance.DelegatePieceAI(rInstance.bishop.subordinates[i].Position);
+					break;
+				}
+			}
+		}
+		else
+			Debug.Log("none delegated");
 	}
 
 	public bool moveKing()

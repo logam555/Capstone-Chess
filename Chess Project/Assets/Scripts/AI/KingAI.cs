@@ -7,7 +7,7 @@ using UnityEngine;
 
 public class KingAI : CommanderAI
 {
-    private Commander King;
+    public Commander King { get; set; }
     //private bool isDead = false;
     public ChessPiece bestPiece { get; set; }
     public bool isWhite;

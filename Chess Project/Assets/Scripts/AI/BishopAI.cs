@@ -10,7 +10,7 @@ public class BishopAI : CommanderAI
 {
     //private bool isDead = false;
     public bool isWhite;
-    private Commander bishop;
+    public Commander bishop { get; set; }
     public ChessPiece bestPiece { get; set; }
     private int[,] moves;
     private ChessPiece[,] board;

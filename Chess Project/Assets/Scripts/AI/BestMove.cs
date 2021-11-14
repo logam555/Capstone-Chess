@@ -31,7 +31,7 @@ public class BestMove
     //add Piece p into eval call
     public Vector3Int eval() //sends board to heuristic to obtain a score for the move made
     {
-        Vector3Int posValue = ModelManager.Instance.GetHighestValueFromBoardWhite();
+        Vector3Int posValue = ModelManager.Instance.GetHighestValueFromBoardBlack();
 
         //change to be made below
         //Vector3Int posValue = GetHighestValueFromTileMoveRange(p);
@@ -225,24 +225,28 @@ public class BestMove
                             pieceTypeStr = "Pawn";
                         }
 
-                        //update board with temp move to check values in min/max
-                        ModelManager.Instance.BoardTileLocationUpdate(new Vector2Int(pieceX, pieceY), new Vector2Int(i, j), pieceWhite, pieceTypeStr);
+                        foreach(Vector2Int pos in possibleMoves(tempPiece))
+                        {
+                            ModelManager.Instance.BoardTileLocationUpdate(new Vector2Int(pieceX, pieceY), pos, pieceWhite, pieceTypeStr);
 
-                        //board wide huer tile only update
-                        ModelManager.Instance.BoardWideHeuristicTileCall(i, j);
+                            //board wide huer tile only update
 
-                        if (possibleMoves(tempPiece).Contains(new Vector2Int(i,j))) {
-                            ChessPiece temp = tempBoard[i, j];
-                            tempBoard[i, j] = tempPiece;
+                            ModelManager.Instance.BoardWideHeuristicTileCall(pos.x, pos.y);
+
+                            ChessPiece temp = tempBoard[pos.x, pos.y];
+                            tempBoard[pos.x, pos.y] = tempPiece;
                             tempBoard[pieceX, pieceY] = null;
                             score = minimax(depth + 1, tempBoard, true, alpha, beta);
                             bestVal = Math.Min(bestVal, score);
                             beta = Math.Min(beta, bestVal);
-                            tempBoard[i, j] = temp;
+                            tempBoard[pos.x, pos.y] = temp;
                             tempBoard[pieceX, pieceY] = tempPiece;
-                            ModelManager.Instance.BoardTileLocationUpdate(new Vector2Int(i, j), new Vector2Int(pieceX, pieceY), pieceWhite, pieceTypeStr);
+                            
+                            ModelManager.Instance.BoardTileLocationUpdate(pos, new Vector2Int(pieceX, pieceY), pieceWhite, pieceTypeStr);
                             ModelManager.Instance.BoardWideHeuristicTileCall(pieceX, pieceY);
                         }
+
+                        //update board with temp move to check values in min/max
                     }
                 }
                 if(beta <= alpha)
