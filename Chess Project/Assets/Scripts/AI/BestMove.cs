@@ -31,7 +31,7 @@ public class BestMove
     //add Piece p into eval call
     public Vector3Int eval() //sends board to heuristic to obtain a score for the move made
     {
-        Vector3Int posValue = ModelManager.Instance.GetHighestValueFromBoard();
+        Vector3Int posValue = ModelManager.Instance.GetHighestValueFromBoardWhite();
 
         //change to be made below
         //Vector3Int posValue = GetHighestValueFromTileMoveRange(p);

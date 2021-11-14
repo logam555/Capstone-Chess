@@ -12,6 +12,9 @@ public class ModelManager : MonoBehaviour
 
     //Dictionary for holding a key for searching Tile; value is custom tile class BoardTile
     public Dictionary<string, BoardTile> chessBoardGridCo;
+    public Dictionary<string, BoardTile> chessBoardCopyKing;
+    public Dictionary<string, BoardTile> chessBoardCopyBishop1;
+    public Dictionary<string, BoardTile> chessBoardCopyBishop2;
 
     [SerializeField]
     private List<GameObject> piecePrefabs; // Not instantiated, list is populated in the editor
@@ -35,7 +38,8 @@ public class ModelManager : MonoBehaviour
     public float duration { get; set; }
     #endregion
 
-    private void Awake() {
+    private void Awake() 
+    {
         Instance = this;
         selection = new Vector2Int(-1, -1);
         activePieces = new List<GameObject>();
@@ -52,11 +56,13 @@ public class ModelManager : MonoBehaviour
         SpawnAllPieces();
     }
 
-    private void Start() {
+    private void Start() 
+    {
         
     }
 
-    private void Update() {
+    private void Update()
+    {
         UpdateSelection();
         MoveObject(pieceObject, position, duration);
         //DrawChessboard();
@@ -64,14 +70,17 @@ public class ModelManager : MonoBehaviour
 
     #region INSTANTIATION
     //function to setup the tile position names, tile is occupied status, if occupied by which color/piece type and basic board wide heuirtics for each color.
-    private void ChessboardTileSetup() {
+    private void ChessboardTileSetup() 
+    {
         BoardTile board = new BoardTile();
         char letterBoard = '0';
         string showB = "";
 
         //setting up tiles and adding to dictionary default values
-        for (int j = 1; j < 9; j++) {
-            for (int i = 65; i < 73; i++) {
+        for (int j = 1; j < 9; j++) 
+        {
+            for (int i = 65; i < 73; i++) 
+            {
                 letterBoard = '0';
                 showB = "";
 
@@ -100,7 +109,8 @@ public class ModelManager : MonoBehaviour
         pieceObject.transform.SetParent(transform);
 
         //adding tags for White and Black pieces. 0-5 index for white, 6-11 index for black. added by george to existing function
-        if (index <= 5) {
+        if (index <= 5) 
+        {
             pieceObject.tag = "White Pieces";
             chessBoardGridCo[Convert.ToString(Convert.ToChar(position.x + 65) + Convert.ToString(position.y + 1))].isWhite = true;
         } else {
@@ -339,7 +349,8 @@ public class ModelManager : MonoBehaviour
 
     #region HEURISTICS
     //take new positions and move piece and values to new tile; clear to null old tile.
-    public void BoardTileLocationUpdate(Vector2Int oldPosition, Vector2Int newPosition, bool isWhiteP, string pieceTypeC) {
+    public void BoardTileLocationUpdate(Vector2Int oldPosition, Vector2Int newPosition, bool isWhiteP, string pieceTypeC) 
+    {
         chessBoardGridCo[Convert.ToString(Convert.ToChar(oldPosition.x + 65) + Convert.ToString(oldPosition.y + 1))].isOccupied = false;
         chessBoardGridCo[Convert.ToString(Convert.ToChar(oldPosition.x + 65) + Convert.ToString(oldPosition.y + 1))].isWhite = false;
         chessBoardGridCo[Convert.ToString(Convert.ToChar(oldPosition.x + 65) + Convert.ToString(oldPosition.y + 1))].occupiedPieceType = "";
@@ -349,36 +360,53 @@ public class ModelManager : MonoBehaviour
         chessBoardGridCo[Convert.ToString(Convert.ToChar(newPosition.x + 65) + Convert.ToString(newPosition.y + 1))].occupiedPieceType = pieceTypeC;
     }
 
-    public Vector3Int GetHighestValueFromBoard() {
-        //entire heur board wide check
+    //return vector 3: x and y for position; z for value for Highest White Huer
+    public Vector3Int GetHighestValueFromBoardWhite()
+    {
+        Vector3Int posValue = new Vector3Int();
 
+        posValue = heuristics.ReturnHighestValueWhite(chessBoardGridCo);
+
+        return posValue;
+    }
+
+    //return vector 3: x and y for position; z for value for Highest Black Huer
+    public Vector3Int GetHighestValueFromBoardBlack()
+    {
         Vector3Int posValue = new Vector3Int();
 
         posValue = heuristics.ReturnHighestValueBlack(chessBoardGridCo);
-        //posValue = heuristics.ReturnHighestValueWhite(chessBoardGridCo);
 
         return posValue;
     }
 
-    //pieces move range check
-    public Vector3Int GetHighestValueFromTileMoveRange(ChessPiece p) {
-        Vector2Int pLocV2 = new Vector2Int();
-
-        //pLocV2 = p.Postion;
-
+    //return vector 3: x and y for position; z for value for Lowest White Huer
+    public Vector3Int GetLowestValueFromBoardWhite()
+    {
         Vector3Int posValue = new Vector3Int();
 
-        //posValue = heuristics.ReturnHighestValueOnePieceRange(chessBoardGridCo, pLocV2);
-        //posValue = heuristics.ReturnHighestValueWhite(chessBoardGridCo);
+        posValue = heuristics.ReturnLowestValueWhite(chessBoardGridCo);
 
         return posValue;
     }
 
-    public void BoardWideHeuristicCall() {
+    //return vector 3: x and y for position; z for value for Lowest Black Huer
+    public Vector3Int GetLowestValueFromBoardBlack()
+    {
+        Vector3Int posValue = new Vector3Int();
+
+        posValue = heuristics.ReturnLowestValueBlack(chessBoardGridCo);
+
+        return posValue;
+    }
+
+    public void BoardWideHeuristicCall() 
+    {
         heuristics.BoardWideHeuristic(ref chessBoardGridCo);
     }
 
-    public void BoardWideHeuristicTileCall(int x, int y) {
+    public void BoardWideHeuristicTileCall(int x, int y) 
+    {
         Vector2Int holderV2I = new Vector2Int();
         holderV2I.x = 0;
         holderV2I.y = 0;
@@ -396,7 +424,59 @@ public class ModelManager : MonoBehaviour
     #endregion
 }
 
-public class BoardTile {
+public void  MakeBoardWideHuerCopy()
+{
+    BoardTile board = new BoardTile();
+    char letterBoard = '0';
+    string showB = "";
+
+    //setting up tiles and adding to dictionary default values
+    for (int j = 1; j < 9; j++)
+    {
+        for (int i = 65; i < 73; i++)
+        {
+            letterBoard = '0';
+            showB = "";
+
+            letterBoard = Convert.ToChar(i);
+            showB = letterBoard.ToString() + j.ToString(); //place letter before number
+            board = new BoardTile();
+
+            chessBoardCopyKing.Add(showB, board);
+            chessBoardCopyKing.isOccupied = chessBoardGridCo[showB].isOccupied;
+            chessBoardCopyKing.isWhite = chessBoardGridCo[showB].isWhite;
+            chessBoardCopyKing.boardPosition.x = chessBoardGridCo[showB].boardPosition.x;
+            chessBoardCopyKing.boardPosition.y = chessBoardGridCo[showB].boardPosition.y;
+            chessBoardCopyKing.officalBoardPosition = chessBoardGridCo[showB].officalBoardPosition;
+            chessBoardCopyKing.occupiedPieceType = chessBoardGridCo[showB].occupiedPieceType;
+            chessBoardCopyKing.whiteHeuristic = chessBoardGridCo[showB].whiteHeuristic;
+            chessBoardCopyKing.blackHeuristic = chessBoardGridCo[showB].blackHeuristic;
+
+            chessBoardCopyBishop1.Add(showB, board);
+            chessBoardCopyBishop1.isOccupied = chessBoardGridCo[showB].isOccupied;
+            chessBoardCopyBishop1.isWhite = chessBoardGridCo[showB].isWhite;
+            chessBoardCopyBishop1.boardPosition.x = chessBoardGridCo[showB].boardPosition.x;
+            chessBoardCopyBishop1.boardPosition.y = chessBoardGridCo[showB].boardPosition.y;
+            chessBoardCopyBishop1.officalBoardPosition = chessBoardGridCo[showB].officalBoardPosition;
+            chessBoardCopyBishop1.occupiedPieceType = chessBoardGridCo[showB].occupiedPieceType;
+            chessBoardCopyBishop1.whiteHeuristic = chessBoardGridCo[showB].whiteHeuristic;
+            chessBoardCopyBishop1.blackHeuristic = chessBoardGridCo[showB].blackHeuristic;
+
+            chessBoardCopyBishop2.Add(showB, board);
+            chessBoardCopyBishop2.isOccupied = chessBoardGridCo[showB].isOccupied;
+            chessBoardCopyBishop2.isWhite = chessBoardGridCo[showB].isWhite;
+            chessBoardCopyBishop2.boardPosition.x = chessBoardGridCo[showB].boardPosition.x;
+            chessBoardCopyBishop2.boardPosition.y = chessBoardGridCo[showB].boardPosition.y;
+            chessBoardCopyBishop2.officalBoardPosition = chessBoardGridCo[showB].officalBoardPosition;
+            chessBoardCopyBishop2.occupiedPieceType = chessBoardGridCo[showB].occupiedPieceType;
+            chessBoardCopyBishop2.whiteHeuristic = chessBoardGridCo[showB].whiteHeuristic;
+            chessBoardCopyBishop2.blackHeuristic = chessBoardGridCo[showB].blackHeuristic;
+        }
+    }
+}
+
+public class BoardTile 
+{
     public bool isOccupied;
     public bool isWhite;
     public Vector2Int boardPosition;//for vector 2 version of string position
@@ -404,5 +484,4 @@ public class BoardTile {
     public string occupiedPieceType;
     public int whiteHeuristic;
     public int blackHeuristic;
-
 }
