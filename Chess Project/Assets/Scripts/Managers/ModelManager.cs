@@ -484,7 +484,26 @@ public class ModelManager : MonoBehaviour
         chessBoardGridCo[Convert.ToString(Convert.ToChar(x) + Convert.ToString(y))].blackHeuristic = holderV2I.y;
     }
 
-    private void MakeBoardWideHuerCopy()
+    public Vector3Int BoardTileHeuristicValueReturn(int x, int y)
+    {
+        Vector3Int holderV2I = new Vector2Int();
+        holderV2I.x = 0;
+        holderV2I.y = 0;
+        holderV2I.z = 0;
+
+        //used to adjust x,y values to Letter/Number combo for dictionary
+        y = +1;
+        x = +65;
+
+        //y first to work with tile format, x is second for int after chessboard
+        holderV2I.x = chessBoardGridCo[Convert.ToString(Convert.ToChar(x) + Convert.ToString(y))].whiteHeuristic;
+        holderV2I.y = chessBoardGridCo[Convert.ToString(Convert.ToChar(x) + Convert.ToString(y))].blackHeuristic;
+        //holderV2I.z = chessBoardGridCo[Convert.ToString(Convert.ToChar(x) + Convert.ToString(y))].WMBHeuristic;
+
+        return holderV2I;
+    }
+
+        private void MakeBoardWideHuerCopy()
     {
         BoardTile board = new BoardTile();
         char letterBoard = '0';
