@@ -151,5 +151,11 @@ public class GameManager : MonoBehaviour
         yield return new WaitForSeconds(10);
         PassTurn();
     }
+
+    public void ButtonPassTurn() {
+        if(CurrentPlayer == user) {
+            PassTurn();
+        }
+    }
     #endregion
 }
