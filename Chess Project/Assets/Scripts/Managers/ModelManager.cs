@@ -498,7 +498,7 @@ public class ModelManager : MonoBehaviour
         //y first to work with tile format, x is second for int after chessboard
         holderV2I.x = chessBoardGridCo[Convert.ToString(Convert.ToChar(x) + Convert.ToString(y))].whiteHeuristic;
         holderV2I.y = chessBoardGridCo[Convert.ToString(Convert.ToChar(x) + Convert.ToString(y))].blackHeuristic;
-        //holderV2I.z = chessBoardGridCo[Convert.ToString(Convert.ToChar(x) + Convert.ToString(y))].WMBHeuristic;
+        holderV2I.z = Convert.ToInt32(Math.Abs(holderV2I.x - (holderV2I.y * 0.9)));
 
         return holderV2I;
     }

@@ -11,7 +11,7 @@ public class BestMove
     ChessPiece[,] board;
     bool isCommander;
     //Heuristics h = new Heuristics();
-    ChessPiece piece;
+    public ChessPiece piece;
 
 
     public BestMove()
@@ -29,16 +29,54 @@ public class BestMove
     }
 
     //add Piece p into eval call
-    public Vector3Int eval() //sends board to heuristic to obtain a score for the move made
+    public int eval(ChessPiece p) //sends board to heuristic to obtain a score for the move made
     {
-        Vector3Int posValue = ModelManager.Instance.GetHighestValueFromBoardBlack();
+        Vector3Int val = ModelManager.Instance.BoardTileHeuristicValueReturn(p.Position.x, p.Position.y);
 
-        //change to be made below
-        //Vector3Int posValue = GetHighestValueFromTileMoveRange(p);
+        //ScanData[,] data = IndividualPieceScanner.Instance.singleScanner(p.IsWhite, new Vector2Int(x,y));
 
-        //int highestValue = posValue.z;
+        /*if (p.IsWhite == true)
+        {
+            /*for(int i = 0; i < data.GetLength(0); i++)
+            {
+                for(int j = 0; j < data.GetLength(1); j++)
+                {
+                    val.x += (int)data[i, j].heuristic;
+                    if (data[i, j].isVulnerable)
+                    {
+                        val.x -= 5;
+                    }
+                    else if (!data[i, j].isVulnerable)
+                    {
+                        val.x += 5;
+                    }
+                }
+            }
 
-        return posValue;
+            return val.x;
+        }
+        if(p.IsWhite == false)
+        {
+            /*for (int i = 0; i < data.GetLength(0); i++)
+            {
+                for (int j = 0; j < data.GetLength(1); j++)
+                {
+                    val.x += (int)data[i, j].heuristic;
+                    if (data[i, j].isVulnerable)
+                    {
+                        val.y -= 5;
+                    }
+                    else if (!data[i, j].isVulnerable)
+                    {
+                        val.y += 5;
+                    }
+                }
+            }
+            Debug.Log(val.y);
+            return val.y;
+        }*/
+        Debug.Log(val.z);
+        return val.z;
     }
 
     public List<Vector2Int> possibleMoves(ChessPiece p) //Uses Bishop script to obtain possible moves for Bishop
@@ -59,14 +97,59 @@ public class BestMove
                 pieceY = piece.Position.y;
                 if (possibleMoves(piece).Contains(new Vector2Int(i,j)))
                 {
-                    
+                    bool pieceWhite = new bool();
+
+                    if (piece.IsWhite)
+                    {
+                        pieceWhite = true;
+                    }
+                    else
+                    {
+                        pieceWhite = false;
+                    }
+
+                    string pieceTypeStr = "";
+
+                    if (piece is King)
+                    {
+                        pieceTypeStr = "King";
+                    }
+                    else if (piece is Queen)
+                    {
+                        pieceTypeStr = "Queen";
+                    }
+                    else if (piece is Bishop)
+                    {
+                        pieceTypeStr = "Bishop";
+                    }
+                    else if (piece is Knight)
+                    {
+                        pieceTypeStr = "Knight";
+                    }
+                    else if (piece is Rook)
+                    {
+                        pieceTypeStr = "Rook";
+                    }
+                    else
+                    {
+                        pieceTypeStr = "Pawn";
+                    }
+
+                    ModelManager.Instance.BoardTileLocationUpdate(new Vector2Int(pieceX, pieceY), new Vector2Int(i, j), pieceWhite, pieceTypeStr);
+
+                    //board wide huer tile only update
+                    ModelManager.Instance.BoardWideHeuristicTileCall(i, j);
+
                     ChessPiece temp = board[i,j];
                     board[i,j] = piece;
                     board[pieceX,pieceY] = null;
-                    int score = minimax(0,board, true, int.MinValue, int.MaxValue);
+                    int score = minimax(0,board, true, int.MinValue, int.MaxValue, i , j, piece);
                     board[i,j] = temp;
                     board[pieceX, pieceY] = piece;
-                    
+
+                    ModelManager.Instance.BoardTileLocationUpdate(new Vector2Int(i, j), new Vector2Int(pieceX, pieceY), pieceWhite, pieceTypeStr);
+                    ModelManager.Instance.BoardWideHeuristicTileCall(pieceX, pieceY);
+
                     if (score > move[2]) //if score obtained is better than bestLocalScore
                     {
                         move[2] = score; //than score obtained is bestLocalScore
@@ -80,11 +163,9 @@ public class BestMove
         return move;
     }
 
-    public int minimax(int depth, ChessPiece[,] tempBoard, bool maximize, int alpha, int beta) //uses minimax algorithm to obtain the score
+    public int minimax(int depth, ChessPiece[,] tempBoard, bool maximize, int alpha, int beta, int x, int y , ChessPiece p) //uses minimax algorithm to obtain the score
     {
-        Vector3Int evalsV3 = eval(); //uses heuristic to obtain score
-        //Vector3Int evalsV3 = eval(piece); //uses heuristic to obtain score
-        int score = evalsV3.z;
+        int score = eval(p);
         int pieceY = 0;
         int pieceX = 0;
         int bestVal = score;
@@ -154,7 +235,7 @@ public class BestMove
                         //board wide huer tile only update
                         ModelManager.Instance.BoardWideHeuristicTileCall(i,j);
 
-                        score = minimax(depth, tempBoard, false,alpha,beta);
+                        score = minimax(depth, tempBoard, false,alpha,beta,i,j,piece);
                         bestVal = Math.Max(bestVal, score);
                         alpha = Math.Max(alpha, bestVal);
                         tempBoard[i,j] = temp;
@@ -236,7 +317,7 @@ public class BestMove
                             ChessPiece temp = tempBoard[pos.x, pos.y];
                             tempBoard[pos.x, pos.y] = tempPiece;
                             tempBoard[pieceX, pieceY] = null;
-                            score = minimax(depth + 1, tempBoard, true, alpha, beta);
+                            score = minimax(depth + 1, tempBoard, true, alpha, beta,i,j,tempPiece);
                             bestVal = Math.Min(bestVal, score);
                             beta = Math.Min(beta, bestVal);
                             tempBoard[pos.x, pos.y] = temp;

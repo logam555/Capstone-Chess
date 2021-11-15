@@ -48,6 +48,8 @@ public class AI : Player
 		lInstance.leftBishop = true;
 		rInstance = new GameObject().AddComponent<BishopAI>();
 		rInstance.leftBishop = false;
+
+		new GameObject().AddComponent<IndividualPieceScanner>();
 	}
 
     public void Step()
