@@ -40,6 +40,7 @@ public class AI : Player
 		first = true;
 
 		ModelManager.Instance.BoardWideHeuristicCall();
+		ModelManager.Instance.MakeBoardWideHuerCopy();
 	}
 
     private void Start() {

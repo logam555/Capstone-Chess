@@ -31,7 +31,7 @@ public class BestMove
     //add Piece p into eval call
     public int eval(ChessPiece p) //sends board to heuristic to obtain a score for the move made
     {
-        Vector3Int val = ModelManager.Instance.BoardTileHeuristicValueReturn(p.Position.x, p.Position.y);
+        Vector3Int val = ModelManager.Instance.BoardTileHeuristicValueReturn(p.Position.x, p.Position.y, p.IsWhite);
 
         //ScanData[,] data = IndividualPieceScanner.Instance.singleScanner(p.IsWhite, new Vector2Int(x,y));
 

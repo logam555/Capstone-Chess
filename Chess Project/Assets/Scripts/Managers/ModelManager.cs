@@ -484,7 +484,7 @@ public class ModelManager : MonoBehaviour
         chessBoardGridCo[Convert.ToString(Convert.ToChar(x) + Convert.ToString(y))].blackHeuristic = holderV2I.y;
     }
 
-    public Vector3Int BoardTileHeuristicValueReturn(int x, int y)
+    public Vector3Int BoardTileHeuristicValueReturn(int x, int y, bool isWhite)
     {
         Vector3Int holderV2I = new Vector3Int();
         holderV2I.x = 0;
@@ -498,12 +498,19 @@ public class ModelManager : MonoBehaviour
         //y first to work with tile format, x is second for int after chessboard
         holderV2I.x = chessBoardGridCo[Convert.ToString(Convert.ToChar(x) + Convert.ToString(y))].whiteHeuristic;
         holderV2I.y = chessBoardGridCo[Convert.ToString(Convert.ToChar(x) + Convert.ToString(y))].blackHeuristic;
-        holderV2I.z = Convert.ToInt32(Math.Abs(holderV2I.x - (holderV2I.y * 0.9)));
+        if (isWhite == true)
+        {
+            holderV2I.z = Convert.ToInt32(Math.Abs(holderV2I.x - (holderV2I.y * 0.9)));
+        }
+        else
+        {
+            holderV2I.z = Convert.ToInt32(Math.Abs(holderV2I.y - (holderV2I.x * 0.9)));
+        }
 
         return holderV2I;
     }
 
-        private void MakeBoardWideHuerCopy()
+    public void MakeBoardWideHuerCopy()
     {
         BoardTile board = new BoardTile();
         char letterBoard = '0';
