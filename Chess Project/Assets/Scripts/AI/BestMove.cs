@@ -31,13 +31,14 @@ public class BestMove
     //add Piece p into eval call
     public int eval(ChessPiece p) //sends board to heuristic to obtain a score for the move made
     {
+        //Debug.Log("BM Eval Call X "+ p.Position.x + " Y " + p.Position.y);
         Vector3Int val = ModelManager.Instance.BoardTileHeuristicValueReturn(p.Position.x, p.Position.y, p.IsWhite);
+        /*
+        ScanData[,] data = IndividualPieceScanner.Instance.singleScanner(p.IsWhite, new Vector2Int(x,y));
 
-        //ScanData[,] data = IndividualPieceScanner.Instance.singleScanner(p.IsWhite, new Vector2Int(x,y));
-
-        /*if (p.IsWhite == true)
+        if (p.IsWhite == true)
         {
-            /*for(int i = 0; i < data.GetLength(0); i++)
+            for(int i = 0; i < data.GetLength(0); i++)
             {
                 for(int j = 0; j < data.GetLength(1); j++)
                 {
@@ -57,7 +58,7 @@ public class BestMove
         }
         if(p.IsWhite == false)
         {
-            /*for (int i = 0; i < data.GetLength(0); i++)
+            for (int i = 0; i < data.GetLength(0); i++)
             {
                 for (int j = 0; j < data.GetLength(1); j++)
                 {
@@ -74,8 +75,9 @@ public class BestMove
             }
             Debug.Log(val.y);
             return val.y;
-        }*/
-        Debug.Log(val.z);
+        }
+        */
+        //Debug.Log(val.z);
         return val.z;
     }
 

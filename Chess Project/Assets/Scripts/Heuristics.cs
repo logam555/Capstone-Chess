@@ -55,7 +55,7 @@ public class Heuristics : MonoBehaviour
     {
         char letterBoard = '0';
         string showB = "";
-
+        //Debug.Log("H BoardWideHeuristic being called");
         Vector2Int holderV2I = new Vector2Int();
 
         //setting up tiles and adding to dictionary default values
@@ -73,6 +73,7 @@ public class Heuristics : MonoBehaviour
 
                 chessBoardGridCo[showB].whiteHeuristic = holderV2I.x;
                 chessBoardGridCo[showB].blackHeuristic = holderV2I.y;
+                //Debug.Log("H BoardWideHeuristic Huer at " + "x " + (i - 65) + " y " + (j - 1) + holderV2I);
             }
         }
     }
