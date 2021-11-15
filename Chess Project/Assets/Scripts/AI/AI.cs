@@ -55,8 +55,8 @@ public class AI : Player
 
     public void Step()
     {
-		lBishopCount = lInstance.bishop.subordinates.Count;
-		rBishopCount = rInstance.bishop.subordinates.Count;
+		lBishopCount = lInstance is null ? int.MaxValue : lInstance.bishop.subordinates.Count;
+		rBishopCount = rInstance is null ? int.MaxValue : rInstance.bishop.subordinates.Count;
 		kingCount = instance.King.subordinates.Count;
 
 		kingDelegate();
@@ -91,19 +91,19 @@ public class AI : Player
 	public void kingDelegate()
     {
 		Debug.Log("Left Bishop Count: " + lBishopCount + " Right Bishop Count: " + rBishopCount + " King Count: " + kingCount);
-		if (lBishopCount < (kingCount-1) && lBishopCount < rBishopCount)
+		if (lBishopCount < (kingCount-1) && lBishopCount < rBishopCount && lInstance != null)
         {
 			ChessBoard.Instance.SelectPiece(instance.King.subordinates[kingCount - 1].Position);
 			ChessBoard.Instance.DelegatePieceAI(lInstance.bishop.Position);
 			Debug.Log("lb delegated: " + lInstance.bishop.subordinates[lBishopCount].Name);
 		}
-		else if (rBishopCount < (kingCount-1) && rBishopCount <= lBishopCount)
+		else if (rBishopCount < (kingCount-1) && rBishopCount <= lBishopCount && rInstance != null)
 		{
 			ChessBoard.Instance.SelectPiece(instance.King.subordinates[kingCount - 1].Position);
 			ChessBoard.Instance.DelegatePieceAI(rInstance.bishop.Position);
 			Debug.Log("rb delegated: " + rInstance.bishop.subordinates[rBishopCount].Name);
 		}
-		else if(kingCount < lBishopCount && lBishopCount > rBishopCount)
+		else if(kingCount < lBishopCount && lBishopCount > rBishopCount && lInstance != null)
         {
 			for(int i = 0; i < lBishopCount; i++)
             {
@@ -115,7 +115,7 @@ public class AI : Player
                 }
             }
         }
-		else if (kingCount < rBishopCount && lBishopCount < rBishopCount)
+		else if (kingCount < rBishopCount && lBishopCount < rBishopCount && rInstance != null)
 		{
 			for (int i = 0; i < rBishopCount; i++)
 			{
