@@ -274,9 +274,9 @@ public class AI : Player
 
 		yield return new WaitForSeconds(wait);
 
-		StartCoroutine(TakeFree());
+		//StartCoroutine(TakeFree());
 
-		//GameManager.Instance.PassTurn();
+		GameManager.Instance.PassTurn();
     }
 
 	public IEnumerator TakeFree()
