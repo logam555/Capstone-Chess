@@ -12,6 +12,7 @@ public class BishopAI : CommanderAI
     public bool isWhite;
     public Commander bishop { get; set; }
     public ChessPiece bestPiece { get; set; }
+    public bool freeMove;
     private int[,] moves;
     private ChessPiece[,] board;
 
@@ -39,7 +40,31 @@ public class BishopAI : CommanderAI
     {
         getBoard();
 
+        freeMove = false;
+
         return bestGlobal();
+    }
+
+    public int[] useFreeMove()
+    {
+        int[] move = { 0, 0 };
+        if (freeMove == false)
+        {
+            getBoard();
+
+            BestMove local = new BestMove();
+
+            int[] bl = local.getMove(board, bishop, true);
+
+            move[0] = bl[0]; //x and y coordinates of best scoring move are recorded
+            move[1] = bl[1];
+
+            freeMove = true;
+
+            return move;
+        }
+
+        return move;
     }
 
     public void getBoard() //Obtains board from BoardManager

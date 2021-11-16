@@ -14,6 +14,9 @@ public class AI : Player
 	//public Random rand = new Random();
 	BishopAI rInstance;
 	int[] kingMove;
+	int[] freeKing;
+	int[] freelB;
+	int[] freerB;
 	int[] lBishopMove;
 	int[] rBishopMove;
 	int[,] moves;
@@ -36,6 +39,11 @@ public class AI : Player
 		kingMove = new int[2];
 		lBishopMove = new int[2];
 		rBishopMove = new int[2];
+
+		freeKing = new int[2];
+		freelB = new int[2];
+		freerB = new int[2];
+		
 		moves = new int[2, 3];
 		first = true;
 
@@ -64,17 +72,26 @@ public class AI : Player
 
 		threads.Add(new Thread(() => {
 			if(instance != null)
+            {
 				kingMove = instance.Step();
+				freeKing = instance.useFreeMove();
+			}
 		}));
 
 		threads.Add(new Thread(() => {
-			if(lInstance != null)
+			if (lInstance != null)
+			{
 				lBishopMove = lInstance.Step();
+				freelB = lInstance.useFreeMove(); ;
+			}
 		}));
 
 		threads.Add(new Thread(() => {
-			if(rInstance != null)
+			if (rInstance != null)
+			{
 				rBishopMove = rInstance.Step();
+				freerB = instance.useFreeMove();
+			}
 		}));
 
 		foreach(Thread thread in threads) {
@@ -86,6 +103,7 @@ public class AI : Player
         }
 
 		StartCoroutine(TakeTurn());
+		StartCoroutine(TakeFree());
 	}
 
 	public void kingDelegate()
@@ -129,6 +147,42 @@ public class AI : Player
 		}
 		else
 			Debug.Log("none delegated");
+	}
+
+	public bool useFreeKing()
+    {
+		if(freeKing[0] != 0 || freeKing[1] != 0)
+        {
+			ChessBoard.Instance.SelectPiece(instance.King.Position);
+			Vector2Int newPosition = new Vector2Int(freeKing[0], freeKing[1]);
+			return ChessBoard.Instance.PerformAction(newPosition);
+        }
+
+		return false;
+	}
+
+	public bool useFreelBishop()
+    {
+		if (freelB[0] != 0 || freelB[1] != 0)
+		{
+			ChessBoard.Instance.SelectPiece(lInstance.bishop.Position);
+			Vector2Int newPosition = new Vector2Int(freelB[0], freelB[1]);
+			return ChessBoard.Instance.PerformAction(newPosition);
+		}
+
+		return false;
+	}
+
+	public bool useFreerBishop()
+    {
+		if (freerB[0] != 0 || freerB[1] != 0)
+		{
+			ChessBoard.Instance.SelectPiece(rInstance.bishop.Position);
+			Vector2Int newPosition = new Vector2Int(freerB[0], freerB[1]);
+			return ChessBoard.Instance.PerformAction(newPosition);
+		}
+
+		return false;
 	}
 
 	public bool moveKing()
@@ -180,6 +234,32 @@ public class AI : Player
             moverBishop();
         }
 
-		GameManager.Instance.PassTurn();
+		//GameManager.Instance.PassTurn();
     }
+
+	public IEnumerator TakeFree()
+	{
+		float wait = 1.0f;
+
+		if (instance != null)
+		{
+			wait = useFreeKing() ? 2.5f : 0.75f;
+		}
+
+		yield return new WaitForSeconds(wait);
+
+		if (lInstance != null)
+		{
+			wait = useFreelBishop() ? 2.5f : 0.75f;
+		}
+
+		yield return new WaitForSeconds(wait);
+
+		if (rInstance != null)
+		{
+			useFreerBishop();
+		}
+
+		GameManager.Instance.PassTurn();
+	}
 }
