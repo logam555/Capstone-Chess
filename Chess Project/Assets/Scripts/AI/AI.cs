@@ -67,40 +67,77 @@ public class AI : Player
 		rBishopCount = rInstance is null ? int.MaxValue : rInstance.bishop.subordinates.Count;
 		kingCount = instance.King.subordinates.Count;
 
-		kingDelegate();
 		List<Thread> threads = new List<Thread>();
 
 		threads.Add(new Thread(() => {
-			if(instance != null)
-            {
-				kingMove = instance.Step();
-				//freeKing = instance.useFreeMove();
+			kingDelegate();
+			List<Thread> run_threads = new List<Thread>();
+
+			run_threads.Add(new Thread(() => {
+				if (instance != null) {
+					kingMove = instance.Step();
+					//freeKing = instance.useFreeMove();
+				}
+			}));
+
+			run_threads.Add(new Thread(() => {
+				if (lInstance != null) {
+					lBishopMove = lInstance.Step();
+					//freelB = lInstance.useFreeMove(); ;
+				}
+			}));
+
+			run_threads.Add(new Thread(() => {
+				if (rInstance != null) {
+					rBishopMove = rInstance.Step();
+					//freerB = instance.useFreeMove();
+				}
+			}));
+
+			foreach (Thread thread in run_threads) {
+				thread.Start();
+			}
+
+			foreach (Thread thread in run_threads) {
+				thread.Join();
 			}
 		}));
 
-		threads.Add(new Thread(() => {
-			if (lInstance != null)
-			{
-				lBishopMove = lInstance.Step();
-				//freelB = lInstance.useFreeMove(); ;
-			}
-		}));
+		threads[0].Start();
+		threads[0].Join();
+		//threads.Clear();
 
-		threads.Add(new Thread(() => {
-			if (rInstance != null)
-			{
-				rBishopMove = rInstance.Step();
-				//freerB = instance.useFreeMove();
-			}
-		}));
+		//threads.Add(new Thread(() => {
+		//	if(instance != null)
+  //          {
+		//		kingMove = instance.Step();
+		//		freeKing = instance.useFreeMove();
+		//	}
+		//}));
 
-		foreach(Thread thread in threads) {
-			thread.Start();
-        }
+		//threads.Add(new Thread(() => {
+		//	if (lInstance != null)
+		//	{
+		//		lBishopMove = lInstance.Step();
+		//		freelB = lInstance.useFreeMove(); ;
+		//	}
+		//}));
 
-		foreach(Thread thread in threads) {
-			thread.Join();
-        }
+		//threads.Add(new Thread(() => {
+		//	if (rInstance != null)
+		//	{
+		//		rBishopMove = rInstance.Step();
+		//		freerB = instance.useFreeMove();
+		//	}
+		//}));
+
+		//foreach(Thread thread in threads) {
+		//	thread.Start();
+  //      }
+
+		//foreach(Thread thread in threads) {
+		//	thread.Join();
+  //      }
 
 		StartCoroutine(TakeTurn());
 	}
