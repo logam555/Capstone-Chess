@@ -33,10 +33,14 @@ public class BestMove
     {
         Vector3Int posValue = ModelManager.Instance.GetHighestValueFromBoardBlack();
 
-        //change to be made below
-        //Vector3Int posValue = GetHighestValueFromTileMoveRange(p);
-
-        //int highestValue = posValue.z;
+        if (piece is King)
+        {
+            posValue.z -= 5;
+        }
+        else if (piece is Bishop)
+        {
+            posValue.z -= 3;
+        }
 
         return posValue;
     }
