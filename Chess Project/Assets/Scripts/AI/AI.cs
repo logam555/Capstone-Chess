@@ -74,7 +74,7 @@ public class AI : Player
 			if(instance != null)
             {
 				kingMove = instance.Step();
-				freeKing = instance.useFreeMove();
+				//freeKing = instance.useFreeMove();
 			}
 		}));
 
@@ -82,7 +82,7 @@ public class AI : Player
 			if (lInstance != null)
 			{
 				lBishopMove = lInstance.Step();
-				freelB = lInstance.useFreeMove(); ;
+				//freelB = lInstance.useFreeMove(); ;
 			}
 		}));
 
@@ -90,7 +90,7 @@ public class AI : Player
 			if (rInstance != null)
 			{
 				rBishopMove = rInstance.Step();
-				freerB = instance.useFreeMove();
+				//freerB = instance.useFreeMove();
 			}
 		}));
 
@@ -103,7 +103,7 @@ public class AI : Player
         }
 
 		StartCoroutine(TakeTurn());
-		StartCoroutine(TakeFree());
+		//StartCoroutine(TakeFree());
 	}
 
 	public void kingDelegate()
@@ -234,7 +234,7 @@ public class AI : Player
             moverBishop();
         }
 
-		//GameManager.Instance.PassTurn();
+		GameManager.Instance.PassTurn();
     }
 
 	public IEnumerator TakeFree()
