@@ -5,6 +5,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Threading;
+using System.Threading.Tasks;
 using UnityEngine;
 
 public class AI : Player
@@ -61,46 +62,60 @@ public class AI : Player
 		new GameObject().AddComponent<IndividualPieceScanner>();
 	}
 
-    public void Step()
+    public async void Step()
     {
 		lBishopCount = lInstance is null ? int.MaxValue : lInstance.bishop.subordinates.Count;
 		rBishopCount = rInstance is null ? int.MaxValue : rInstance.bishop.subordinates.Count;
 		kingCount = instance.King.subordinates.Count;
 
-		kingDelegate();
-		List<Thread> threads = new List<Thread>();
+		await Task.Run(() => kingDelegate());
 
-        threads.Add(new Thread(() => {
-            if (instance != null) {
-                kingMove = instance.Step();
-                freeKing = instance.useFreeMove();
-            }
-        }));
+		List<Task> tasks = new List<Task>();
+		tasks.Add(Task.Run(() => {
+			List<Thread> threads = new List<Thread>();
+			threads.Add(new Thread(() => {
+				if (instance != null) {
+					kingMove = instance.Step();
+					freeKing = instance.useFreeMove();
+				}
+			}));
 
-        threads.Add(new Thread(() => {
-            if (lInstance != null) {
-                lBishopMove = lInstance.Step();
-                freelB = lInstance.useFreeMove(); ;
-            }
-        }));
+			threads[0].Start();
+			threads[0].Join();
+			
+		}));
 
-        threads.Add(new Thread(() => {
-            if (rInstance != null) {
-                rBishopMove = rInstance.Step();
-                freerB = instance.useFreeMove();
-            }
-        }));
+		tasks.Add(Task.Run(() => {
+			List<Thread> threads = new List<Thread>();
+			threads.Add(new Thread(() => {
+				if (lInstance != null) {
+					lBishopMove = lInstance.Step();
+					freelB = lInstance.useFreeMove();
+				}
+			}));
 
-        foreach (Thread thread in threads) {
-            thread.Start();
-        }
+			threads[0].Start();
+			threads[0].Join();
+		}));
 
-        foreach (Thread thread in threads) {
-            thread.Join();
-        }
+		tasks.Add(Task.Run(() => {
+			List<Thread> threads = new List<Thread>();
+			threads.Add(new Thread(() => {
+				if (rInstance != null) {
+					rBishopMove = rInstance.Step();
+					freerB = rInstance.useFreeMove();
+				}
+			}));
 
-        StartCoroutine(TakeTurn());
+			threads[0].Start();
+			threads[0].Join();
+		}));
+
+		await Task.WhenAll(tasks);
+
+		StartCoroutine(TakeTurn());
 	}
+
 
 	public void kingDelegate()
     {
@@ -214,7 +229,7 @@ public class AI : Player
 	public IEnumerator TakeTurn() {
 		float wait = 1.0f;
 
-		yield return new WaitForEndOfFrame();
+		yield return new WaitForSeconds(0.25f);
 
 		if (instance != null) {
 			wait = moveKing() ? 2.5f : 0.75f;
