@@ -103,7 +103,6 @@ public class AI : Player
         }
 
 		StartCoroutine(TakeTurn());
-		StartCoroutine(TakeFree());
 	}
 
 	public void kingDelegate()
@@ -218,6 +217,8 @@ public class AI : Player
 	public IEnumerator TakeTurn() {
 		float wait = 1.0f;
 
+		yield return new WaitForEndOfFrame();
+
 		if (instance != null) {
 			wait = moveKing() ? 2.5f : 0.75f;
 		}
@@ -231,8 +232,12 @@ public class AI : Player
 		yield return new WaitForSeconds(wait);
 
         if (rInstance != null) {
-            moverBishop();
+            wait = moverBishop() ? 2.5f : 0.75f;
         }
+
+		yield return new WaitForSeconds(wait);
+
+		StartCoroutine(TakeFree());
 
 		//GameManager.Instance.PassTurn();
     }
@@ -257,8 +262,10 @@ public class AI : Player
 
 		if (rInstance != null)
 		{
-			useFreerBishop();
+			wait = useFreerBishop() ? 2.5f : 0.75f;
 		}
+
+		yield return new WaitForSeconds(wait);
 
 		GameManager.Instance.PassTurn();
 	}
