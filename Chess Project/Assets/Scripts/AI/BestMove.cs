@@ -116,6 +116,11 @@ public class BestMove
                         //board tile location update values to send to board update
                         bool pieceWhite = new bool();
 
+                        if(j < 4 && i > 2 && i < 5|| j < 4 && ChessBoard.Instance.PieceAt(new Vector2Int(i,j), tempBoard) is King)
+                        {
+                            score *= 10;
+                        }
+
                         if (piece.IsWhite)
                         {
                             pieceWhite = true;
