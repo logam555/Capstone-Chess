@@ -35,11 +35,11 @@ public class BestMove
 
         if (piece is King)
         {
-            posValue.z -= 5;
+            posValue.z /= 5;
         }
         else if (piece is Bishop)
         {
-            posValue.z -= 3;
+            posValue.z /= 3;
         }
 
         return posValue;
@@ -116,9 +116,13 @@ public class BestMove
                         //board tile location update values to send to board update
                         bool pieceWhite = new bool();
 
-                        if(j < 4 && i > 2 && i < 5|| j < 4 && ChessBoard.Instance.PieceAt(new Vector2Int(i,j), tempBoard) is King)
+                        if(j < 4 && i > 0 && i < 5)
                         {
-                            score *= 10;
+                            score *= 2;
+                        }
+                        if(j < 4 && ChessBoard.Instance.PieceAt(new Vector2Int(i, j), tempBoard) is King)
+                        {
+                            score *= 5;
                         }
 
                         if (piece.IsWhite)
