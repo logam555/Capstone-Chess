@@ -9,9 +9,19 @@ using UnityEngine;
 public class BestMove
 {
     ChessPiece[,] board;
-    bool isCommander;
-    //Heuristics h = new Heuristics();
-    ChessPiece piece;
+    Dictionary<string, BoardTile> chessBoardGridCo;
+
+    public struct Moves {
+        public ChessPiece piece;
+        public Vector2Int targetPos;
+        public int score;
+
+        public Moves(ChessPiece piece, Vector2Int targetPos, int score) {
+            this.piece = piece;
+            this.targetPos = targetPos;
+            this.score = score;
+        }
+    }
 
 
     public BestMove()
@@ -19,262 +29,291 @@ public class BestMove
 
     }
 
-    public int[] getMove(ChessPiece[,] board, ChessPiece piece, bool isCommander)
+    public int[] getMove(ChessPiece[,] board, Commander piece, bool isLeft)
     {
         this.board = board;
-        this.piece = piece;
-        this.isCommander = isCommander;
 
-        return bestLocal();
+        if(piece is King) {
+            chessBoardGridCo = ModelManager.Instance.chessBoardCopyKing;
+        }
+        else if(piece is Bishop && isLeft) {
+            chessBoardGridCo = ModelManager.Instance.chessBoardCopyBishop1;
+        }
+        else {
+            chessBoardGridCo = ModelManager.Instance.chessBoardCopyBishop2;
+        }
+
+        return bestLocal(piece);
     }
 
     //add Piece p into eval call
-    public Vector3Int eval() //sends board to heuristic to obtain a score for the move made
+    public List<Moves> eval(Commander commander, ChessPiece[,] board) //sends board to heuristic to obtain a score for the move made
     {
-        Vector3Int posValue = ModelManager.Instance.GetHighestValueFromBoardBlack();
+        List<Moves> moves = new List<Moves>();
+        List<ChessPiece> pieces = new List<ChessPiece>();
+        pieces.Add(commander);
+        pieces = pieces.Union(commander.subordinates).ToList();
 
-        if (piece is King)
-        {
-            posValue.z /= 5;
-        }
-        else if (piece is Bishop)
-        {
-            posValue.z /= 3;
+        foreach(ChessPiece piece in pieces) {
+            var heuristics = IndividualPieceScanner.Instance.singleScanner(commander.IsWhite, piece.Position, board);
+            foreach (Vector2Int pos in possibleMoves(piece)) {
+                
+                int score = (int) (heuristics[pos.x, pos.y].Heuristic + ModelManager.Instance.BoardTileHeuristicValueReturn(pos.x, pos.y, commander.IsWhite).z); // board heuristics + scanner heruistics
+                moves.Add(new Moves(piece, pos, score));
+            }
         }
 
-        return posValue;
+        return moves;
+        
     }
 
     public List<Vector2Int> possibleMoves(ChessPiece p) //Uses Bishop script to obtain possible moves for Bishop
     {
-        return ChessBoard.Instance.FilterMoveRange(p, board).Union(ChessBoard.Instance.FilterAttackRange(p, board)).ToList();
+        List<Vector2Int> startPos = new List<Vector2Int>();
+        startPos.Add(p.Position);
+        return ChessBoard.Instance.FilterMoveRange(p, board).Union(ChessBoard.Instance.FilterAttackRange(p, board)).Union(startPos).ToList();
     }
 
-    public int[] bestLocal() //obtains best possible move for Bishop
+    public int[] bestLocal(Commander piece) //obtains best possible move for Bishop
     {
         int[] move = new int[3];
-        int pieceY = 0;
-        int pieceX = 0;
-        for (int i = 0; i < 8; i++)
-        {
-            for (int j = 0; j < 8; j++)
-            {
-                pieceX = piece.Position.x;
-                pieceY = piece.Position.y;
-                if (possibleMoves(piece).Contains(new Vector2Int(i, j)))
-                {
 
-                    ChessPiece temp = board[i, j];
-                    board[i, j] = piece;
-                    board[pieceX, pieceY] = null;
-                    int score = minimax(0, board, true, int.MinValue, int.MaxValue);
-                    board[i, j] = temp;
-                    board[pieceX, pieceY] = piece;
-
-                    if (score > move[2]) //if score obtained is better than bestLocalScore
+        Vector3Int score = minimax(0,piece, board, true, int.MinValue, int.MaxValue);
+        if (score.z > move[2]) //if score obtained is better than bestLocalScore
                     {
-                        move[2] = score; //than score obtained is bestLocalScore
-                        move[0] = i; //x and y coordinates of best scoring move are recorded
-                        move[1] = j;
-                    }
-                }
-
-            }
+            move[2] = score.z; //than score obtained is bestLocalScore
+            move[0] = score.x; //x and y coordinates of best scoring move are recorded
+            move[1] = score.y;
         }
+
         return move;
     }
 
-    public int minimax(int depth, ChessPiece[,] tempBoard, bool maximize, int alpha, int beta) //uses minimax algorithm to obtain the score
+    public Vector3Int minimax(int depth, Commander commander, ChessPiece[,] tempBoard, bool maximize, int alpha, int beta) //uses minimax algorithm to obtain the score
     {
-        Vector3Int evalsV3 = eval(); //uses heuristic to obtain score
         //Vector3Int evalsV3 = eval(piece); //uses heuristic to obtain score
-        int score = evalsV3.z;
-        int pieceY = 0;
-        int pieceX = 0;
-        int bestVal = score;
+        Vector3Int score = new Vector3Int();
+        int pieceY = -1;
+        int pieceX = -1;
+        Vector3Int bestVal = new Vector3Int();
+        bestVal.x = pieceX;
+        bestVal.y = pieceY;
 
         if (depth == 1)
         {
-            return score; //if specified depth is hit return score
+            List<Moves> evals = eval(commander, tempBoard);
+            int best = int.MinValue;
+            foreach (Moves move in evals) {
+                if (move.score > best) {
+                    score.x = move.targetPos.x;
+                    score.y = move.targetPos.y;
+                }
+            }
+
+            score.z = best;
+            return score; //if specified depth is hit return score  
         }
 
         if (maximize == true) //if maximizing (AIs turn)
         {
-            bestVal = int.MinValue;
-            for (int i = 0; i < 8; i++)//x value of board
-            {
-                for (int j = 0; j < 8; j++) //Iteratate through board, y value of board
-                {
-                    pieceX = piece.Position.x;
-                    pieceY = piece.Position.y;
-                    if (possibleMoves(piece).Contains(new Vector2Int(i, j))) //If space is available
-                    {
-                        ChessPiece temp = tempBoard[i, j];
-                        tempBoard[i, j] = piece; //move piece
-                        tempBoard[pieceX, pieceY] = null; //move empty space to  pieces previous position
+            List<Moves> moves = eval(commander, tempBoard);
+            bestVal.z = int.MinValue;
 
-                        //board tile location update values to send to board update
-                        bool pieceWhite = new bool();
+            foreach(Moves move in moves) {
+                pieceX = move.piece.Position.x;
+                pieceY = move.piece.Position.y;
 
-                        if(j < 4 && i > 2 && i < 5 || i > 0 || j > 0)
-                        {
-                            score *= 2;
-                        }
-                        if(j < 4 && ChessBoard.Instance.PieceAt(new Vector2Int(i, j), tempBoard) is King)
-                        {
-                            score *= 15;
-                        }
-                        if (j < 4 && ChessBoard.Instance.PieceAt(new Vector2Int(i, j), tempBoard) is Queen)
-                        {
-                            score *= 10;
-                        }
-                        if (j < 4 && ChessBoard.Instance.PieceAt(new Vector2Int(i, j), tempBoard) is Bishop)
-                        {
-                            score *= 5;
-                        }
+                ChessPiece temp = tempBoard[move.targetPos.x, move.targetPos.y];
+                tempBoard[pieceX, pieceY] = null;
+                tempBoard[move.targetPos.x, move.targetPos.y] = move.piece;
+                move.piece.Position = move.targetPos;
 
-                        if (piece.IsWhite)
-                        {
-                            pieceWhite = true;
-                        }
-                        else
-                        {
-                            pieceWhite = false;
-                        }
+                string pieceTypeStr = "";
 
-                        string pieceTypeStr = "";
+                if (move.piece is King) {
+                    pieceTypeStr = "King";
+                } else if (move.piece is Queen) {
+                    pieceTypeStr = "Queen";
+                } else if (move.piece is Bishop) {
+                    pieceTypeStr = "Bishop";
+                } else if (move.piece is Knight) {
+                    pieceTypeStr = "Knight";
+                } else if (move.piece is Rook) {
+                    pieceTypeStr = "Rook";
+                } else {
+                    pieceTypeStr = "Pawn";
+                }
 
-                        if (piece is King)
-                        {
-                            pieceTypeStr = "King";
-                        }
-                        else if (piece is Queen)
-                        {
-                            pieceTypeStr = "Queen";
-                        }
-                        else if (piece is Bishop)
-                        {
-                            pieceTypeStr = "Bishop";
-                        }
-                        else if (piece is Knight)
-                        {
-                            pieceTypeStr = "Knight";
-                        }
-                        else if (piece is Rook)
-                        {
-                            pieceTypeStr = "Rook";
-                        }
-                        else
-                        {
-                            pieceTypeStr = "Pawn";
-                        }
+                //update board with temp move to check values in min/max
+                ModelManager.Instance.BoardTileLocationUpdate(new Vector2Int(pieceX, pieceY), new Vector2Int(move.targetPos.x, move.targetPos.y), move.piece.IsWhite, pieceTypeStr, chessBoardGridCo);
+                //board wide huer tile only update
+                ModelManager.Instance.BoardWideHeuristicTileCall(move.targetPos.x, move.targetPos.y, chessBoardGridCo);
 
-                        //update board with temp move to check values in min/max
-                        ModelManager.Instance.BoardTileLocationUpdate(new Vector2Int(pieceX, pieceY), new Vector2Int(i, j), pieceWhite, pieceTypeStr);
+                score = minimax(depth, GameManager.Instance.user.commanders[0], tempBoard, false, alpha, beta);
+                if (score.z > bestVal.z)
+                    bestVal = score;
+                alpha = Math.Max(alpha, bestVal.z);
 
-                        //board wide huer tile only update
-                        ModelManager.Instance.BoardWideHeuristicTileCall(i, j);
+                tempBoard[move.targetPos.x, move.targetPos.y] = temp;
+                tempBoard[pieceX, pieceY] = move.piece;
+                move.piece.Position = new Vector2Int(pieceX, pieceY);
 
-                        score = minimax(depth, tempBoard, false, alpha, beta);
-                        bestVal = Math.Max(bestVal, score);
-                        alpha = Math.Max(alpha, bestVal);
-                        tempBoard[i, j] = temp;
-                        tempBoard[pieceX, pieceY] = piece;
+                ModelManager.Instance.BoardTileLocationUpdate(new Vector2Int(move.targetPos.x, move.targetPos.y), new Vector2Int(pieceX, pieceY), move.piece.IsWhite, pieceTypeStr, chessBoardGridCo);
+                ModelManager.Instance.BoardWideHeuristicTileCall(pieceX, pieceY, chessBoardGridCo);
 
-                        ModelManager.Instance.BoardTileLocationUpdate(new Vector2Int(i, j), new Vector2Int(pieceX, pieceY), pieceWhite, pieceTypeStr);
-                        ModelManager.Instance.BoardWideHeuristicTileCall(pieceX, pieceY);
-
-                    }
-                    if (beta <= alpha)
-                    {
-                        return bestVal;
-                    }
+                if (beta <= alpha) {
+                    return bestVal;
                 }
             }
             return bestVal;
         }
 
-        if (maximize == false)
-        {
-            bestVal = int.MaxValue;
-            ChessPiece tempPiece = tempBoard[0, 0];
-            for (int i = 0; i < 8; i++)//x value of board
-            {
-                for (int j = 0; j < 8; j++)//y value of board
-                {
-                    if (ChessBoard.Instance.IsEnemyPieceAt(piece.IsWhite, new Vector2Int(i, j), board))
-                    {
-                        tempPiece = tempBoard[i, j];
-                        pieceX = i;
-                        pieceY = j;
+        if (maximize == false) {
+            int piece1X;
+            int piece1Y;
+            int piece2X;
+            int piece2Y;
+            int piece3X;
+            int piece3Y;
+            ChessPiece temp1;
+            ChessPiece temp2 = null;
+            ChessPiece temp3 = null;
 
-                        bool pieceWhite = new bool();
+            List<Moves> moves1 = eval(GameManager.Instance.user.commanders[0], tempBoard);
+            List<Moves> moves2 = eval(GameManager.Instance.user.commanders[1], tempBoard);
+            List<Moves> moves3 = eval(GameManager.Instance.user.commanders[2], tempBoard);
 
-                        if (tempPiece.IsWhite)
-                        {
-                            pieceWhite = true;
-                        }
-                        else
-                        {
-                            pieceWhite = false;
-                        }
+            bestVal.z = int.MaxValue;
+
+            foreach (Moves move1 in moves1) {
+                foreach (Moves move2 in moves2) {
+                    foreach (Moves move3 in moves3) {
+                        piece1X = move1.piece.Position.x;
+                        piece1Y = move1.piece.Position.y;
+                        piece2X = move2.piece.Position.x;
+                        piece2Y = move2.piece.Position.y;
+                        piece3X = move3.piece.Position.x;
+                        piece3Y = move3.piece.Position.y;
+
+                        temp1 = tempBoard[move1.targetPos.x, move1.targetPos.y];
+                        tempBoard[piece1X, piece1Y] = null;
+                        tempBoard[move1.targetPos.x, move1.targetPos.y] = move1.piece;
+                        move1.piece.Position = move1.targetPos;
 
                         string pieceTypeStr = "";
 
-                        if (tempPiece is King)
-                        {
+                        if (move1.piece is King) {
                             pieceTypeStr = "King";
-                        }
-                        else if (tempPiece is Queen)
-                        {
+                        } else if (move1.piece is Queen) {
                             pieceTypeStr = "Queen";
-                        }
-                        else if (tempPiece is Bishop)
-                        {
+                        } else if (move1.piece is Bishop) {
                             pieceTypeStr = "Bishop";
-                        }
-                        else if (tempPiece is Knight)
-                        {
+                        } else if (move1.piece is Knight) {
                             pieceTypeStr = "Knight";
-                        }
-                        else if (tempPiece is Rook)
-                        {
+                        } else if (move1.piece is Rook) {
                             pieceTypeStr = "Rook";
-                        }
-                        else
-                        {
+                        } else {
                             pieceTypeStr = "Pawn";
                         }
 
-                        foreach (Vector2Int pos in possibleMoves(tempPiece))
-                        {
-                            ModelManager.Instance.BoardTileLocationUpdate(new Vector2Int(pieceX, pieceY), pos, pieceWhite, pieceTypeStr);
+                        //update board with temp move to check values in min/max
+                        ModelManager.Instance.BoardTileLocationUpdate(new Vector2Int(piece1X, piece1Y), new Vector2Int(move1.targetPos.x, move1.targetPos.y), move1.piece.IsWhite, pieceTypeStr, chessBoardGridCo);
+                        //board wide huer tile only update
+                        ModelManager.Instance.BoardWideHeuristicTileCall(move1.targetPos.x, move1.targetPos.y, chessBoardGridCo);
 
+                        if (move2.targetPos != move1.targetPos) {
+                            temp2 = tempBoard[move2.targetPos.x, move2.targetPos.y];
+                            tempBoard[piece2X, piece2Y] = null;
+                            tempBoard[move2.targetPos.x, move2.targetPos.y] = move2.piece;
+                            move2.piece.Position = move2.targetPos;
+
+                            pieceTypeStr = "";
+
+                            if (move2.piece is King) {
+                                pieceTypeStr = "King";
+                            } else if (move2.piece is Queen) {
+                                pieceTypeStr = "Queen";
+                            } else if (move2.piece is Bishop) {
+                                pieceTypeStr = "Bishop";
+                            } else if (move2.piece is Knight) {
+                                pieceTypeStr = "Knight";
+                            } else if (move2.piece is Rook) {
+                                pieceTypeStr = "Rook";
+                            } else {
+                                pieceTypeStr = "Pawn";
+                            }
+
+                            //update board with temp move to check values in min/max
+                            ModelManager.Instance.BoardTileLocationUpdate(new Vector2Int(piece2X, piece2Y), new Vector2Int(move2.targetPos.x, move2.targetPos.y), move2.piece.IsWhite, pieceTypeStr, chessBoardGridCo);
                             //board wide huer tile only update
-
-                            ModelManager.Instance.BoardWideHeuristicTileCall(pos.x, pos.y);
-
-                            ChessPiece temp = tempBoard[pos.x, pos.y];
-                            tempBoard[pos.x, pos.y] = tempPiece;
-                            tempBoard[pieceX, pieceY] = null;
-                            score = minimax(depth + 1, tempBoard, true, alpha, beta);
-                            bestVal = Math.Min(bestVal, score);
-                            beta = Math.Min(beta, bestVal);
-                            tempBoard[pos.x, pos.y] = temp;
-                            tempBoard[pieceX, pieceY] = tempPiece;
-
-                            ModelManager.Instance.BoardTileLocationUpdate(pos, new Vector2Int(pieceX, pieceY), pieceWhite, pieceTypeStr);
-                            ModelManager.Instance.BoardWideHeuristicTileCall(pieceX, pieceY);
+                            ModelManager.Instance.BoardWideHeuristicTileCall(move2.targetPos.x, move2.targetPos.y, chessBoardGridCo);
                         }
 
-                        //update board with temp move to check values in min/max
+                        if (move3.targetPos != move1.targetPos && move3.targetPos != move2.targetPos) {
+                            temp3 = tempBoard[move3.targetPos.x, move3.targetPos.y];
+                            tempBoard[piece3X, piece3Y] = null;
+                            tempBoard[move3.targetPos.x, move3.targetPos.y] = move3.piece;
+                            move3.piece.Position = move3.targetPos;
+
+                            pieceTypeStr = "";
+
+                            if (move3.piece is King) {
+                                pieceTypeStr = "King";
+                            } else if (move3.piece is Queen) {
+                                pieceTypeStr = "Queen";
+                            } else if (move3.piece is Bishop) {
+                                pieceTypeStr = "Bishop";
+                            } else if (move3.piece is Knight) {
+                                pieceTypeStr = "Knight";
+                            } else if (move3.piece is Rook) {
+                                pieceTypeStr = "Rook";
+                            } else {
+                                pieceTypeStr = "Pawn";
+                            }
+
+                            //update board with temp move to check values in min/max
+                            ModelManager.Instance.BoardTileLocationUpdate(new Vector2Int(piece3X, piece3Y), new Vector2Int(move3.targetPos.x, move3.targetPos.y), move3.piece.IsWhite, pieceTypeStr, chessBoardGridCo);
+                            //board wide huer tile only update
+                            ModelManager.Instance.BoardWideHeuristicTileCall(move3.targetPos.x, move3.targetPos.y, chessBoardGridCo);
+                        }
+
+                        score = minimax(depth + 1, GameManager.Instance.user.commanders[0], tempBoard, true, alpha, beta);
+                        if (score.z < bestVal.z)
+                            bestVal = score;
+                        beta = Math.Min(beta, bestVal.z);
+
+                        tempBoard[move1.targetPos.x, move1.targetPos.y] = temp1;
+                        tempBoard[piece1X, piece1Y] = move1.piece;
+                        move1.piece.Position = new Vector2Int(piece1X, piece1Y);
+
+                        ModelManager.Instance.BoardTileLocationUpdate(new Vector2Int(move1.targetPos.x, move1.targetPos.y), new Vector2Int(piece1X, piece1Y), move1.piece.IsWhite, pieceTypeStr, chessBoardGridCo);
+                        ModelManager.Instance.BoardWideHeuristicTileCall(piece1X, piece1Y, chessBoardGridCo);
+
+                        if (move2.targetPos != move1.targetPos) {
+                            tempBoard[move2.targetPos.x, move2.targetPos.y] = temp2;
+                            tempBoard[piece2X, piece2Y] = move2.piece;
+                            move2.piece.Position = new Vector2Int(piece2X, piece2Y);
+
+                            ModelManager.Instance.BoardTileLocationUpdate(new Vector2Int(move2.targetPos.x, move2.targetPos.y), new Vector2Int(piece2X, piece2Y), move2.piece.IsWhite, pieceTypeStr, chessBoardGridCo);
+                            ModelManager.Instance.BoardWideHeuristicTileCall(piece2X, piece2Y, chessBoardGridCo);
+                        }
+
+                        if (move3.targetPos != move1.targetPos && move3.targetPos != move2.targetPos) {
+                            tempBoard[move3.targetPos.x, move3.targetPos.y] = temp3;
+                            tempBoard[piece3X, piece3Y] = move3.piece;
+                            move3.piece.Position = new Vector2Int(piece3X, piece3Y);
+
+                            ModelManager.Instance.BoardTileLocationUpdate(new Vector2Int(move3.targetPos.x, move3.targetPos.y), new Vector2Int(piece3X, piece3Y), move3.piece.IsWhite, pieceTypeStr, chessBoardGridCo);
+                            ModelManager.Instance.BoardWideHeuristicTileCall(piece3X, piece3Y, chessBoardGridCo);
+                        }
+
+                        if (beta <= alpha) {
+                            return bestVal;
+                        }
                     }
                 }
-                if (beta <= alpha)
-                {
-                    return bestVal;
-                }
             }
+
             return bestVal;
         }
 

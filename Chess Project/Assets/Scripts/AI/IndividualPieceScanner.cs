@@ -64,7 +64,7 @@ public class IndividualPieceScanner : MonoBehaviour
 
     }
 
-    public ScanData[,] singleScanner(bool isWhite, Vector2Int position)
+    public ScanData[,] singleScanner(bool isWhite, Vector2Int position, ChessPiece[,] board)
     {
 
         //replace Piece with ChessPiece  
@@ -74,14 +74,17 @@ public class IndividualPieceScanner : MonoBehaviour
         //Chessboard.Instance.FilterMoverange(piece, board)  
         //ChessPiece[,] board = new ChessPiece[8,8];
 
-        board = (ChessPiece[,])ChessBoard.Instance.Board.Clone();
         //board = ChessBoard.Instance.Board.Clone();
         ChessPiece ScanPiece = ChessBoard.Instance.PieceAt(position, board);
         //openPositionMap = bm.availableMoves(ScanPiece); 
+        ScanData[,] IndividualScanMap = new ScanData[8, 8];
+
+        if (ScanPiece == null)
+            return IndividualScanMap;
 
         List<Vector2Int> enemies = ChessBoard.Instance.FilterAttackRange(ScanPiece, board);
         List<Vector2Int> openTiles = ChessBoard.Instance.FilterMoveRange(ScanPiece, board);
-        ScanData[,] IndividualScanMap = new ScanData[8, 8];
+        
 
 
         for (int i = 0; i < enemies.Count; i++)

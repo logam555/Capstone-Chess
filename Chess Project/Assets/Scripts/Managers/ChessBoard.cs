@@ -10,6 +10,9 @@ class ChessBoard : MonoBehaviour {
     public static ChessBoard Instance;
 
     public ChessPiece[,] Board { get; set; }
+    public ChessPiece[,] KingBoard { get; set; }
+    public ChessPiece[,] LBishopBoard  { get; set; }
+    public ChessPiece[,] RBishopBoard { get;set; }
     public ChessPiece SelectedPiece { get; set; }
 
     [SerializeField]
@@ -21,7 +24,10 @@ class ChessBoard : MonoBehaviour {
     private void Awake() {
         Instance = this;
         isAttacking = false;
-        Instantiate();
+        Board = Instantiate();
+        KingBoard = Instantiate();
+        LBishopBoard = Instantiate();
+        RBishopBoard = Instantiate();
     }
 
     private void Start() {
@@ -47,6 +53,7 @@ class ChessBoard : MonoBehaviour {
             if (Input.GetMouseButtonDown(0)) {
                 if (SelectedPiece == null) {
                     SelectPiece(ModelManager.Instance.selection);
+                    
 
                 } else {
                     PerformAction(ModelManager.Instance.selection);
@@ -57,8 +64,8 @@ class ChessBoard : MonoBehaviour {
 
 
     #region INSTANTIATION
-    private void Instantiate() {
-        Board = new ChessPiece[8, 8];
+    private ChessPiece[,] Instantiate() {
+        ChessPiece[,] board = new ChessPiece[8, 8];
         SelectedPiece = null;
 
         // Create White Pieces
@@ -68,29 +75,29 @@ class ChessBoard : MonoBehaviour {
         Bishop rBishop = new Bishop(true, new Vector2Int(5, 0), "WB2", king);
 
         // Add Commanders to board
-        Board[4, 0] = king;
-        Board[2, 0] = lBishop;
-        Board[5, 0] = rBishop;
+        board[4, 0] = king;
+        board[2, 0] = lBishop;
+        board[5, 0] = rBishop;
 
         // Create Rooks
-        Board[0, 0] = new Rook(true, new Vector2Int(0, 0), king, "WR1");
-        Board[7, 0] = new Rook(true, new Vector2Int(7, 0), king, "WR2");
+        board[0, 0] = new Rook(true, new Vector2Int(0, 0), king, "WR1");
+        board[7, 0] = new Rook(true, new Vector2Int(7, 0), king, "WR2");
 
         // Create Knights
-        Board[1, 0] = new Knight(true, new Vector2Int(1, 0), lBishop, "WKn1");
-        Board[6, 0] = new Knight(true, new Vector2Int(6, 0), rBishop, "WKn2");
+        board[1, 0] = new Knight(true, new Vector2Int(1, 0), lBishop, "WKn1");
+        board[6, 0] = new Knight(true, new Vector2Int(6, 0), rBishop, "WKn2");
 
         // Create Queen
-        Board[3, 0] = new Queen(true, new Vector2Int(3, 0), king, "WQ");
+        board[3, 0] = new Queen(true, new Vector2Int(3, 0), king, "WQ");
 
         // Create Pawns
         for (int i = 0; i < 8; i++) {
             if (i < 3)
-                Board[i, 1] = new Pawn(true, new Vector2Int(i, 1), lBishop, "WP" + i.ToString());
+                board[i, 1] = new Pawn(true, new Vector2Int(i, 1), lBishop, "WP" + i.ToString());
             else if(i < 5)
-                Board[i, 1] = new Pawn(true, new Vector2Int(i, 1), king, "WP" + i.ToString());
+                board[i, 1] = new Pawn(true, new Vector2Int(i, 1), king, "WP" + i.ToString());
             else
-                Board[i, 1] = new Pawn(true, new Vector2Int(i, 1), rBishop, "WP" + i.ToString());
+                board[i, 1] = new Pawn(true, new Vector2Int(i, 1), rBishop, "WP" + i.ToString());
         }
 
 
@@ -101,40 +108,42 @@ class ChessBoard : MonoBehaviour {
         rBishop = new Bishop(false, new Vector2Int(5, 7), "BB2", king);
 
         // Add Commanders to board
-        Board[4, 7] = king;
-        Board[2, 7] = lBishop;
-        Board[5, 7] = rBishop;
+        board[4, 7] = king;
+        board[2, 7] = lBishop;
+        board[5, 7] = rBishop;
 
         // Create Rooks
-        Board[0, 7] = new Rook(false, new Vector2Int(0, 7), king, "BR1");
-        Board[7, 7] = new Rook(false, new Vector2Int(7, 7), king, "BR2");
+        board[0, 7] = new Rook(false, new Vector2Int(0, 7), king, "BR1");
+        board[7, 7] = new Rook(false, new Vector2Int(7, 7), king, "BR2");
 
         // Create Knights
-        Board[1, 7] = new Knight(false, new Vector2Int(1, 7), lBishop, "BKn1");
-        Board[6, 7] = new Knight(false, new Vector2Int(6, 7), rBishop, "BKn2");
+        board[1, 7] = new Knight(false, new Vector2Int(1, 7), lBishop, "BKn1");
+        board[6, 7] = new Knight(false, new Vector2Int(6, 7), rBishop, "BKn2");
 
         // Create Queen
-        Board[3, 7] = new Queen(false, new Vector2Int(3, 7), king, "BQ");
+        board[3, 7] = new Queen(false, new Vector2Int(3, 7), king, "BQ");
 
         // Create Pawns
         for (int i = 0; i < 8; i++) {
             if (i < 3)
-                Board[i, 6] = new Pawn(false, new Vector2Int(i, 6), lBishop, "BP" + i.ToString());
+                board[i, 6] = new Pawn(false, new Vector2Int(i, 6), lBishop, "BP" + i.ToString());
             else if (i < 5)
-                Board[i, 6] = new Pawn(false, new Vector2Int(i, 6), king, "BP" + i.ToString());
+                board[i, 6] = new Pawn(false, new Vector2Int(i, 6), king, "BP" + i.ToString());
             else
-                Board[i, 6] = new Pawn(false, new Vector2Int(i, 6), rBishop, "BP" + i.ToString());
+                board[i, 6] = new Pawn(false, new Vector2Int(i, 6), rBishop, "BP" + i.ToString());
         }
 
         // Call for attaching commanders when all pieces are spawned
-        AttachSubordinatePieces();
+        AttachSubordinatePieces(board);
+
+        return board;
     }
 
-    private void AttachSubordinatePieces() {
+    private void AttachSubordinatePieces(ChessPiece[,] board) {
         //Attach White side
         for(int i = 0; i < 8; i++) {
             for(int j = 0; j < 2; j++) {
-                ChessPiece piece = Board[i, j];
+                ChessPiece piece = board[i, j];
                 if(piece is Subordinate) {
                     Subordinate subordinate = (Subordinate)piece;
                     subordinate.Commander.subordinates.Add(subordinate);
@@ -145,7 +154,7 @@ class ChessBoard : MonoBehaviour {
         // Attach Black side
         for (int i = 0; i < 8; i++) {
             for (int j = 6; j < 8; j++) {
-                ChessPiece piece = Board[i, j];
+                ChessPiece piece = board[i, j];
                 if (piece is Subordinate) {
                     Subordinate subordinate = (Subordinate)piece;
                     subordinate.Commander.subordinates.Add(subordinate);
@@ -234,6 +243,8 @@ class ChessBoard : MonoBehaviour {
         if(IsPieceAt(position, Board) && PieceAt(position, Board).IsWhite == GameManager.Instance.CurrentPlayer.isWhite) {
             SelectedPiece = Board[position.x, position.y];
             ModelManager.Instance.HighlightAllTiles(position, FilterMoveRange(SelectedPiece, Board), FilterAttackRange(SelectedPiece, Board), SelectedPiece is Subordinate ? ((Subordinate)SelectedPiece).Commander : (Commander)SelectedPiece);
+            Debug.Log(SelectedPiece);
+            Debug.Log(SelectedPiece.Position);
         }
         else {
             SelectedPiece = null;
@@ -263,7 +274,7 @@ class ChessBoard : MonoBehaviour {
         SelectedPiece.Position = position;
         sound.Play();
 
-        ModelManager.Instance.BoardTileLocationUpdate(oldPosition, position, SelectedPiece.IsWhite, SelectedPiece.GetType().Name); ;
+        ModelManager.Instance.BoardTileLocationUpdate(oldPosition, position, SelectedPiece.IsWhite, SelectedPiece.GetType().Name, ModelManager.Instance.chessBoardGridCo); ;
 
         // Call function in board to move the piece game object
         ModelManager.Instance.pieceObject = SelectedPiece;
@@ -392,7 +403,7 @@ class ChessBoard : MonoBehaviour {
     // Function to check if the selected tile is a valid move for the selected piece and perform appropriate action.
     public bool PerformAction(Vector2Int position) {
         // Deselect the selected piece if position is not valid
-        if (!ValidPosition(position)) {
+        if (!ValidPosition(position) || SelectedPiece is null) {
             SelectPiece(position);
             return false;
         }

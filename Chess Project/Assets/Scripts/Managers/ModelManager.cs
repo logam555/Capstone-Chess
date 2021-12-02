@@ -437,15 +437,15 @@ public class ModelManager : MonoBehaviour
 
     #region HEURISTICS
     //take new positions and move piece and values to new tile; clear to null old tile.
-    public void BoardTileLocationUpdate(Vector2Int oldPosition, Vector2Int newPosition, bool isWhiteP, string pieceTypeC)
+    public void BoardTileLocationUpdate(Vector2Int oldPosition, Vector2Int newPosition, bool isWhiteP, string pieceTypeC, Dictionary<string, BoardTile> board)
     {
-        chessBoardGridCo[Convert.ToString(Convert.ToChar(oldPosition.x + 65) + Convert.ToString(oldPosition.y + 1))].isOccupied = false;
-        chessBoardGridCo[Convert.ToString(Convert.ToChar(oldPosition.x + 65) + Convert.ToString(oldPosition.y + 1))].isWhite = false;
-        chessBoardGridCo[Convert.ToString(Convert.ToChar(oldPosition.x + 65) + Convert.ToString(oldPosition.y + 1))].occupiedPieceType = "";
+        board[Convert.ToString(Convert.ToChar(oldPosition.x + 65) + Convert.ToString(oldPosition.y + 1))].isOccupied = false;
+        board[Convert.ToString(Convert.ToChar(oldPosition.x + 65) + Convert.ToString(oldPosition.y + 1))].isWhite = false;
+        board[Convert.ToString(Convert.ToChar(oldPosition.x + 65) + Convert.ToString(oldPosition.y + 1))].occupiedPieceType = "";
 
-        chessBoardGridCo[Convert.ToString(Convert.ToChar(newPosition.x + 65) + Convert.ToString(newPosition.y + 1))].isOccupied = true;
-        chessBoardGridCo[Convert.ToString(Convert.ToChar(newPosition.x + 65) + Convert.ToString(newPosition.y + 1))].isWhite = isWhiteP;
-        chessBoardGridCo[Convert.ToString(Convert.ToChar(newPosition.x + 65) + Convert.ToString(newPosition.y + 1))].occupiedPieceType = pieceTypeC;
+        board[Convert.ToString(Convert.ToChar(newPosition.x + 65) + Convert.ToString(newPosition.y + 1))].isOccupied = true;
+        board[Convert.ToString(Convert.ToChar(newPosition.x + 65) + Convert.ToString(newPosition.y + 1))].isWhite = isWhiteP;
+        board[Convert.ToString(Convert.ToChar(newPosition.x + 65) + Convert.ToString(newPosition.y + 1))].occupiedPieceType = pieceTypeC;
     }
 
     //return vector 3: x and y for position; z for value for Highest White Huer
@@ -493,7 +493,7 @@ public class ModelManager : MonoBehaviour
         heuristics.BoardWideHeuristic(ref chessBoardGridCo);
     }
 
-    public void BoardWideHeuristicTileCall(int x, int y)
+    public void BoardWideHeuristicTileCall(int x, int y, Dictionary<string, BoardTile> board)
     {
         Vector2Int holderV2I = new Vector2Int();
         holderV2I.x = 0;
@@ -504,10 +504,10 @@ public class ModelManager : MonoBehaviour
         x = +65;
 
         //y first to work with tile format, x is second for int after chessboard
-        holderV2I = heuristics.BoardWideHeuristicTile(chessBoardGridCo, y, x);
+        holderV2I = heuristics.BoardWideHeuristicTile(board, y, x);
 
-        chessBoardGridCo[Convert.ToString(Convert.ToChar(x) + Convert.ToString(y))].whiteHeuristic = holderV2I.x;
-        chessBoardGridCo[Convert.ToString(Convert.ToChar(x) + Convert.ToString(y))].blackHeuristic = holderV2I.y;
+        board[Convert.ToString(Convert.ToChar(x) + Convert.ToString(y))].whiteHeuristic = holderV2I.x;
+        board[Convert.ToString(Convert.ToChar(x) + Convert.ToString(y))].blackHeuristic = holderV2I.y;
         //Debug.Log("MM BoardWideHeuristicTileCall " + "X " + (x - 65) + " Y " + (y - 1) + holderV2I );
     }
 

@@ -42,7 +42,7 @@ public class BishopAI : CommanderAI
 
         freeMove = false;
 
-        return bestGlobal();
+        return getLocal();
     }
 
     public int[] useFreeMove()
@@ -69,13 +69,13 @@ public class BishopAI : CommanderAI
 
     public void getBoard() //Obtains board from BoardManager
     {
-        board = (ChessPiece[,])ChessBoard.Instance.Board.Clone();
+        board = leftBishop ? ChessBoard.Instance.LBishopBoard : ChessBoard.Instance.RBishopBoard;
     }
 
     public int[] bestGlobal() //obtains the best move possible in corp and returns x and y coordinates and return as array
     {
         getLocal();
-        subordinateMoves();
+        //subordinateMoves();
 
         int[] move = new int[2];
         int bestScore = moves[2,0];
@@ -97,30 +97,29 @@ public class BishopAI : CommanderAI
         return move;
     }
 
-    public void getLocal()
+    public int[] getLocal()
     {
         BestMove local = new BestMove();
 
-        int[] bl = local.getMove(board, bishop,true);
+        int[] bl = local.getMove(board, bishop, leftBishop);
+        bestPiece = ChessBoard.Instance.PieceAt(new Vector2Int(bl[0], bl[1]), board);
 
-        moves[0,0] = bl[0]; //x and y coordinates of best scoring move are recorded
-        moves[1,0] = bl[1];
-        moves[2,0] = bl[2]; //than score obtained is bestLocalScore
+        return bl;
     }
 
-    public void subordinateMoves() //obtains the moves and scores of its subordinate pieces
-    {
-        BestMove local = new BestMove();
+    //public void subordinateMoves() //obtains the moves and scores of its subordinate pieces
+    //{
+    //    BestMove local = new BestMove();
 
-        for (int i = 0; i < bishop.subordinates.Count; i++)
-        {
-            int[] bl = local.getMove(board, bishop.subordinates[i], false);
+    //    for (int i = 0; i < bishop.subordinates.Count; i++)
+    //    {
+    //        int[] bl = local.getMove(board, bishop.subordinates[i], false);
 
-            moves[0, i + 1] = bl[0]; //x and y coordinates of best scoring move are recorded
-            moves[1, i + 1] = bl[1];
-            moves[2, i + 1] = bl[2]; //than score obtained is bestLocalScore 
-        }
-    }
+    //        moves[0, i + 1] = bl[0]; //x and y coordinates of best scoring move are recorded
+    //        moves[1, i + 1] = bl[1];
+    //        moves[2, i + 1] = bl[2]; //than score obtained is bestLocalScore 
+    //    }
+    //}
 
     public void getCommander(bool lBishop)
     {

@@ -85,33 +85,33 @@ public class AI : Player
 			
 		}));
 
-		tasks.Add(Task.Run(() => {
-			List<Thread> threads = new List<Thread>();
-			threads.Add(new Thread(() => {
-				if (lInstance != null) {
-					lBishopMove = lInstance.Step();
-					freelB = lInstance.useFreeMove();
-				}
-			}));
+        tasks.Add(Task.Run(() => {
+            List<Thread> threads = new List<Thread>();
+            threads.Add(new Thread(() => {
+                if (lInstance != null) {
+                    lBishopMove = lInstance.Step();
+                    freelB = lInstance.useFreeMove();
+                }
+            }));
 
-			threads[0].Start();
-			threads[0].Join();
-		}));
+            threads[0].Start();
+            threads[0].Join();
+        }));
 
-		tasks.Add(Task.Run(() => {
-			List<Thread> threads = new List<Thread>();
-			threads.Add(new Thread(() => {
-				if (rInstance != null) {
-					rBishopMove = rInstance.Step();
-					freerB = rInstance.useFreeMove();
-				}
-			}));
+        tasks.Add(Task.Run(() => {
+            List<Thread> threads = new List<Thread>();
+            threads.Add(new Thread(() => {
+                if (rInstance != null) {
+                    rBishopMove = rInstance.Step();
+                    freerB = rInstance.useFreeMove();
+                }
+            }));
 
-			threads[0].Start();
-			threads[0].Join();
-		}));
+            threads[0].Start();
+            threads[0].Join();
+        }));
 
-		await Task.WhenAll(tasks);
+        await Task.WhenAll(tasks);
 
 		StartCoroutine(TakeTurn());
 	}

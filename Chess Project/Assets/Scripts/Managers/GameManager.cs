@@ -12,9 +12,9 @@ public class GameManager : MonoBehaviour
     public bool IsGameOver { get; set; }
 
     [SerializeField]
-    private Player user;
+    public Player user;
     [SerializeField]
-    private Player ai;
+    public Player ai;
 
     public ScoreManager score;
 
