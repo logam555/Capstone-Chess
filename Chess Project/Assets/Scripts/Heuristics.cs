@@ -51,7 +51,7 @@ public class Heuristics : MonoBehaviour
         HeuristicDifficulty();
     }
 
-    public void BoardWideHeuristic(ref Dictionary<string, BoardTile> chessBoardGridCo)
+    public void BoardWideHeuristic(ref Dictionary<string, BoardTile> board)
     {
         char letterBoard = '0';
         string showB = "";
@@ -69,10 +69,10 @@ public class Heuristics : MonoBehaviour
                 holderV2I.x = 0;
                 holderV2I.y = 0;
 
-                holderV2I = BoardWideHeuristicTile(chessBoardGridCo, j, i);
+                holderV2I = BoardWideHeuristicTile(board, j, i);
 
-                chessBoardGridCo[showB].whiteHeuristic = holderV2I.x;
-                chessBoardGridCo[showB].blackHeuristic = holderV2I.y;
+                board[showB].whiteHeuristic = holderV2I.x;
+                board[showB].blackHeuristic = holderV2I.y;
                 //Debug.Log("H BoardWideHeuristic Huer at " + "x " + (i - 65) + " y " + (j - 1) + holderV2I);
             }
         }
@@ -416,7 +416,91 @@ public class Heuristics : MonoBehaviour
         return posValue;
     }
 
-    public Vector2Int BoardWideHeuristicTile(Dictionary<string, BoardTile> chessBoardGridCo, int j, int i)
+    public Vector2Int BoardWideHeuristicTile(Dictionary<string, BoardTile> board, int j, int i)
+    {
+        Vector2Int holderV2I = new Vector2Int();
+        holderV2I.x = 0;
+        holderV2I.y = 0;
+
+        //check space Primany Tile base i and j values
+        holderV2I = holderV2I + TileCalc((i), (j), board);
+
+        //check space Upper Left i - 1 and j + 1
+        if (i - 1 >= 65 && i - 1 <= 72)
+        {
+            if (j + 1 >= 1 && j + 1 <= 8)
+            {
+                holderV2I = holderV2I + TileCalc((i - 1), (j + 1), board);
+            }
+        }
+
+        //check space Upper i base and j + 1
+        if (i >= 65 && i <= 72)
+        {
+            if (j + 1 >= 1 && j + 1 <= 8)
+            {
+                holderV2I = holderV2I + TileCalc((i), (j + 1), board);
+            }
+        }
+
+        //check space Upper Right i + 1 and j + 1
+        if (i + 1 >= 65 && i + 1 <= 72)
+        {
+            if (j + 1 >= 1 && j + 1 <= 8)
+            {
+                holderV2I = holderV2I + TileCalc((i + 1), (j + 1), board);
+            }
+        }
+
+        //check space Left i - 1 and j base
+        if (i - 1 >= 65 && i - 1 <= 72)
+        {
+            if (j >= 1 && j <= 8)
+            {
+                holderV2I = holderV2I + TileCalc((i - 1), (j), board);
+            }
+        }
+
+        //check space Right i + 1  and j base
+        if (i + 1 >= 65 && i + 1 <= 72)
+        {
+            if (j >= 1 && j <= 8)
+            {
+                holderV2I = holderV2I + TileCalc((i + 1), (j), board);
+            }
+        }
+
+        //check space Lower Left i - 1 and j - 1
+        if (i - 1 >= 65 && i - 1 <= 72)
+        {
+            if (j - 1 >= 1 && j - 1 <= 8)
+            {
+                holderV2I = holderV2I + TileCalc((i - 1), (j - 1), board);
+            }
+        }
+
+        //check space Lower i base and j - 1
+        if (i >= 65 && i <= 72)
+        {
+            if (j - 1 >= 1 && j - 1 <= 8)
+            {
+                holderV2I = holderV2I + TileCalc((i), (j - 1), board);
+            }
+        }
+
+        //check space Lower Right i + 1 and j - 1
+        if (i + 1 >= 65 && i + 1 <= 72)
+        {
+            if (j - 1 >= 1 && j - 1 <= 8)
+            {
+                holderV2I = holderV2I + TileCalc((i + 1), (j - 1), board);
+            }
+        }
+
+        return holderV2I;
+    }
+
+    public Vector2Int TileCalc(int i, int j, Dictionary<string, BoardTile> board)
     {
         int whiteHeurTotal = new int();
         int blackHeurTotal = new int();
@@ -433,605 +517,60 @@ public class Heuristics : MonoBehaviour
         letterBoard = Convert.ToChar(i);
         showB = letterBoard.ToString() + j.ToString();
 
-        //check space Primany Tile
-        if (chessBoardGridCo[showB].isOccupied == true)
+        if (board[showB].isOccupied == true)
         {
-            if (chessBoardGridCo[showB].isWhite == true)
+            if (board[showB].isWhite == true)
             {
-                if (chessBoardGridCo[showB].occupiedPieceType == "King")
+                if (board[showB].occupiedPieceType == "King")
                 {
                     blackHeurTotal += chessTypes[0].typeValue;
                 }
-                else if (chessBoardGridCo[showB].occupiedPieceType == "Queen")
+                else if (board[showB].occupiedPieceType == "Queen")
                 {
                     blackHeurTotal += chessTypes[1].typeValue;
                 }
-                else if (chessBoardGridCo[showB].occupiedPieceType == "Bishop")
+                else if (board[showB].occupiedPieceType == "Bishop")
                 {
                     blackHeurTotal += chessTypes[2].typeValue;
                 }
-                else if (chessBoardGridCo[showB].occupiedPieceType == "Knight")
+                else if (board[showB].occupiedPieceType == "Knight")
                 {
                     blackHeurTotal += chessTypes[3].typeValue;
                 }
-                else if (chessBoardGridCo[showB].occupiedPieceType == "Rook")
+                else if (board[showB].occupiedPieceType == "Rook")
                 {
                     blackHeurTotal += chessTypes[4].typeValue;
                 }
-                else if (chessBoardGridCo[showB].occupiedPieceType == "Pawn")
+                else if (board[showB].occupiedPieceType == "Pawn")
                 {
                     blackHeurTotal += chessTypes[5].typeValue;
                 }
             }
             else
             {
-                if (chessBoardGridCo[showB].occupiedPieceType == "King")
+                if (board[showB].occupiedPieceType == "King")
                 {
                     whiteHeurTotal += chessTypes[0].typeValue;
                 }
-                else if (chessBoardGridCo[showB].occupiedPieceType == "Queen")
+                else if (board[showB].occupiedPieceType == "Queen")
                 {
                     whiteHeurTotal += chessTypes[1].typeValue;
                 }
-                else if (chessBoardGridCo[showB].occupiedPieceType == "Bishop")
+                else if (board[showB].occupiedPieceType == "Bishop")
                 {
                     whiteHeurTotal += chessTypes[2].typeValue;
                 }
-                else if (chessBoardGridCo[showB].occupiedPieceType == "Knight")
+                else if (board[showB].occupiedPieceType == "Knight")
                 {
                     whiteHeurTotal += chessTypes[3].typeValue;
                 }
-                else if (chessBoardGridCo[showB].occupiedPieceType == "Rook")
+                else if (board[showB].occupiedPieceType == "Rook")
                 {
                     whiteHeurTotal += chessTypes[4].typeValue;
                 }
-                else if (chessBoardGridCo[showB].occupiedPieceType == "Pawn")
+                else if (board[showB].occupiedPieceType == "Pawn")
                 {
                     whiteHeurTotal += chessTypes[5].typeValue;
-                }
-            }
-        }
-
-        //check space Upper Left
-        if (i - 1 >= 65)
-        {
-            if (j + 1 >= 0)
-            {
-                letterBoard = Convert.ToChar(i);
-                showB = letterBoard.ToString() + j.ToString();
-
-                if (chessBoardGridCo[showB].isOccupied == true)
-                {
-                    if (chessBoardGridCo[showB].isWhite == true)
-                    {
-                        if (chessBoardGridCo[showB].occupiedPieceType == "King")
-                        {
-                            blackHeurTotal += chessTypes[0].typeValue;
-                        }
-                        else if (chessBoardGridCo[showB].occupiedPieceType == "Queen")
-                        {
-                            blackHeurTotal += chessTypes[1].typeValue;
-                        }
-                        else if (chessBoardGridCo[showB].occupiedPieceType == "Bishop")
-                        {
-                            blackHeurTotal += chessTypes[2].typeValue;
-                        }
-                        else if (chessBoardGridCo[showB].occupiedPieceType == "Knight")
-                        {
-                            blackHeurTotal += chessTypes[3].typeValue;
-                        }
-                        else if (chessBoardGridCo[showB].occupiedPieceType == "Rook")
-                        {
-                            blackHeurTotal += chessTypes[4].typeValue;
-                        }
-                        else if (chessBoardGridCo[showB].occupiedPieceType == "Pawn")
-                        {
-                            blackHeurTotal += chessTypes[5].typeValue;
-                        }
-                    }
-                    else
-                    {
-                        if (chessBoardGridCo[showB].occupiedPieceType == "King")
-                        {
-                            whiteHeurTotal += chessTypes[0].typeValue;
-                        }
-                        else if (chessBoardGridCo[showB].occupiedPieceType == "Queen")
-                        {
-                            whiteHeurTotal += chessTypes[1].typeValue;
-                        }
-                        else if (chessBoardGridCo[showB].occupiedPieceType == "Bishop")
-                        {
-                            whiteHeurTotal += chessTypes[2].typeValue;
-                        }
-                        else if (chessBoardGridCo[showB].occupiedPieceType == "Knight")
-                        {
-                            whiteHeurTotal += chessTypes[3].typeValue;
-                        }
-                        else if (chessBoardGridCo[showB].occupiedPieceType == "Rook")
-                        {
-                            whiteHeurTotal += chessTypes[4].typeValue;
-                        }
-                        else if (chessBoardGridCo[showB].occupiedPieceType == "Pawn")
-                        {
-                            whiteHeurTotal += chessTypes[5].typeValue;
-                        }
-                    }
-                }
-            }
-        }
-
-        //check space Upper 
-        if (i >= 65)
-        {
-            if (j + 1 >= 0)
-            {
-                letterBoard = Convert.ToChar(i);
-                showB = letterBoard.ToString() + j.ToString();
-
-                if (chessBoardGridCo[showB].isOccupied == true)
-                {
-                    if (chessBoardGridCo[showB].isWhite == true)
-                    {
-                        if (chessBoardGridCo[showB].occupiedPieceType == "King")
-                        {
-                            blackHeurTotal += chessTypes[0].typeValue;
-                        }
-                        else if (chessBoardGridCo[showB].occupiedPieceType == "Queen")
-                        {
-                            blackHeurTotal += chessTypes[1].typeValue;
-                        }
-                        else if (chessBoardGridCo[showB].occupiedPieceType == "Bishop")
-                        {
-                            blackHeurTotal += chessTypes[2].typeValue;
-                        }
-                        else if (chessBoardGridCo[showB].occupiedPieceType == "Knight")
-                        {
-                            blackHeurTotal += chessTypes[3].typeValue;
-                        }
-                        else if (chessBoardGridCo[showB].occupiedPieceType == "Rook")
-                        {
-                            blackHeurTotal += chessTypes[4].typeValue;
-                        }
-                        else if (chessBoardGridCo[showB].occupiedPieceType == "Pawn")
-                        {
-                            blackHeurTotal += chessTypes[5].typeValue;
-                        }
-                    }
-                    else
-                    {
-                        if (chessBoardGridCo[showB].occupiedPieceType == "King")
-                        {
-                            whiteHeurTotal += chessTypes[0].typeValue;
-                        }
-                        else if (chessBoardGridCo[showB].occupiedPieceType == "Queen")
-                        {
-                            whiteHeurTotal += chessTypes[1].typeValue;
-                        }
-                        else if (chessBoardGridCo[showB].occupiedPieceType == "Bishop")
-                        {
-                            whiteHeurTotal += chessTypes[2].typeValue;
-                        }
-                        else if (chessBoardGridCo[showB].occupiedPieceType == "Knight")
-                        {
-                            whiteHeurTotal += chessTypes[3].typeValue;
-                        }
-                        else if (chessBoardGridCo[showB].occupiedPieceType == "Rook")
-                        {
-                            whiteHeurTotal += chessTypes[4].typeValue;
-                        }
-                        else if (chessBoardGridCo[showB].occupiedPieceType == "Pawn")
-                        {
-                            whiteHeurTotal += chessTypes[5].typeValue;
-                        }
-                    }
-                }
-            }
-        }
-
-        //check space Upper Right
-        if (i + 1 >= 65)
-        {
-            if (j + 1 >= 0)
-            {
-                letterBoard = Convert.ToChar(i);
-                showB = letterBoard.ToString() + j.ToString();
-
-                if (chessBoardGridCo[showB].isOccupied == true)
-                {
-                    if (chessBoardGridCo[showB].isWhite == true)
-                    {
-                        if (chessBoardGridCo[showB].occupiedPieceType == "King")
-                        {
-                            blackHeurTotal += chessTypes[0].typeValue;
-                        }
-                        else if (chessBoardGridCo[showB].occupiedPieceType == "Queen")
-                        {
-                            blackHeurTotal += chessTypes[1].typeValue;
-                        }
-                        else if (chessBoardGridCo[showB].occupiedPieceType == "Bishop")
-                        {
-                            blackHeurTotal += chessTypes[2].typeValue;
-                        }
-                        else if (chessBoardGridCo[showB].occupiedPieceType == "Knight")
-                        {
-                            blackHeurTotal += chessTypes[3].typeValue;
-                        }
-                        else if (chessBoardGridCo[showB].occupiedPieceType == "Rook")
-                        {
-                            blackHeurTotal += chessTypes[4].typeValue;
-                        }
-                        else if (chessBoardGridCo[showB].occupiedPieceType == "Pawn")
-                        {
-                            blackHeurTotal += chessTypes[5].typeValue;
-                        }
-                    }
-                    else
-                    {
-                        if (chessBoardGridCo[showB].occupiedPieceType == "King")
-                        {
-                            whiteHeurTotal += chessTypes[0].typeValue;
-                        }
-                        else if (chessBoardGridCo[showB].occupiedPieceType == "Queen")
-                        {
-                            whiteHeurTotal += chessTypes[1].typeValue;
-                        }
-                        else if (chessBoardGridCo[showB].occupiedPieceType == "Bishop")
-                        {
-                            whiteHeurTotal += chessTypes[2].typeValue;
-                        }
-                        else if (chessBoardGridCo[showB].occupiedPieceType == "Knight")
-                        {
-                            whiteHeurTotal += chessTypes[3].typeValue;
-                        }
-                        else if (chessBoardGridCo[showB].occupiedPieceType == "Rook")
-                        {
-                            whiteHeurTotal += chessTypes[4].typeValue;
-                        }
-                        else if (chessBoardGridCo[showB].occupiedPieceType == "Pawn")
-                        {
-                            whiteHeurTotal += chessTypes[5].typeValue;
-                        }
-                    }
-                }
-            }
-        }
-
-        //check space Left
-        if (i - 1 >= 65)
-        {
-            if (j >= 0)
-            {
-                letterBoard = Convert.ToChar(i);
-                showB = letterBoard.ToString() + j.ToString();
-
-                if (chessBoardGridCo[showB].isOccupied == true)
-                {
-                    if (chessBoardGridCo[showB].isWhite == true)
-                    {
-                        if (chessBoardGridCo[showB].occupiedPieceType == "King")
-                        {
-                            blackHeurTotal += chessTypes[0].typeValue;
-                        }
-                        else if (chessBoardGridCo[showB].occupiedPieceType == "Queen")
-                        {
-                            blackHeurTotal += chessTypes[1].typeValue;
-                        }
-                        else if (chessBoardGridCo[showB].occupiedPieceType == "Bishop")
-                        {
-                            blackHeurTotal += chessTypes[2].typeValue;
-                        }
-                        else if (chessBoardGridCo[showB].occupiedPieceType == "Knight")
-                        {
-                            blackHeurTotal += chessTypes[3].typeValue;
-                        }
-                        else if (chessBoardGridCo[showB].occupiedPieceType == "Rook")
-                        {
-                            blackHeurTotal += chessTypes[4].typeValue;
-                        }
-                        else if (chessBoardGridCo[showB].occupiedPieceType == "Pawn")
-                        {
-                            blackHeurTotal += chessTypes[5].typeValue;
-                        }
-                    }
-                    else
-                    {
-                        if (chessBoardGridCo[showB].occupiedPieceType == "King")
-                        {
-                            whiteHeurTotal += chessTypes[0].typeValue;
-                        }
-                        else if (chessBoardGridCo[showB].occupiedPieceType == "Queen")
-                        {
-                            whiteHeurTotal += chessTypes[1].typeValue;
-                        }
-                        else if (chessBoardGridCo[showB].occupiedPieceType == "Bishop")
-                        {
-                            whiteHeurTotal += chessTypes[2].typeValue;
-                        }
-                        else if (chessBoardGridCo[showB].occupiedPieceType == "Knight")
-                        {
-                            whiteHeurTotal += chessTypes[3].typeValue;
-                        }
-                        else if (chessBoardGridCo[showB].occupiedPieceType == "Rook")
-                        {
-                            whiteHeurTotal += chessTypes[4].typeValue;
-                        }
-                        else if (chessBoardGridCo[showB].occupiedPieceType == "Pawn")
-                        {
-                            whiteHeurTotal += chessTypes[5].typeValue;
-                        }
-                    }
-                }
-            }
-        }
-
-        //check space Right
-        if (i + 1 >= 65)
-        {
-            if (j >= 0)
-            {
-                letterBoard = Convert.ToChar(i);
-                showB = letterBoard.ToString() + j.ToString();
-
-                if (chessBoardGridCo[showB].isOccupied == true)
-                {
-                    if (chessBoardGridCo[showB].isWhite == true)
-                    {
-                        if (chessBoardGridCo[showB].occupiedPieceType == "King")
-                        {
-                            blackHeurTotal += chessTypes[0].typeValue;
-                        }
-                        else if (chessBoardGridCo[showB].occupiedPieceType == "Queen")
-                        {
-                            blackHeurTotal += chessTypes[1].typeValue;
-                        }
-                        else if (chessBoardGridCo[showB].occupiedPieceType == "Bishop")
-                        {
-                            blackHeurTotal += chessTypes[2].typeValue;
-                        }
-                        else if (chessBoardGridCo[showB].occupiedPieceType == "Knight")
-                        {
-                            blackHeurTotal += chessTypes[3].typeValue;
-                        }
-                        else if (chessBoardGridCo[showB].occupiedPieceType == "Rook")
-                        {
-                            blackHeurTotal += chessTypes[4].typeValue;
-                        }
-                        else if (chessBoardGridCo[showB].occupiedPieceType == "Pawn")
-                        {
-                            blackHeurTotal += chessTypes[5].typeValue;
-                        }
-                    }
-                    else
-                    {
-                        if (chessBoardGridCo[showB].occupiedPieceType == "King")
-                        {
-                            whiteHeurTotal += chessTypes[0].typeValue;
-                        }
-                        else if (chessBoardGridCo[showB].occupiedPieceType == "Queen")
-                        {
-                            whiteHeurTotal += chessTypes[1].typeValue;
-                        }
-                        else if (chessBoardGridCo[showB].occupiedPieceType == "Bishop")
-                        {
-                            whiteHeurTotal += chessTypes[2].typeValue;
-                        }
-                        else if (chessBoardGridCo[showB].occupiedPieceType == "Knight")
-                        {
-                            whiteHeurTotal += chessTypes[3].typeValue;
-                        }
-                        else if (chessBoardGridCo[showB].occupiedPieceType == "Rook")
-                        {
-                            whiteHeurTotal += chessTypes[4].typeValue;
-                        }
-                        else if (chessBoardGridCo[showB].occupiedPieceType == "Pawn")
-                        {
-                            whiteHeurTotal += chessTypes[5].typeValue;
-                        }
-                    }
-                }
-            }
-        }
-
-        //check space Lower Left
-        if (i - 1 >= 65)
-        {
-            if (j - 1 >= 0)
-            {
-                letterBoard = Convert.ToChar(i);
-                showB = letterBoard.ToString() + j.ToString();
-
-                if (chessBoardGridCo[showB].isOccupied == true)
-                {
-                    if (chessBoardGridCo[showB].isWhite == true)
-                    {
-                        if (chessBoardGridCo[showB].occupiedPieceType == "King")
-                        {
-                            blackHeurTotal += chessTypes[0].typeValue;
-                        }
-                        else if (chessBoardGridCo[showB].occupiedPieceType == "Queen")
-                        {
-                            blackHeurTotal += chessTypes[1].typeValue;
-                        }
-                        else if (chessBoardGridCo[showB].occupiedPieceType == "Bishop")
-                        {
-                            blackHeurTotal += chessTypes[2].typeValue;
-                        }
-                        else if (chessBoardGridCo[showB].occupiedPieceType == "Knight")
-                        {
-                            blackHeurTotal += chessTypes[3].typeValue;
-                        }
-                        else if (chessBoardGridCo[showB].occupiedPieceType == "Rook")
-                        {
-                            blackHeurTotal += chessTypes[4].typeValue;
-                        }
-                        else if (chessBoardGridCo[showB].occupiedPieceType == "Pawn")
-                        {
-                            blackHeurTotal += chessTypes[5].typeValue;
-                        }
-                    }
-                    else
-                    {
-                        if (chessBoardGridCo[showB].occupiedPieceType == "King")
-                        {
-                            whiteHeurTotal += chessTypes[0].typeValue;
-                        }
-                        else if (chessBoardGridCo[showB].occupiedPieceType == "Queen")
-                        {
-                            whiteHeurTotal += chessTypes[1].typeValue;
-                        }
-                        else if (chessBoardGridCo[showB].occupiedPieceType == "Bishop")
-                        {
-                            whiteHeurTotal += chessTypes[2].typeValue;
-                        }
-                        else if (chessBoardGridCo[showB].occupiedPieceType == "Knight")
-                        {
-                            whiteHeurTotal += chessTypes[3].typeValue;
-                        }
-                        else if (chessBoardGridCo[showB].occupiedPieceType == "Rook")
-                        {
-                            whiteHeurTotal += chessTypes[4].typeValue;
-                        }
-                        else if (chessBoardGridCo[showB].occupiedPieceType == "Pawn")
-                        {
-                            whiteHeurTotal += chessTypes[5].typeValue;
-                        }
-                    }
-                }
-            }
-        }
-
-        //check space Lower
-        if (i >= 65)
-        {
-            if (j - 1 >= 0)
-            {
-                letterBoard = Convert.ToChar(i);
-                showB = letterBoard.ToString() + j.ToString();
-
-                if (chessBoardGridCo[showB].isOccupied == true)
-                {
-                    if (chessBoardGridCo[showB].isWhite == true)
-                    {
-                        if (chessBoardGridCo[showB].occupiedPieceType == "King")
-                        {
-                            blackHeurTotal += chessTypes[0].typeValue;
-                        }
-                        else if (chessBoardGridCo[showB].occupiedPieceType == "Queen")
-                        {
-                            blackHeurTotal += chessTypes[1].typeValue;
-                        }
-                        else if (chessBoardGridCo[showB].occupiedPieceType == "Bishop")
-                        {
-                            blackHeurTotal += chessTypes[2].typeValue;
-                        }
-                        else if (chessBoardGridCo[showB].occupiedPieceType == "Knight")
-                        {
-                            blackHeurTotal += chessTypes[3].typeValue;
-                        }
-                        else if (chessBoardGridCo[showB].occupiedPieceType == "Rook")
-                        {
-                            blackHeurTotal += chessTypes[4].typeValue;
-                        }
-                        else if (chessBoardGridCo[showB].occupiedPieceType == "Pawn")
-                        {
-                            blackHeurTotal += chessTypes[5].typeValue;
-                        }
-                    }
-                    else
-                    {
-                        if (chessBoardGridCo[showB].occupiedPieceType == "King")
-                        {
-                            whiteHeurTotal += chessTypes[0].typeValue;
-                        }
-                        else if (chessBoardGridCo[showB].occupiedPieceType == "Queen")
-                        {
-                            whiteHeurTotal += chessTypes[1].typeValue;
-                        }
-                        else if (chessBoardGridCo[showB].occupiedPieceType == "Bishop")
-                        {
-                            whiteHeurTotal += chessTypes[2].typeValue;
-                        }
-                        else if (chessBoardGridCo[showB].occupiedPieceType == "Knight")
-                        {
-                            whiteHeurTotal += chessTypes[3].typeValue;
-                        }
-                        else if (chessBoardGridCo[showB].occupiedPieceType == "Rook")
-                        {
-                            whiteHeurTotal += chessTypes[4].typeValue;
-                        }
-                        else if (chessBoardGridCo[showB].occupiedPieceType == "Pawn")
-                        {
-                            whiteHeurTotal += chessTypes[5].typeValue;
-                        }
-                    }
-                }
-            }
-        }
-
-        //check space Lower Right
-        if (i + 1 >= 65)
-        {
-            if (j - 1 >= 0)
-            {
-                letterBoard = Convert.ToChar(i);
-                showB = letterBoard.ToString() + j.ToString();
-
-                if (chessBoardGridCo[showB].isOccupied == true)
-                {
-                    if (chessBoardGridCo[showB].isWhite == true)
-                    {
-                        if (chessBoardGridCo[showB].occupiedPieceType == "King")
-                        {
-                            blackHeurTotal += chessTypes[0].typeValue;
-                        }
-                        else if (chessBoardGridCo[showB].occupiedPieceType == "Queen")
-                        {
-                            blackHeurTotal += chessTypes[1].typeValue;
-                        }
-                        else if (chessBoardGridCo[showB].occupiedPieceType == "Bishop")
-                        {
-                            blackHeurTotal += chessTypes[2].typeValue;
-                        }
-                        else if (chessBoardGridCo[showB].occupiedPieceType == "Knight")
-                        {
-                            blackHeurTotal += chessTypes[3].typeValue;
-                        }
-                        else if (chessBoardGridCo[showB].occupiedPieceType == "Rook")
-                        {
-                            blackHeurTotal += chessTypes[4].typeValue;
-                        }
-                        else if (chessBoardGridCo[showB].occupiedPieceType == "Pawn")
-                        {
-                            blackHeurTotal += chessTypes[5].typeValue;
-                        }
-                    }
-                    else
-                    {
-                        if (chessBoardGridCo[showB].occupiedPieceType == "King")
-                        {
-                            whiteHeurTotal += chessTypes[0].typeValue;
-                        }
-                        else if (chessBoardGridCo[showB].occupiedPieceType == "Queen")
-                        {
-                            whiteHeurTotal += chessTypes[1].typeValue;
-                        }
-                        else if (chessBoardGridCo[showB].occupiedPieceType == "Bishop")
-                        {
-                            whiteHeurTotal += chessTypes[2].typeValue;
-                        }
-                        else if (chessBoardGridCo[showB].occupiedPieceType == "Knight")
-                        {
-                            whiteHeurTotal += chessTypes[3].typeValue;
-                        }
-                        else if (chessBoardGridCo[showB].occupiedPieceType == "Rook")
-                        {
-                            whiteHeurTotal += chessTypes[4].typeValue;
-                        }
-                        else if (chessBoardGridCo[showB].occupiedPieceType == "Pawn")
-                        {
-                            whiteHeurTotal += chessTypes[5].typeValue;
-                        }
-                    }
                 }
             }
         }

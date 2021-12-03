@@ -69,15 +69,15 @@ public class ModelManager : MonoBehaviour
     {
         UpdateSelection();
         MoveObject(pieceObject, position, duration);
-        //DrawChessboard();
 
-        /*
+        
         if (Input.GetKeyDown(KeyCode.H))
         {
             heuristics.BoardWideHeuristic(ref chessBoardGridCo);
             
             char letterBoard = '0';
             string showB = "";
+
             for (int j = 1; j < 9; j++)
             {
                 for (int i = 65; i < 73; i++)
@@ -95,7 +95,7 @@ public class ModelManager : MonoBehaviour
                 }
             }
         }
-        */
+        
     }
 
     #region INSTANTIATION
@@ -128,6 +128,7 @@ public class ModelManager : MonoBehaviour
                 chessBoardGridCo[showB].whiteHeuristic = 0;
                 chessBoardGridCo[showB].blackHeuristic = 0;
 
+                board = new BoardTile();
                 chessBoardCopyKing.Add(showB, board);
                 chessBoardCopyKing[showB].isOccupied = false;
                 chessBoardCopyKing[showB].isWhite = false;
@@ -138,6 +139,7 @@ public class ModelManager : MonoBehaviour
                 chessBoardCopyKing[showB].whiteHeuristic = 0;
                 chessBoardCopyKing[showB].blackHeuristic = 0;
 
+                board = new BoardTile();
                 chessBoardCopyBishop1.Add(showB, board);
                 chessBoardCopyBishop1[showB].isOccupied = false;
                 chessBoardCopyBishop1[showB].isWhite = false;
@@ -148,6 +150,7 @@ public class ModelManager : MonoBehaviour
                 chessBoardCopyBishop1[showB].whiteHeuristic = 0;
                 chessBoardCopyBishop1[showB].blackHeuristic = 0;
 
+                board = new BoardTile();
                 chessBoardCopyBishop2.Add(showB, board);
                 chessBoardCopyBishop2[showB].isOccupied = false;
                 chessBoardCopyBishop2[showB].isWhite = false;
@@ -488,9 +491,10 @@ public class ModelManager : MonoBehaviour
         return posValue;
     }
 
-    public void BoardWideHeuristicCall()
+    //
+    public void BoardWideHeuristicCall(ref Dictionary<string, BoardTile> board)
     {
-        heuristics.BoardWideHeuristic(ref chessBoardGridCo);
+        heuristics.BoardWideHeuristic(ref board);
     }
 
     public void BoardWideHeuristicTileCall(int x, int y, Dictionary<string, BoardTile> board)
@@ -508,18 +512,15 @@ public class ModelManager : MonoBehaviour
 
         board[Convert.ToString(Convert.ToChar(x) + Convert.ToString(y))].whiteHeuristic = holderV2I.x;
         board[Convert.ToString(Convert.ToChar(x) + Convert.ToString(y))].blackHeuristic = holderV2I.y;
-        //Debug.Log("MM BoardWideHeuristicTileCall " + "X " + (x - 65) + " Y " + (y - 1) + holderV2I );
     }
 
     public Vector3Int BoardTileHeuristicValueReturn(int x, int y, bool isWhite)
     {
-        //BoardWideHeuristicCall();
         Vector3Int holderV2I = new Vector3Int();
         holderV2I.x = 0;
         holderV2I.y = 0;
         holderV2I.z = 0;
-        //Debug.Log("BoardTileHeuristicValueReturn X " + x + " Y " + y);
-        //used to adjust x,y values to Letter/Number combo for dictionary
+
         y = +1;
         x = +65;
 
@@ -534,7 +535,7 @@ public class ModelManager : MonoBehaviour
         {
             holderV2I.z = Convert.ToInt32(Math.Abs(holderV2I.y - (holderV2I.x * 0.9)));
         }
-        //Debug.Log("MM BoardTileHeuristicValueReturn " + "X " + (x-65) + " Y " + (y-1) + holderV2I + isWhite);
+
         return holderV2I;
     }
 
@@ -543,8 +544,7 @@ public class ModelManager : MonoBehaviour
         BoardTile board = new BoardTile();
         char letterBoard = '0';
         string showB = "";
-        //Debug.Log("MM MakeBoardWideHuerCopy");
-        //setting up tiles and adding to dictionary default values
+
         for (int j = 1; j < 9; j++)
         {
             for (int i = 65; i < 73; i++)

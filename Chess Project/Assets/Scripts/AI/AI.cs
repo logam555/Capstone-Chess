@@ -47,8 +47,8 @@ public class AI : Player
 		
 		moves = new int[2, 3];
 		first = true;
-
-		ModelManager.Instance.BoardWideHeuristicCall();
+		
+		ModelManager.Instance.BoardWideHeuristicCall(ref ModelManager.Instance.chessBoardGridCo);
 		ModelManager.Instance.MakeBoardWideHuerCopy();
 	}
 
