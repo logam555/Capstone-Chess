@@ -265,16 +265,32 @@ class ChessBoard : MonoBehaviour {
             }
         }
 
+        ChessPiece selectedPieceKing = PieceAt(SelectedPiece.Position, KingBoard);
+        ChessPiece selectedPieceLBishop = PieceAt(SelectedPiece.Position, LBishopBoard);
+        ChessPiece selectedPieceRBishop = PieceAt(SelectedPiece.Position, RBishopBoard);
+
         //store old location;
         Vector2Int oldPosition = SelectedPiece.Position;
 
         // Move piece to new position
         Board[SelectedPiece.Position.x, SelectedPiece.Position.y] = null;
         Board[position.x, position.y] = SelectedPiece;
+        KingBoard[SelectedPiece.Position.x, SelectedPiece.Position.y] = null;
+        KingBoard[position.x, position.y] = selectedPieceKing;
+        LBishopBoard[SelectedPiece.Position.x, SelectedPiece.Position.y] = null;
+        LBishopBoard[position.x, position.y] = selectedPieceLBishop;
+        RBishopBoard[SelectedPiece.Position.x, SelectedPiece.Position.y] = null;
+        RBishopBoard[position.x, position.y] = selectedPieceRBishop;
         SelectedPiece.Position = position;
+        selectedPieceKing.Position = position;
+        selectedPieceLBishop.Position = position;
+        selectedPieceRBishop.Position = position;
         sound.Play();
 
-        ModelManager.Instance.BoardTileLocationUpdate(oldPosition, position, SelectedPiece.IsWhite, SelectedPiece.GetType().Name, ModelManager.Instance.chessBoardGridCo); ;
+        ModelManager.Instance.BoardTileLocationUpdate(oldPosition, position, SelectedPiece.IsWhite, SelectedPiece.GetType().Name, ModelManager.Instance.chessBoardGridCo);
+        ModelManager.Instance.BoardTileLocationUpdate(oldPosition, position, SelectedPiece.IsWhite, SelectedPiece.GetType().Name, ModelManager.Instance.chessBoardCopyKing);
+        ModelManager.Instance.BoardTileLocationUpdate(oldPosition, position, SelectedPiece.IsWhite, SelectedPiece.GetType().Name, ModelManager.Instance.chessBoardCopyBishop1);
+        ModelManager.Instance.BoardTileLocationUpdate(oldPosition, position, SelectedPiece.IsWhite, SelectedPiece.GetType().Name, ModelManager.Instance.chessBoardCopyBishop2);
 
         // Call function in board to move the piece game object
         ModelManager.Instance.pieceObject = SelectedPiece;
@@ -310,10 +326,18 @@ class ChessBoard : MonoBehaviour {
         if (attackSuccessful) {
             // Remove the captured piece and add to capture pieces
             ChessPiece enemy = Board[position.x, position.y];
+            ChessPiece enemyKing = KingBoard[position.x, position.y];
+            ChessPiece enemyLBishop = LBishopBoard[position.x, position.y];
+            ChessPiece enemyRBishop = RBishopBoard[position.x, position.y];
+
             GameManager.Instance.CapturePiece(enemy);
             ModelManager.Instance.RemoveObject(enemy);
-            if(enemy is Subordinate)
+            if (enemy is Subordinate) {
                 ((Subordinate)enemy).Commander.subordinates.Remove((Subordinate)enemy);
+                ((Subordinate)enemyKing).Commander.subordinates.Remove((Subordinate)enemyKing);
+                ((Subordinate)enemyLBishop).Commander.subordinates.Remove((Subordinate)enemyLBishop);
+                ((Subordinate)enemyRBishop).Commander.subordinates.Remove((Subordinate)enemyRBishop);
+            }
 
             // Move the selected piece
             MovePiece(position);
@@ -349,20 +373,35 @@ class ChessBoard : MonoBehaviour {
             return;
 
         Subordinate pieceToDelegate = (Subordinate)SelectedPiece;
+        Subordinate pieceToDelegateKing = (Subordinate)PieceAt(SelectedPiece.Position, KingBoard);
+        Subordinate pieceToDelegateLBishop = (Subordinate)PieceAt(SelectedPiece.Position, LBishopBoard);
+        Subordinate pieceToDelegateRBishop = (Subordinate)PieceAt(SelectedPiece.Position, RBishopBoard);
         SelectPiece(new Vector2Int(-1, -1));
         SelectPiece(ModelManager.Instance.selection);
 
         if (SelectedPiece == (ChessPiece)pieceToDelegate) {
             if (pieceToDelegate.Delegated) {
                 King king = (King)GameManager.Instance.CurrentPlayer.commanders.Find(commander => commander is King);
+                King kingKing = (King)PieceAt(king.Position, KingBoard);
+                King kingLBishop = (King)PieceAt(king.Position, LBishopBoard);
+                King kingRBishop = (King)PieceAt(king.Position, RBishopBoard);
                 king.RecallPiece(pieceToDelegate);
+                kingKing.RecallPiece(pieceToDelegateKing);
+                kingLBishop.RecallPiece(pieceToDelegateLBishop);
+                kingRBishop.RecallPiece(pieceToDelegateRBishop);
             }
 
             SelectPiece(new Vector2Int(-1, -1));
         } else {
             if (SelectedPiece is Commander && !(SelectedPiece is King) && pieceToDelegate.Commander is King) {
                 King king = (King)pieceToDelegate.Commander;
+                King kingKing = (King)PieceAt(king.Position, KingBoard);
+                King kingLBishop = (King)PieceAt(king.Position, LBishopBoard);
+                King kingRBishop = (King)PieceAt(king.Position, RBishopBoard);
                 king.DelegatePiece(pieceToDelegate, (Commander)SelectedPiece);
+                kingKing.DelegatePiece(pieceToDelegateKing, (Commander)PieceAt(SelectedPiece.Position, KingBoard));
+                kingLBishop.DelegatePiece(pieceToDelegateLBishop, (Commander)PieceAt(SelectedPiece.Position, LBishopBoard));
+                kingRBishop.DelegatePiece(pieceToDelegateRBishop, (Commander)PieceAt(SelectedPiece.Position, RBishopBoard));
             }
 
             SelectPiece(new Vector2Int(-1, -1));
@@ -375,6 +414,9 @@ class ChessBoard : MonoBehaviour {
             return;
 
         Subordinate pieceToDelegate = (Subordinate)SelectedPiece;
+        Subordinate pieceToDelegateKing = (Subordinate)PieceAt(SelectedPiece.Position, KingBoard);
+        Subordinate pieceToDelegateLBishop = (Subordinate)PieceAt(SelectedPiece.Position, LBishopBoard);
+        Subordinate pieceToDelegateRBishop = (Subordinate)PieceAt(SelectedPiece.Position, RBishopBoard);
         SelectPiece(new Vector2Int(-1, -1));
         SelectPiece(position);
 
@@ -383,7 +425,13 @@ class ChessBoard : MonoBehaviour {
             if (pieceToDelegate.Delegated)
             {
                 King king = (King)GameManager.Instance.CurrentPlayer.commanders.Find(commander => commander is King);
+                King kingKing = (King)PieceAt(king.Position, KingBoard);
+                King kingLBishop = (King)PieceAt(king.Position, LBishopBoard);
+                King kingRBishop = (King)PieceAt(king.Position, RBishopBoard);
                 king.RecallPiece(pieceToDelegate);
+                kingKing.RecallPiece(pieceToDelegateKing);
+                kingLBishop.RecallPiece(pieceToDelegateLBishop);
+                kingRBishop.RecallPiece(pieceToDelegateRBishop);
             }
 
             SelectPiece(new Vector2Int(-1, -1));
@@ -393,7 +441,13 @@ class ChessBoard : MonoBehaviour {
             if (SelectedPiece is Commander && !(SelectedPiece is King) && pieceToDelegate.Commander is King)
             {
                 King king = (King)pieceToDelegate.Commander;
+                King kingKing = (King)PieceAt(king.Position, KingBoard);
+                King kingLBishop = (King)PieceAt(king.Position, LBishopBoard);
+                King kingRBishop = (King)PieceAt(king.Position, RBishopBoard);
                 king.DelegatePiece(pieceToDelegate, (Commander)SelectedPiece);
+                kingKing.DelegatePiece(pieceToDelegateKing, (Commander)PieceAt(SelectedPiece.Position, KingBoard));
+                kingLBishop.DelegatePiece(pieceToDelegateLBishop, (Commander)PieceAt(SelectedPiece.Position, LBishopBoard));
+                kingRBishop.DelegatePiece(pieceToDelegateRBishop, (Commander)PieceAt(SelectedPiece.Position, RBishopBoard));
             }
 
             SelectPiece(new Vector2Int(-1, -1));

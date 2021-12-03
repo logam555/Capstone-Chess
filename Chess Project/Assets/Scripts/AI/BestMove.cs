@@ -10,6 +10,7 @@ public class BestMove
 {
     ChessPiece[,] board;
     Dictionary<string, BoardTile> chessBoardGridCo;
+    List<Commander> commanders;
 
     public struct Moves {
         public ChessPiece piece;
@@ -24,14 +25,17 @@ public class BestMove
     }
 
 
-    public BestMove()
+    public BestMove(ChessPiece[,] board)
     {
-
+        commanders = new List<Commander>();
+        this.board = board;
+        commanders.Add((Commander)board[4, 0]);
+        commanders.Add((Commander)board[2, 0]);
+        commanders.Add((Commander)board[5, 0]);
     }
 
-    public int[] getMove(ChessPiece[,] board, Commander piece, bool isLeft)
+    public int[] getMove(Commander piece, bool isLeft)
     {
-        this.board = board;
 
         if(piece is King) {
             chessBoardGridCo = ModelManager.Instance.chessBoardCopyKing;

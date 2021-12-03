@@ -6,7 +6,11 @@ using System.Threading.Tasks;
 using UnityEngine;
 
 public class Knight : Subordinate {
-    public Knight(bool isWhite, Vector2Int position, Commander commander, string name) : base(isWhite, position, commander, name) { }
+    public bool Moved { get; set; }
+
+    public Knight(bool isWhite, Vector2Int position, Commander commander, string name) : base(isWhite, position, commander, name) { 
+        Moved = false;
+    }
 
     public override List<Vector2Int> MoveRange(ChessPiece[,] board) {
         if (Commander.commandActions <= 0)

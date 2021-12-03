@@ -15,6 +15,7 @@ public class BishopAI : CommanderAI
     public bool freeMove;
     private int[,] moves;
     private ChessPiece[,] board;
+    private BestMove local;
 
     private bool initialized;
     public bool leftBishop;
@@ -28,9 +29,11 @@ public class BishopAI : CommanderAI
         getBoard();
         isWhite = FindObjectOfType<AI>().isWhite;
         getCommander(leftBishop);
+        
     }
 
     private void Update() {
+        
         if(initialized && bishop.isDead) {
             Destroy(this.gameObject);
         }
@@ -38,7 +41,10 @@ public class BishopAI : CommanderAI
 
     public override int[] Step()
     {
-        getBoard();
+        if (!initialized) {
+            initialized = true;
+            local = new BestMove(board);
+        }
 
         freeMove = false;
 
@@ -50,11 +56,8 @@ public class BishopAI : CommanderAI
         int[] move = { 0, 0 };
         if (freeMove == false)
         {
-            getBoard();
 
-            BestMove local = new BestMove();
-
-            int[] bl = local.getMove(board, bishop, true);
+            int[] bl = local.getMove(bishop, true);
 
             move[0] = bl[0]; //x and y coordinates of best scoring move are recorded
             move[1] = bl[1];
@@ -99,9 +102,8 @@ public class BishopAI : CommanderAI
 
     public int[] getLocal()
     {
-        BestMove local = new BestMove();
 
-        int[] bl = local.getMove(board, bishop, leftBishop);
+        int[] bl = local.getMove(bishop, leftBishop);
         bestPiece = ChessBoard.Instance.PieceAt(new Vector2Int(bl[0], bl[1]), board);
 
         return bl;
@@ -152,7 +154,5 @@ public class BishopAI : CommanderAI
 
             bishop = (Commander) ChessBoard.Instance.PieceAt(position, board);
         }
-
-        initialized = true;
     }
 }

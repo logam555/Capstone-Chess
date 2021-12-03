@@ -14,8 +14,12 @@ public class King : Commander {
     }
 
     public override List<Vector2Int> MoveRange(ChessPiece[,] board) {
-        if (commandActions <= 0)
+        if (commandActions <= 0 && usedFreeMovement)
             return new List<Vector2Int>();
+        if(commandActions <= 0 && !usedFreeMovement)
+            return RecursiveMoveRange(Position, 1, board);
+        if (usedFreeMovement)
+            return RecursiveMoveRange(Position, 2, board);
         return RecursiveMoveRange(Position, 3, board);
     }
 

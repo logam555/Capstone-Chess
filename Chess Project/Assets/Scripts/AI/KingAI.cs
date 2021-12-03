@@ -14,6 +14,12 @@ public class KingAI : CommanderAI
     public bool freeMove;
     private int[,] moves;
     private ChessPiece[,] board;
+    BestMove local;
+    private bool initialized;
+
+    private void Awake() {
+        initialized = false;
+    }
 
     private void Start() {
         moves = new int[3, 16];
@@ -24,7 +30,10 @@ public class KingAI : CommanderAI
 
     public override int[] Step()
     {
-        getBoard();
+        if (!initialized) {
+            initialized = true;
+            local = new BestMove(board);
+        }
 
         freeMove = false;
 
@@ -36,11 +45,8 @@ public class KingAI : CommanderAI
         int[] move = {0,0};
         if(freeMove == false)
         {
-            getBoard();
 
-            BestMove local = new BestMove();
-
-            int[] bl = local.getMove(board, King, true);
+            int[] bl = local.getMove(King, true);
 
             move[0] = bl[0]; //x and y coordinates of best scoring move are recorded
             move[1] = bl[1];
@@ -113,9 +119,8 @@ public class KingAI : CommanderAI
 
     public int[] getLocal()
     {
-        BestMove local = new BestMove();
 
-        int[] bl = local.getMove(board, King, true);
+        int[] bl = local.getMove(King, true);
 
         bestPiece = ChessBoard.Instance.PieceAt(new Vector2Int(bl[0], bl[1]), board);
 
