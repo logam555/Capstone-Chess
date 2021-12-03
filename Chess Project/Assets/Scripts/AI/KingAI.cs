@@ -42,14 +42,11 @@ public class KingAI : CommanderAI
 
     public int[] useFreeMove()
     {
-        int[] move = {0,0};
+        int[] move = new int[4];
         if(freeMove == false)
         {
 
-            int[] bl = local.getMove(King, true);
-
-            move[0] = bl[0]; //x and y coordinates of best scoring move are recorded
-            move[1] = bl[1];
+            move = local.getMove(King, true, true);
 
             freeMove = true;
 
@@ -120,7 +117,7 @@ public class KingAI : CommanderAI
     public int[] getLocal()
     {
 
-        int[] bl = local.getMove(King, true);
+        int[] bl = local.getMove(King, true, false);
 
         bestPiece = ChessBoard.Instance.PieceAt(new Vector2Int(bl[0], bl[1]), board);
 

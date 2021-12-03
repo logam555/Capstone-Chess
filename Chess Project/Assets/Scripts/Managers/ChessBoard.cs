@@ -243,8 +243,6 @@ class ChessBoard : MonoBehaviour {
         if(IsPieceAt(position, Board) && PieceAt(position, Board).IsWhite == GameManager.Instance.CurrentPlayer.isWhite) {
             SelectedPiece = Board[position.x, position.y];
             ModelManager.Instance.HighlightAllTiles(position, FilterMoveRange(SelectedPiece, Board), FilterAttackRange(SelectedPiece, Board), SelectedPiece is Subordinate ? ((Subordinate)SelectedPiece).Commander : (Commander)SelectedPiece);
-            Debug.Log(SelectedPiece);
-            Debug.Log(SelectedPiece.Position);
         }
         else {
             SelectedPiece = null;

@@ -76,7 +76,6 @@ public class AI : Player
 			threads.Add(new Thread(() => {
 				if (instance != null) {
 					kingMove = instance.Step();
-					freeKing = instance.useFreeMove();
 				}
 			}));
 
@@ -90,7 +89,6 @@ public class AI : Player
             threads.Add(new Thread(() => {
                 if (lInstance != null) {
                     lBishopMove = lInstance.Step();
-                    freelB = lInstance.useFreeMove();
                 }
             }));
 
@@ -103,7 +101,6 @@ public class AI : Player
             threads.Add(new Thread(() => {
                 if (rInstance != null) {
                     rBishopMove = rInstance.Step();
-                    freerB = rInstance.useFreeMove();
                 }
             }));
 
@@ -114,6 +111,51 @@ public class AI : Player
         await Task.WhenAll(tasks);
 
 		StartCoroutine(TakeTurn());
+
+		tasks.Clear();
+		tasks.Add(Task.Run(() => {
+			List<Thread> threads = new List<Thread>();
+			threads.Add(new Thread(() => {
+				if (instance != null) {
+					freeKing = instance.useFreeMove();
+				}
+			}));
+
+			threads[0].Start();
+			threads[0].Join();
+
+		}));
+
+		tasks.Add(Task.Run(() => {
+			List<Thread> threads = new List<Thread>();
+			threads.Add(new Thread(() => {
+				if (lInstance != null) {
+					freelB = lInstance.useFreeMove();
+				}
+			}));
+
+			threads[0].Start();
+			threads[0].Join();
+		}));
+
+		tasks.Add(Task.Run(() => {
+			List<Thread> threads = new List<Thread>();
+			threads.Add(new Thread(() => {
+				if (rInstance != null) {
+					freerB = rInstance.useFreeMove();
+				}
+			}));
+
+			threads[0].Start();
+			threads[0].Join();
+		}));
+
+		await Task.WhenAll(tasks);
+
+		StartCoroutine(TakeFree());
+
+		await Task.WhenAll(tasks);
+
 	}
 
 
@@ -162,10 +204,12 @@ public class AI : Player
 
 	public bool useFreeKing()
     {
-		if(freeKing[0] != 0 || freeKing[1] != 0)
+		if (freeKing[0] != 0 || freeKing[1] != 0)
         {
 			ChessBoard.Instance.SelectPiece(instance.King.Position);
-			Vector2Int newPosition = new Vector2Int(freeKing[0], freeKing[1]);
+			Vector2Int newPosition = new Vector2Int(freeKing[2], freeKing[3]);
+			Debug.Log(ChessBoard.Instance.SelectedPiece);
+			Debug.Log(newPosition);
 			return ChessBoard.Instance.PerformAction(newPosition);
         }
 
@@ -177,7 +221,9 @@ public class AI : Player
 		if (freelB[0] != 0 || freelB[1] != 0)
 		{
 			ChessBoard.Instance.SelectPiece(lInstance.bishop.Position);
-			Vector2Int newPosition = new Vector2Int(freelB[0], freelB[1]);
+			Vector2Int newPosition = new Vector2Int(freelB[2], freelB[3]);
+			Debug.Log(ChessBoard.Instance.SelectedPiece);
+			Debug.Log(newPosition);
 			return ChessBoard.Instance.PerformAction(newPosition);
 		}
 
@@ -189,7 +235,9 @@ public class AI : Player
 		if (freerB[0] != 0 || freerB[1] != 0)
 		{
 			ChessBoard.Instance.SelectPiece(rInstance.bishop.Position);
-			Vector2Int newPosition = new Vector2Int(freerB[0], freerB[1]);
+			Vector2Int newPosition = new Vector2Int(freerB[2], freerB[3]);
+			Debug.Log(ChessBoard.Instance.SelectedPiece);
+			Debug.Log(newPosition);
 			return ChessBoard.Instance.PerformAction(newPosition);
 		}
 
@@ -201,8 +249,10 @@ public class AI : Player
 		Vector2Int newPosition = new Vector2Int(0, 0);
 
 		ChessBoard.Instance.SelectPiece(instance.bestPiece.Position);
-		newPosition.x = kingMove[0];
-		newPosition.y = kingMove[1];
+		newPosition.x = kingMove[2];
+		newPosition.y = kingMove[3];
+		Debug.Log(ChessBoard.Instance.SelectedPiece);
+		Debug.Log(newPosition);
 		return ChessBoard.Instance.PerformAction(newPosition);
 	}
 
@@ -211,8 +261,10 @@ public class AI : Player
 		Vector2Int newPosition = new Vector2Int(0, 0);
 
 		ChessBoard.Instance.SelectPiece(lInstance.bestPiece.Position);
-		newPosition.x = lBishopMove[0];
-		newPosition.y = lBishopMove[1];
+		newPosition.x = lBishopMove[2];
+		newPosition.y = lBishopMove[3];
+		Debug.Log(ChessBoard.Instance.SelectedPiece);
+		Debug.Log(newPosition);
 		return ChessBoard.Instance.PerformAction(newPosition);
 	}
 
@@ -221,8 +273,10 @@ public class AI : Player
 		Vector2Int newPosition = new Vector2Int(0, 0);
 
 		ChessBoard.Instance.SelectPiece(rInstance.bestPiece.Position);
-		newPosition.x = rBishopMove[0];
-		newPosition.y = rBishopMove[1];
+		newPosition.x = rBishopMove[2];
+		newPosition.y = rBishopMove[3];
+		Debug.Log(ChessBoard.Instance.SelectedPiece);
+		Debug.Log(newPosition);
 		return ChessBoard.Instance.PerformAction(newPosition);
 	}
 
@@ -247,11 +301,7 @@ public class AI : Player
             wait = moverBishop() ? 2.5f : 0.75f;
         }
 
-		yield return new WaitForSeconds(wait);
-
-		//StartCoroutine(TakeFree());
-
-		GameManager.Instance.PassTurn();
+		yield return new WaitForSeconds(3.0f);
     }
 
 	public IEnumerator TakeFree()
@@ -277,8 +327,9 @@ public class AI : Player
 			wait = useFreerBishop() ? 2.5f : 0.75f;
 		}
 
-		yield return new WaitForSeconds(wait);
+		yield return new WaitForSeconds(3.0f);
 
 		GameManager.Instance.PassTurn();
+
 	}
 }
