@@ -84,6 +84,10 @@ public class ScoreManager : MonoBehaviour
         if(gm.IsGameOver)
         {
             winUI.SetActive(true);
+            if (gm.user.capturedPieces["King"] > 0)
+                winUI.GetComponentInChildren<Text>().text = "YOU WIN!";
+            else
+                winUI.GetComponentInChildren<Text>().text = "AI WINS!";
         }
         //test the spawning
         if (Input.GetKeyDown(KeyCode.P)) 

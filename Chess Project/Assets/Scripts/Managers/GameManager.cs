@@ -112,17 +112,19 @@ public class GameManager : MonoBehaviour
                 score.AddImgPieces(ScoreManager.pieceType.sliverknight);
         } else if (captured is Bishop) {
             CurrentPlayer.capturedPieces["Bishop"] += 1;
+            Bishop bishop = (Bishop)captured;
+            bishop.DelegatePieces();
             if (CurrentPlayer == user)
                 score.AddImgPieces(ScoreManager.pieceType.goldbishop);
             else
                 score.AddImgPieces(ScoreManager.pieceType.sliverbishop);
-            Bishop bishop = (Bishop)captured;
-            bishop.DelegatePieces();
 
-            if (CurrentPlayer == user)
+
+            if (CurrentPlayer == user) {
                 ai.commanders.Remove(bishop);
-            else
+            } else {
                 user.commanders.Remove(bishop);
+            }
 
         } else if (captured is Queen) {
             CurrentPlayer.capturedPieces["Queen"] += 1;

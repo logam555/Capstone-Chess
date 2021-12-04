@@ -26,14 +26,19 @@ public class KingAI : CommanderAI
         getBoard();
         isWhite = FindObjectOfType<AI>().isWhite;
         getCommander();
+        
     }
 
-    public override int[] Step()
-    {
+    private void Update() {
         if (!initialized) {
             initialized = true;
             local = new BestMove(board);
         }
+    }
+
+    public override int[] Step()
+    {
+        
 
         freeMove = false;
 

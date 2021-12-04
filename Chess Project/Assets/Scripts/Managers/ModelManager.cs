@@ -529,11 +529,11 @@ public class ModelManager : MonoBehaviour
         holderV2I.y = chessBoardGridCo[Convert.ToString(Convert.ToChar(x) + Convert.ToString(y))].blackHeuristic;
         if (isWhite == true)
         {
-            holderV2I.z = Convert.ToInt32(Math.Abs(holderV2I.x - (holderV2I.y * 0.9)));
+            holderV2I.z = Convert.ToInt32(holderV2I.x - holderV2I.y);
         }
         else
         {
-            holderV2I.z = Convert.ToInt32(Math.Abs(holderV2I.y - (holderV2I.x * 0.9)));
+            holderV2I.z = Convert.ToInt32(holderV2I.y - holderV2I.x);
         }
 
         return holderV2I;

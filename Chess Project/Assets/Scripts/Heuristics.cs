@@ -173,7 +173,7 @@ public class Heuristics : MonoBehaviour
         }
 
         //hard
-        if (diff == 3)
+        if (diff == 1)
         {
             //scale
             chessTypes[0].typeValue *= 4;

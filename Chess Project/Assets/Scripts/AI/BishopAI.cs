@@ -33,18 +33,20 @@ public class BishopAI : CommanderAI
     }
 
     private void Update() {
-        
-        if(initialized && bishop.isDead) {
+
+
+        if (!initialized) {
+            initialized = true;
+            local = new BestMove(board);
+        }
+
+        if (initialized && bishop.isDead) {
             Destroy(this.gameObject);
         }
     }
 
     public override int[] Step()
     {
-        if (!initialized) {
-            initialized = true;
-            local = new BestMove(board);
-        }
 
         freeMove = false;
 

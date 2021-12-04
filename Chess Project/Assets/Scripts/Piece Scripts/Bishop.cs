@@ -29,8 +29,31 @@ public class Bishop : Commander {
     }
 
     public void DelegatePieces() {
+        Commander kingKing = (Commander)ChessBoard.Instance.PieceAt(King.Position, ChessBoard.Instance.KingBoard);
+        Commander lbishopKing = (Commander)ChessBoard.Instance.PieceAt(King.Position, ChessBoard.Instance.LBishopBoard);
+        Commander rbishopKing = (Commander)ChessBoard.Instance.PieceAt(King.Position, ChessBoard.Instance.RBishopBoard);
+
+        Commander kingBishop = (Commander)ChessBoard.Instance.PieceAt(Position, ChessBoard.Instance.KingBoard);
+        Commander lbishopBishop = (Commander)ChessBoard.Instance.PieceAt(Position, ChessBoard.Instance.LBishopBoard);
+        Commander rbishopBishop = (Commander)ChessBoard.Instance.PieceAt(Position, ChessBoard.Instance.RBishopBoard);
+
         King.subordinates = King.subordinates.Union(subordinates).ToList();
+        kingKing.subordinates = kingKing.subordinates.Union(kingBishop.subordinates).ToList();
+        lbishopKing.subordinates = lbishopKing.subordinates.Union(lbishopBishop.subordinates).ToList();
+        rbishopKing.subordinates = rbishopKing.subordinates.Union(rbishopBishop.subordinates).ToList();
+
+        for(int i = 0; i < subordinates.Count; i++) {
+            subordinates[i].Commander = King;
+            kingBishop.subordinates[i].Commander = kingKing;
+            lbishopBishop.subordinates[i].Commander = lbishopKing;
+            rbishopBishop.subordinates[i].Commander = rbishopKing;
+        }
+
         subordinates.Clear();
+        kingBishop.subordinates.Clear();
+        lbishopBishop.subordinates.Clear();
+        rbishopBishop.subordinates.Clear();
+
         isDead = true;
     }
 

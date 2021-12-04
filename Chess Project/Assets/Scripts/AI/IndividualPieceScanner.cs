@@ -90,7 +90,7 @@ public class IndividualPieceScanner : MonoBehaviour
         for (int i = 0; i < enemies.Count; i++)
         {
             ChessPiece EnemyPiece = ChessBoard.Instance.PieceAt(enemies[i], board);
-            IndividualScanMap[enemies[i].x, enemies[i].y].ChanceToCapture = 1 - (FuzzyLogic.FindFuzzyNumber(ScanPiece, EnemyPiece) / 6);
+            IndividualScanMap[enemies[i].x, enemies[i].y].ChanceToCapture = ((7 - FuzzyLogic.FindFuzzyNumber(ScanPiece, EnemyPiece)) / 6.0f) * PieceValue(EnemyPiece);
             IndividualScanMap[enemies[i].x, enemies[i].y].friendFoe = 2;
             //Begin Search on EnemiesMoves 
             List<Vector2Int> EnemyAttackList = ChessBoard.Instance.FilterAttackRange(EnemyPiece, board);
@@ -99,7 +99,7 @@ public class IndividualPieceScanner : MonoBehaviour
             {
 
                 IndividualScanMap[EnemyAttackList[k].x, EnemyAttackList[k].y].isVulnerable = true;
-                IndividualScanMap[EnemyAttackList[k].x, EnemyAttackList[k].y].CaptureChance += 1 - (FuzzyLogic.FindFuzzyNumber(EnemyPiece, ScanPiece) / 6);
+                IndividualScanMap[EnemyAttackList[k].x, EnemyAttackList[k].y].CaptureChance += ((7 - FuzzyLogic.FindFuzzyNumber(EnemyPiece, ScanPiece)) / 6.0f);
             }
 
         }
@@ -112,12 +112,27 @@ public class IndividualPieceScanner : MonoBehaviour
         {
             for (int f = 0; f < 8; f++)
             {
-                IndividualScanMap[h, f].Heuristic = IndividualScanMap[h, f].ChanceToCapture * 5 - IndividualScanMap[h, f].captureChance;
+                IndividualScanMap[h, f].Heuristic = IndividualScanMap[h, f].ChanceToCapture - IndividualScanMap[h, f].captureChance;
             }
         }
 
 
         return IndividualScanMap;
 
+    }
+
+    private int PieceValue(ChessPiece piece) {
+        if (piece is Pawn)
+            return 1;
+        else if (piece is Rook)
+            return 3;
+        else if (piece is Knight)
+            return 3;
+        else if (piece is Bishop)
+            return 5;
+        else if (piece is Queen)
+            return 2;
+        else
+            return 10;
     }
 }

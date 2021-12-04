@@ -71,18 +71,18 @@ public class AI : Player
 		await Task.Run(() => kingDelegate());
 
 		List<Task> tasks = new List<Task>();
-		tasks.Add(Task.Run(() => {
-			List<Thread> threads = new List<Thread>();
-			threads.Add(new Thread(() => {
-				if (instance != null) {
-					kingMove = instance.Step();
-				}
-			}));
+        tasks.Add(Task.Run(() => {
+            List<Thread> threads = new List<Thread>();
+            threads.Add(new Thread(() => {
+                if (instance != null) {
+                    kingMove = instance.Step();
+                }
+            }));
 
-			threads[0].Start();
-			threads[0].Join();
-			
-		}));
+            threads[0].Start();
+            threads[0].Join();
+
+        }));
 
         tasks.Add(Task.Run(() => {
             List<Thread> threads = new List<Thread>();
@@ -110,53 +110,50 @@ public class AI : Player
 
         await Task.WhenAll(tasks);
 
-		StartCoroutine(TakeTurn());
+        StartCoroutine(TakeTurn());
 
-		tasks.Clear();
-		tasks.Add(Task.Run(() => {
-			List<Thread> threads = new List<Thread>();
-			threads.Add(new Thread(() => {
-				if (instance != null) {
-					freeKing = instance.useFreeMove();
-				}
-			}));
+        //tasks.Clear();
+        //tasks.Add(Task.Run(() => {
+        //    List<Thread> threads = new List<Thread>();
+        //    threads.Add(new Thread(() => {
+        //        if (instance != null) {
+        //            freeKing = instance.useFreeMove();
+        //        }
+        //    }));
 
-			threads[0].Start();
-			threads[0].Join();
+        //    threads[0].Start();
+        //    threads[0].Join();
 
-		}));
+        //}));
 
-		tasks.Add(Task.Run(() => {
-			List<Thread> threads = new List<Thread>();
-			threads.Add(new Thread(() => {
-				if (lInstance != null) {
-					freelB = lInstance.useFreeMove();
-				}
-			}));
+        //tasks.Add(Task.Run(() => {
+        //    List<Thread> threads = new List<Thread>();
+        //    threads.Add(new Thread(() => {
+        //        if (lInstance != null) {
+        //            freelB = lInstance.useFreeMove();
+        //        }
+        //    }));
 
-			threads[0].Start();
-			threads[0].Join();
-		}));
+        //    threads[0].Start();
+        //    threads[0].Join();
+        //}));
 
-		tasks.Add(Task.Run(() => {
-			List<Thread> threads = new List<Thread>();
-			threads.Add(new Thread(() => {
-				if (rInstance != null) {
-					freerB = rInstance.useFreeMove();
-				}
-			}));
+        //tasks.Add(Task.Run(() => {
+        //    List<Thread> threads = new List<Thread>();
+        //    threads.Add(new Thread(() => {
+        //        if (rInstance != null) {
+        //            freerB = rInstance.useFreeMove();
+        //        }
+        //    }));
 
-			threads[0].Start();
-			threads[0].Join();
-		}));
+        //    threads[0].Start();
+        //    threads[0].Join();
+        //}));
 
-		await Task.WhenAll(tasks);
+        //await Task.WhenAll(tasks);
 
-		StartCoroutine(TakeFree());
-
-		await Task.WhenAll(tasks);
-
-	}
+        //StartCoroutine(TakeFree());
+    }
 
 
 	public void kingDelegate()
@@ -248,7 +245,7 @@ public class AI : Player
     {
 		Vector2Int newPosition = new Vector2Int(0, 0);
 
-		ChessBoard.Instance.SelectPiece(instance.bestPiece.Position);
+		ChessBoard.Instance.SelectPiece(new Vector2Int(kingMove[0], kingMove[1]));
 		newPosition.x = kingMove[2];
 		newPosition.y = kingMove[3];
 		Debug.Log(ChessBoard.Instance.SelectedPiece);
@@ -260,7 +257,7 @@ public class AI : Player
     {
 		Vector2Int newPosition = new Vector2Int(0, 0);
 
-		ChessBoard.Instance.SelectPiece(lInstance.bestPiece.Position);
+		ChessBoard.Instance.SelectPiece(new Vector2Int(lBishopMove[0], lBishopMove[1]));
 		newPosition.x = lBishopMove[2];
 		newPosition.y = lBishopMove[3];
 		Debug.Log(ChessBoard.Instance.SelectedPiece);
@@ -272,7 +269,7 @@ public class AI : Player
     {
 		Vector2Int newPosition = new Vector2Int(0, 0);
 
-		ChessBoard.Instance.SelectPiece(rInstance.bestPiece.Position);
+		ChessBoard.Instance.SelectPiece(new Vector2Int(rBishopMove[0], rBishopMove[1]));
 		newPosition.x = rBishopMove[2];
 		newPosition.y = rBishopMove[3];
 		Debug.Log(ChessBoard.Instance.SelectedPiece);
@@ -286,22 +283,24 @@ public class AI : Player
 		yield return new WaitForSeconds(0.25f);
 
 		if (instance != null) {
-			wait = moveKing() ? 2.5f : 0.75f;
+			wait = moveKing() ? 5.0f : 1.5f;
 		}
 
 		yield return new WaitForSeconds(wait);
 
         if (lInstance != null) {
-			wait = movelBishop() ? 2.5f : 0.75f;
+			wait = movelBishop() ? 5.0f : 1.5f;
 		}
 
 		yield return new WaitForSeconds(wait);
 
         if (rInstance != null) {
-            wait = moverBishop() ? 2.5f : 0.75f;
+            wait = moverBishop() ? 5.0f : 1.5f;
         }
 
-		yield return new WaitForSeconds(3.0f);
+		yield return new WaitForSeconds(wait);
+
+		GameManager.Instance.PassTurn();
     }
 
 	public IEnumerator TakeFree()
@@ -310,24 +309,24 @@ public class AI : Player
 
 		if (instance != null)
 		{
-			wait = useFreeKing() ? 2.5f : 0.75f;
+			wait = useFreeKing() ? 5.0f : 2.5f;
 		}
 
 		yield return new WaitForSeconds(wait);
 
 		if (lInstance != null)
 		{
-			wait = useFreelBishop() ? 2.5f : 0.75f;
+			wait = useFreelBishop() ? 5.0f : 2.5f;
 		}
 
 		yield return new WaitForSeconds(wait);
 
 		if (rInstance != null)
 		{
-			wait = useFreerBishop() ? 2.5f : 0.75f;
+			wait = useFreerBishop() ? 5.0f : 2.5f;
 		}
 
-		yield return new WaitForSeconds(3.0f);
+		yield return new WaitForSeconds(wait);
 
 		GameManager.Instance.PassTurn();
 
