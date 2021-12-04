@@ -76,6 +76,7 @@ public class AI : Player
             threads.Add(new Thread(() => {
                 if (instance != null) {
                     kingMove = instance.Step();
+					instance.King.commandActions -= 1;
                 }
             }));
 
@@ -89,6 +90,7 @@ public class AI : Player
             threads.Add(new Thread(() => {
                 if (lInstance != null) {
                     lBishopMove = lInstance.Step();
+					lInstance.bishop.commandActions -= 1;
                 }
             }));
 
@@ -101,6 +103,7 @@ public class AI : Player
             threads.Add(new Thread(() => {
                 if (rInstance != null) {
                     rBishopMove = rInstance.Step();
+					rInstance.bishop.commandActions -= 1;
                 }
             }));
 
@@ -110,50 +113,49 @@ public class AI : Player
 
         await Task.WhenAll(tasks);
 
-        StartCoroutine(TakeTurn());
+        tasks.Clear();
+        tasks.Add(Task.Run(() => {
+            List<Thread> threads = new List<Thread>();
+            threads.Add(new Thread(() => {
+                if (instance != null) {
+                    freeKing = instance.useFreeMove();
+                }
+            }));
 
-        //tasks.Clear();
-        //tasks.Add(Task.Run(() => {
-        //    List<Thread> threads = new List<Thread>();
-        //    threads.Add(new Thread(() => {
-        //        if (instance != null) {
-        //            freeKing = instance.useFreeMove();
-        //        }
-        //    }));
+            threads[0].Start();
+            threads[0].Join();
 
-        //    threads[0].Start();
-        //    threads[0].Join();
+        }));
 
-        //}));
+        tasks.Add(Task.Run(() => {
+            List<Thread> threads = new List<Thread>();
+            threads.Add(new Thread(() => {
+                if (lInstance != null) {
+                    freelB = lInstance.useFreeMove();
+                }
+            }));
 
-        //tasks.Add(Task.Run(() => {
-        //    List<Thread> threads = new List<Thread>();
-        //    threads.Add(new Thread(() => {
-        //        if (lInstance != null) {
-        //            freelB = lInstance.useFreeMove();
-        //        }
-        //    }));
+            threads[0].Start();
+            threads[0].Join();
+        }));
 
-        //    threads[0].Start();
-        //    threads[0].Join();
-        //}));
+        tasks.Add(Task.Run(() => {
+            List<Thread> threads = new List<Thread>();
+            threads.Add(new Thread(() => {
+                if (rInstance != null) {
+                    freerB = rInstance.useFreeMove();
+                }
+            }));
 
-        //tasks.Add(Task.Run(() => {
-        //    List<Thread> threads = new List<Thread>();
-        //    threads.Add(new Thread(() => {
-        //        if (rInstance != null) {
-        //            freerB = rInstance.useFreeMove();
-        //        }
-        //    }));
+            threads[0].Start();
+            threads[0].Join();
+        }));
 
-        //    threads[0].Start();
-        //    threads[0].Join();
-        //}));
+        await Task.WhenAll(tasks);
 
-        //await Task.WhenAll(tasks);
+		StartCoroutine(TakeTurn());
 
-        //StartCoroutine(TakeFree());
-    }
+	}
 
 
 	public void kingDelegate()
@@ -283,25 +285,26 @@ public class AI : Player
 		yield return new WaitForSeconds(0.25f);
 
 		if (instance != null) {
-			wait = moveKing() ? 5.0f : 1.5f;
+			wait = moveKing() ? 4.0f : 1.0f;
 		}
 
 		yield return new WaitForSeconds(wait);
 
         if (lInstance != null) {
-			wait = movelBishop() ? 5.0f : 1.5f;
+			wait = movelBishop() ? 4.0f : 1.0f;
 		}
 
 		yield return new WaitForSeconds(wait);
 
         if (rInstance != null) {
-            wait = moverBishop() ? 5.0f : 1.5f;
+            wait = moverBishop() ? 4.0f : 1.0f;
         }
 
 		yield return new WaitForSeconds(wait);
 
-		GameManager.Instance.PassTurn();
-    }
+		StartCoroutine(TakeFree());
+		//GameManager.Instance.PassTurn();
+	}
 
 	public IEnumerator TakeFree()
 	{
@@ -309,24 +312,28 @@ public class AI : Player
 
 		if (instance != null)
 		{
-			wait = useFreeKing() ? 5.0f : 2.5f;
+			wait = useFreeKing() ? 4.0f : 1.0f;
 		}
 
 		yield return new WaitForSeconds(wait);
 
 		if (lInstance != null)
 		{
-			wait = useFreelBishop() ? 5.0f : 2.5f;
+			wait = useFreelBishop() ? 4.0f : 1.0f;
 		}
 
 		yield return new WaitForSeconds(wait);
 
 		if (rInstance != null)
 		{
-			wait = useFreerBishop() ? 5.0f : 2.5f;
+			wait = useFreerBishop() ? 4.0f : 1.0f;
 		}
 
 		yield return new WaitForSeconds(wait);
+
+		instance.King.commandActions = 1;
+		lInstance.bishop.commandActions = 1;
+		rInstance.bishop.commandActions = 1;
 
 		GameManager.Instance.PassTurn();
 
