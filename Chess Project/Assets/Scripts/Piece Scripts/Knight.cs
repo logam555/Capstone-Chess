@@ -19,6 +19,10 @@ public class Knight : Subordinate {
     }
 
     public override List<Vector2Int> AttackRange(ChessPiece[,] board) {
-        return MoveRange(board);
+        if (Commander.commandActions > 0)
+            return RecursiveMoveRange(Position, 1, board);
+        if(Commander.commandActions <= 0 && Moved)
+            return RecursiveMoveRange(Position, 1, board);
+        return new List<Vector2Int>();
     }
 }

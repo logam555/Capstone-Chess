@@ -263,6 +263,10 @@ class ChessBoard : MonoBehaviour {
             }
         }
 
+        if (SelectedPiece is Knight) {
+            ((Knight)SelectedPiece).Moved = !((Knight)SelectedPiece).Moved;
+        }
+
         ChessPiece selectedPieceKing = PieceAt(SelectedPiece.Position, KingBoard);
         ChessPiece selectedPieceLBishop = PieceAt(SelectedPiece.Position, LBishopBoard);
         ChessPiece selectedPieceRBishop = PieceAt(SelectedPiece.Position, RBishopBoard);
@@ -311,13 +315,13 @@ class ChessBoard : MonoBehaviour {
 
        
         // Check if selected piece is a knight and is attacking a non-adjacent piece
-        if (SelectedPiece is Knight && (Mathf.Abs((position - SelectedPiece.Position).sqrMagnitude) > 2))
+        if (SelectedPiece is Knight && ((Knight)SelectedPiece).Moved)
             isMoving = true;
 
         // Change optional isMoving parameter if selected piece is a Knight attacking a non-adjacent piece
-        if (isMoving)
+        if (isMoving) {
             attackSuccessful = FuzzyLogic.FindFuzzyNumber(SelectedPiece, Board[position.x, position.y]) <= DiceManager.Instance.diceNumber + 1;
-        else
+        } else
             attackSuccessful = FuzzyLogic.FindFuzzyNumber(SelectedPiece, Board[position.x, position.y]) <= DiceManager.Instance.diceNumber;
 
         // Capture piece and remove model if attack is successful
@@ -337,31 +341,19 @@ class ChessBoard : MonoBehaviour {
                 ((Subordinate)enemyRBishop).Commander.subordinates.Remove((Subordinate)enemyRBishop);
             }
 
+            if (SelectedPiece is Knight)
+                ((Knight)SelectedPiece).Moved = true;
+
             // Move the selected piece
             MovePiece(position);
 
         } else {
-            // Move knight next to defending piece if attacking a non-adjacent piece
-            if (SelectedPiece is Knight && isMoving) {
-                List<Vector2Int> locations = FilterMoveRange(SelectedPiece, Board);
+            // Reduce number of actions remaining
+            Commander leader = SelectedPiece is Subordinate ? ((Subordinate)SelectedPiece).Commander : (Commander)SelectedPiece;
+            leader.commandActions -= 1;
 
-                foreach (Vector2Int pos in locations) {
-                    Vector2Int diff = Vector2Int.zero;
-                    diff.x = Mathf.Abs(position.x - pos.x);
-                    diff.y = Mathf.Abs(position.y - pos.y);
-                    if (diff.sqrMagnitude <= 2 && diff.sqrMagnitude > 0) {
-                        MovePiece(pos);
-                        break;
-                    }
-                }
-            } else {
-                // Reduce number of actions remaining
-                Commander leader = SelectedPiece is Subordinate ? ((Subordinate)SelectedPiece).Commander : (Commander)SelectedPiece;
-                leader.commandActions -= 1;
-
-                // Deselect the piece
-                SelectPiece(new Vector2Int(-1, -1));
-            }
+            // Deselect the piece
+            SelectPiece(new Vector2Int(-1, -1));
         }
     }
 
