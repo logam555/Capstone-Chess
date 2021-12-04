@@ -90,7 +90,7 @@ public class IndividualPieceScanner : MonoBehaviour
         for (int i = 0; i < enemies.Count; i++)
         {
             ChessPiece EnemyPiece = ChessBoard.Instance.PieceAt(enemies[i], board);
-            IndividualScanMap[enemies[i].x, enemies[i].y].ChanceToCapture = ((7 - FuzzyLogic.FindFuzzyNumber(ScanPiece, EnemyPiece)) / 6.0f) * PieceValue(EnemyPiece);
+            IndividualScanMap[enemies[i].x, enemies[i].y].ChanceToCapture = (((7 - FuzzyLogic.FindFuzzyNumber(ScanPiece, EnemyPiece)) / 6.0f) + 1) * PieceValue(EnemyPiece);
             IndividualScanMap[enemies[i].x, enemies[i].y].friendFoe = 2;
             //Begin Search on EnemiesMoves 
             List<Vector2Int> EnemyAttackList = ChessBoard.Instance.FilterAttackRange(EnemyPiece, board);
@@ -99,7 +99,7 @@ public class IndividualPieceScanner : MonoBehaviour
             {
 
                 IndividualScanMap[EnemyAttackList[k].x, EnemyAttackList[k].y].isVulnerable = true;
-                IndividualScanMap[EnemyAttackList[k].x, EnemyAttackList[k].y].CaptureChance += ((7 - FuzzyLogic.FindFuzzyNumber(EnemyPiece, ScanPiece)) / 6.0f);
+                IndividualScanMap[EnemyAttackList[k].x, EnemyAttackList[k].y].CaptureChance += (((7 - FuzzyLogic.FindFuzzyNumber(EnemyPiece, ScanPiece)) / 6.0f) + 1) * PieceValue(ScanPiece);
             }
 
         }
@@ -125,14 +125,16 @@ public class IndividualPieceScanner : MonoBehaviour
         if (piece is Pawn)
             return 1;
         else if (piece is Rook)
-            return 3;
+            return 5;
         else if (piece is Knight)
             return 3;
         else if (piece is Bishop)
             return 5;
         else if (piece is Queen)
-            return 2;
-        else
+            return 5;
+        else if (piece is King)
             return 10;
+        else
+            return 0; ;
     }
 }

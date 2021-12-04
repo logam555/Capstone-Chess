@@ -84,9 +84,9 @@ public class BestMove
                 float boardH = ModelManager.Instance.BoardTileHeuristicValueReturn(pos.x, pos.y, commander.IsWhite).z;
                 int score = -1; // board heuristics + scanner heruistics
                 if (pos == commander.Position) {
-                    score = (int)((scan + 1) * boardH / 4.0f) - PieceValue(piece);
+                    score = (int)((scan + 1) * boardH);
                 } else
-                    score = (int)((scan + 1) * boardH) - PieceValue(piece);
+                    score = (int)((scan + 1) * boardH);
                 moves.Add(new Moves(piece, pos, score));
             }
         }

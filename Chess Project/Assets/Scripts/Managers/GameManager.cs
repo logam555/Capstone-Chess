@@ -114,6 +114,9 @@ public class GameManager : MonoBehaviour
             CurrentPlayer.capturedPieces["Bishop"] += 1;
             Bishop bishop = (Bishop)captured;
             bishop.DelegatePieces();
+            ((Commander)ChessBoard.Instance.PieceAt(bishop.Position, ChessBoard.Instance.KingBoard)).isDead = true;
+            ((Commander)ChessBoard.Instance.PieceAt(bishop.Position, ChessBoard.Instance.LBishopBoard)).isDead = true;
+            ((Commander)ChessBoard.Instance.PieceAt(bishop.Position, ChessBoard.Instance.RBishopBoard)).isDead = true;
             if (CurrentPlayer == user)
                 score.AddImgPieces(ScoreManager.pieceType.goldbishop);
             else

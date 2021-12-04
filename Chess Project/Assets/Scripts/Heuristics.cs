@@ -153,12 +153,12 @@ public class Heuristics : MonoBehaviour
         diff = PlayerPrefs.GetInt("Difficulty");
 
         //base/Easy
-        chessTypes[0].typeValue = 20;
-        chessTypes[1].typeValue = 5;
-        chessTypes[2].typeValue = 10;
-        chessTypes[3].typeValue = 3;
-        chessTypes[4].typeValue = 2;
-        chessTypes[5].typeValue = 1;
+        chessTypes[0].typeValue = 22;
+        chessTypes[1].typeValue = 22;
+        chessTypes[2].typeValue = 21;
+        chessTypes[3].typeValue = 23;
+        chessTypes[4].typeValue = 25;
+        chessTypes[5].typeValue = 10;
 
         //normal
         if (diff == 2)
