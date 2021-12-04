@@ -128,4 +128,12 @@ public class KingAI : CommanderAI
 
         return bl;
     }
+
+    public int[] getLocalKnight(ChessPiece knight) {
+        if (knight is null) {
+            return new int[] {-1,-1,-1,-1};
+        }
+        int[] bl = local.getMove(knight, true, true);
+        return bl;
+    }
 }

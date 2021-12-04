@@ -20,6 +20,7 @@ public class AI : Player
 	int[] freerB;
 	int[] lBishopMove;
 	int[] rBishopMove;
+	int[] knightMove;
 	int[,] moves;
 	int lBishopCount;
 	int rBishopCount;
@@ -40,6 +41,7 @@ public class AI : Player
 		kingMove = new int[2];
 		lBishopMove = new int[2];
 		rBishopMove = new int[2];
+		knightMove = null;
 
 		freeKing = new int[2];
 		freelB = new int[2];
@@ -248,6 +250,8 @@ public class AI : Player
 		Vector2Int newPosition = new Vector2Int(0, 0);
 
 		ChessBoard.Instance.SelectPiece(new Vector2Int(kingMove[0], kingMove[1]));
+		if(ChessBoard.Instance.KingBoard[kingMove[0], kingMove[1]] is Knight)
+			knightMove = instance.getLocalKnight(ChessBoard.Instance.KingBoard[kingMove[2], kingMove[3]]);
 		newPosition.x = kingMove[2];
 		newPosition.y = kingMove[3];
 		Debug.Log(ChessBoard.Instance.SelectedPiece);
@@ -260,6 +264,8 @@ public class AI : Player
 		Vector2Int newPosition = new Vector2Int(0, 0);
 
 		ChessBoard.Instance.SelectPiece(new Vector2Int(lBishopMove[0], lBishopMove[1]));
+		if (ChessBoard.Instance.LBishopBoard[lBishopMove[0], lBishopMove[1]] is Knight)
+			knightMove = lBishopMove;
 		newPosition.x = lBishopMove[2];
 		newPosition.y = lBishopMove[3];
 		Debug.Log(ChessBoard.Instance.SelectedPiece);
@@ -272,10 +278,42 @@ public class AI : Player
 		Vector2Int newPosition = new Vector2Int(0, 0);
 
 		ChessBoard.Instance.SelectPiece(new Vector2Int(rBishopMove[0], rBishopMove[1]));
+		if (ChessBoard.Instance.RBishopBoard[rBishopMove[0], rBishopMove[1]] is Knight)
+			knightMove = rBishopMove;
 		newPosition.x = rBishopMove[2];
 		newPosition.y = rBishopMove[3];
 		Debug.Log(ChessBoard.Instance.SelectedPiece);
 		Debug.Log(newPosition);
+		return ChessBoard.Instance.PerformAction(newPosition);
+	}
+
+	public bool moveKnight(int commander) {
+		Knight knight;
+		if (commander == 0) {
+			knight = (Knight)ChessBoard.Instance.KingBoard[kingMove[2], kingMove[3]];
+			if (knight != null)
+				knight.Moved = true;
+			knightMove = instance.getLocalKnight(knight);
+		} else if (commander == 1) {
+			knight = (Knight)ChessBoard.Instance.LBishopBoard[lBishopMove[2], lBishopMove[3]];
+			if (knight != null)
+				knight.Moved = true;
+			knightMove = instance.getLocalKnight(knight);
+		} else {
+			knight = (Knight)ChessBoard.Instance.RBishopBoard[rBishopMove[2], rBishopMove[3]];
+			if(knight != null) 
+				knight.Moved = true;
+			knightMove = instance.getLocalKnight(knight);
+		}
+		Vector2Int newPosition = new Vector2Int(0, 0);
+
+		ChessBoard.Instance.SelectPiece(new Vector2Int(knightMove[0], knightMove[1]));
+		newPosition.x = knightMove[2];
+		newPosition.y = knightMove[3];
+		Debug.Log(ChessBoard.Instance.SelectedPiece);
+		Debug.Log(newPosition);
+		if(knight != null)
+			knight.Moved = false;
 		return ChessBoard.Instance.PerformAction(newPosition);
 	}
 
@@ -290,17 +328,44 @@ public class AI : Player
 
 		yield return new WaitForSeconds(wait);
 
-        if (lInstance != null) {
+		if(knightMove != null) {
+			wait = moveKnight(0) ? 4.0f : 1.0f;
+			knightMove = null;
+
+			yield return new WaitForSeconds(wait);
+		}
+
+		
+
+		if (lInstance != null) {
 			wait = movelBishop() ? 4.0f : 1.0f;
 		}
 
 		yield return new WaitForSeconds(wait);
 
-        if (rInstance != null) {
+		if (knightMove != null) {
+			wait = moveKnight(1) ? 4.0f : 1.0f;
+			knightMove = null;
+
+			yield return new WaitForSeconds(wait);
+		}
+
+		
+
+		if (rInstance != null) {
             wait = moverBishop() ? 4.0f : 1.0f;
         }
 
 		yield return new WaitForSeconds(wait);
+
+		if (knightMove != null) {
+			wait = moveKnight(2) ? 4.0f : 1.0f;
+			knightMove = null;
+
+			yield return new WaitForSeconds(wait);
+		}
+
+		
 
 		StartCoroutine(TakeFree());
 		//GameManager.Instance.PassTurn();

@@ -35,14 +35,20 @@ public class BestMove
         commanders.Add((Commander)board[5, 0]);
     }
 
-    public int[] getMove(Commander piece, bool isLeft, bool free)
+    public int[] getMove(ChessPiece piece, bool isLeft, bool free)
     {
+        Commander leader;
+        if(piece is Knight) {
+            leader = ((Knight)piece).Commander;
+        }
+        else
+            leader = (Commander)piece;
 
-        if(piece is King) {
+        if(leader is King) {
             chessBoardGridCo = ModelManager.Instance.chessBoardCopyKing;
             enemyCommander = commanders[0];
         }
-        else if(piece is Bishop && isLeft) {
+        else if(leader is Bishop && isLeft) {
             chessBoardGridCo = ModelManager.Instance.chessBoardCopyBishop1;
             enemyCommander = commanders[1];
         }
@@ -51,7 +57,10 @@ public class BestMove
             enemyCommander = commanders[2];
         }
 
-        return bestLocal(piece, free);
+        if (piece is Knight)
+            return bestLocalKnight(piece);
+
+        return bestLocal(leader, free);
     }
 
     private int PieceValue(ChessPiece piece) {
@@ -95,7 +104,7 @@ public class BestMove
         
     }
 
-    public List<Moves> evalFree(Commander commander, ChessPiece[,] board) {
+    public List<Moves> evalFree(ChessPiece commander, ChessPiece[,] board) {
         List<Moves> moves = new List<Moves>();
         var heuristics = IndividualPieceScanner.Instance.singleScanner(commander.IsWhite, commander.Position, board);
         foreach (Vector2Int pos in possibleMoves(commander)) {
@@ -183,6 +192,69 @@ public class BestMove
         return move;
     }
 
+    public int[] bestLocalKnight(ChessPiece piece) {
+        int[] move = new int[4];
+        Moves bestMove = new Moves();
+        int bestScore;
+        int counter = 0;
+
+        List<Moves> moves = evalFree(piece, board);
+
+        bestScore = int.MinValue;
+
+        foreach (Moves possibleMove in moves) {
+            int pieceX = possibleMove.piece.Position.x;
+            int pieceY = possibleMove.piece.Position.y;
+
+            ChessPiece temp = board[possibleMove.targetPos.x, possibleMove.targetPos.y];
+            board[pieceX, pieceY] = null;
+            board[possibleMove.targetPos.x, possibleMove.targetPos.y] = possibleMove.piece;
+            possibleMove.piece.Position = possibleMove.targetPos;
+
+            string pieceTypeStr = "";
+
+            if (possibleMove.piece is King) {
+                pieceTypeStr = "King";
+            } else if (possibleMove.piece is Queen) {
+                pieceTypeStr = "Queen";
+            } else if (possibleMove.piece is Bishop) {
+                pieceTypeStr = "Bishop";
+            } else if (possibleMove.piece is Knight) {
+                pieceTypeStr = "Knight";
+            } else if (possibleMove.piece is Rook) {
+                pieceTypeStr = "Rook";
+            } else {
+                pieceTypeStr = "Pawn";
+            }
+
+            //update board with temp move to check values in min/max
+            ModelManager.Instance.BoardTileLocationUpdate(new Vector2Int(pieceX, pieceY), new Vector2Int(possibleMove.targetPos.x, possibleMove.targetPos.y), possibleMove.piece.IsWhite, pieceTypeStr, chessBoardGridCo);
+            //board wide huer tile only update
+            ModelManager.Instance.BoardWideHeuristicTileCall(possibleMove.targetPos.x, possibleMove.targetPos.y, chessBoardGridCo);
+
+            int j = possibleMove.score + minimax(1, piece, board, false, int.MinValue, int.MaxValue, true);
+            if (j >= bestScore) {
+                bestScore = j;
+                bestMove = possibleMove;
+            }
+
+            board[possibleMove.targetPos.x, possibleMove.targetPos.y] = temp;
+            board[pieceX, pieceY] = possibleMove.piece;
+            possibleMove.piece.Position = new Vector2Int(pieceX, pieceY);
+
+            ModelManager.Instance.BoardTileLocationUpdate(new Vector2Int(possibleMove.targetPos.x, possibleMove.targetPos.y), new Vector2Int(pieceX, pieceY), possibleMove.piece.IsWhite, pieceTypeStr, chessBoardGridCo);
+            ModelManager.Instance.BoardWideHeuristicTileCall(pieceX, pieceY, chessBoardGridCo);
+        }
+
+        move[0] = bestMove.piece.Position.x;
+        move[1] = bestMove.piece.Position.y;
+        move[2] = bestMove.targetPos.x;
+        move[3] = bestMove.targetPos.y;
+        Debug.Log(bestMove.score);
+
+        return move;
+    }
+
     //public int minimax(int depth, int nodeIndex, bool isMax, int[] scores, int h) {
     //    if(depth == h)
     //        return scores[nodeIndex];
@@ -194,7 +266,7 @@ public class BestMove
     //            minimax(depth + 1, nodeIndex * 2 + 1, false, scores, h));
     //}
     
-    public int minimax(int depth, Commander commander, ChessPiece[,] tempBoard, bool maximize, int alpha, int beta, bool free) //uses minimax algorithm to obtain the score
+    public int minimax(int depth, ChessPiece commander, ChessPiece[,] tempBoard, bool maximize, int alpha, int beta, bool free) //uses minimax algorithm to obtain the score
     {
         //Vector3Int evalsV3 = eval(piece); //uses heuristic to obtain score
         int score;
@@ -205,7 +277,7 @@ public class BestMove
         if (depth == 4)
         {
             if (maximize) {
-                List<Moves> evals = !free ? eval(commander, tempBoard) : evalFree(commander, tempBoard);
+                List<Moves> evals = !free ? eval((Commander)commander, tempBoard) : evalFree(commander, tempBoard);
                 int bestScore = int.MinValue;
                 foreach (Moves move in evals) {
                     if (move.score > bestScore) {
@@ -218,7 +290,7 @@ public class BestMove
 
             }
             else {
-                List<Moves> evals = !free ? eval(commander, tempBoard) : evalFree(commander, tempBoard);
+                List<Moves> evals = !free ? eval((Commander)commander, tempBoard) : evalFree(commander, tempBoard);
                 int bestScore = int.MaxValue;
                 foreach (Moves move in evals) {
                     if (move.score < bestScore) {
@@ -233,7 +305,7 @@ public class BestMove
 
         if (maximize == true) //if maximizing (AIs turn)
         {
-            List<Moves> moves = !free ? eval(commander, tempBoard) : evalFree(commander, tempBoard);
+            List<Moves> moves = !free ? eval((Commander)commander, tempBoard) : evalFree(commander, tempBoard);
             bestVal = int.MinValue;
 
             foreach (Moves move in moves) {

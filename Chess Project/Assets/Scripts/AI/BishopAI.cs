@@ -108,6 +108,15 @@ public class BishopAI : CommanderAI
         return bl;
     }
 
+    public int[] getLocalKnight(ChessPiece knight) {
+        if (knight is null) {
+            return new int[] { -1, -1, -1, -1 };
+        }
+        int[] bl = local.getMove(knight, leftBishop, true);
+
+        return bl;
+    }
+
     //public void subordinateMoves() //obtains the moves and scores of its subordinate pieces
     //{
     //    BestMove local = new BestMove();

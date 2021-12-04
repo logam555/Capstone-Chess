@@ -251,7 +251,7 @@ class ChessBoard : MonoBehaviour {
     }
 
     // Function to move the selected piece in the array implementation of the board
-    private void MovePiece(Vector2Int position) {
+    private void MovePiece(Vector2Int position, bool attacked) {
 
         // Check if selected piece is commander and is using free movement
         if (SelectedPiece is Commander) {
@@ -264,7 +264,10 @@ class ChessBoard : MonoBehaviour {
         }
 
         if (SelectedPiece is Knight) {
-            ((Knight)SelectedPiece).Moved = !((Knight)SelectedPiece).Moved;
+            if(attacked)
+                ((Knight)SelectedPiece).Moved = false;
+            else
+                ((Knight)SelectedPiece).Moved = true;
         }
 
         ChessPiece selectedPieceKing = PieceAt(SelectedPiece.Position, KingBoard);
@@ -345,7 +348,7 @@ class ChessBoard : MonoBehaviour {
                 ((Knight)SelectedPiece).Moved = true;
 
             // Move the selected piece
-            MovePiece(position);
+            MovePiece(position, true);
 
         } else {
             // Reduce number of actions remaining
@@ -459,7 +462,7 @@ class ChessBoard : MonoBehaviour {
 
         // Move piece if position is in available moves, attack enemy piece if position contains enemy, or change selection if position contains a friendly piece
         if (availableMoves.Contains(position)) {
-            MovePiece(position);
+            MovePiece(position, false);
 
         } else if (enemies.Contains(position)) {
             isAttacking = true;
