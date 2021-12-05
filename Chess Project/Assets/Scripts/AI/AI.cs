@@ -21,7 +21,7 @@ public class AI : Player
 	int[] lBishopMove;
 	int[] rBishopMove;
 	int[] knightMove;
-	int[,] moves;
+	List<int[]> moves;
 	int lBishopCount;
 	int rBishopCount;
 	int kingCount;
@@ -47,7 +47,7 @@ public class AI : Player
 		freelB = new int[2];
 		freerB = new int[2];
 		
-		moves = new int[2, 3];
+		moves = new List<int[]>();
 		first = true;
 		
 		ModelManager.Instance.BoardWideHeuristicCall(ref ModelManager.Instance.chessBoardGridCo);
@@ -79,6 +79,7 @@ public class AI : Player
                 if (instance != null) {
                     kingMove = instance.Step();
 					instance.King.commandActions -= 1;
+					moves.Add(kingMove);
                 }
             }));
 
@@ -93,6 +94,7 @@ public class AI : Player
                 if (lInstance != null) {
                     lBishopMove = lInstance.Step();
 					lInstance.bishop.commandActions -= 1;
+					moves.Add(lBishopMove);
                 }
             }));
 
@@ -106,6 +108,7 @@ public class AI : Player
                 if (rInstance != null) {
                     rBishopMove = rInstance.Step();
 					rInstance.bishop.commandActions -= 1;
+					moves.Add(rBishopMove);
                 }
             }));
 
@@ -289,6 +292,8 @@ public class AI : Player
 
 	public bool moveKnight(int commander) {
 		Knight knight;
+		if (commander == -1)
+			return false;
 		try {
 			if (commander == 0) {
 				knight = (Knight)ChessBoard.Instance.KingBoard[kingMove[2], kingMove[3]];
@@ -321,19 +326,51 @@ public class AI : Player
 		return ChessBoard.Instance.PerformAction(newPosition);
 	}
 
+	public bool makeMove(int[] move, out int commander) {
+		if (move == kingMove) {
+			commander = 0;
+			if (instance != null)
+				return moveKing();
+		}
+		if (move == lBishopMove) {
+			commander = 1;
+			if (lInstance != null)
+				return movelBishop();
+		}
+		if (move == rBishopMove) {
+			commander = 2;
+			if (rInstance != null)
+				return moverBishop();
+		}
+
+		commander = -1;
+		return false;
+    }
+
 	public IEnumerator TakeTurn() {
 		float wait = 1.0f;
+		int com;
+
+		moves.Sort(delegate (int[] x, int[] y) {
+			if (x[4] == y[4]) {
+				if (x[3] < y[3])
+					return -1;
+				if (x[3] == y[3])
+					return 0;
+				return 1;
+			} else if (x[4] > y[4]) return -1;
+			else
+				return 1;
+		});
 
 		yield return new WaitForSeconds(0.25f);
 
-		if (instance != null) {
-			wait = moveKing() ? 4.0f : 1.0f;
-		}
+		wait = makeMove(moves[0], out com) ? 4.0f : 1.0f;
 
 		yield return new WaitForSeconds(wait);
 
 		if(knightMove != null) {
-			wait = moveKnight(0) ? 4.0f : 1.0f;
+			wait = moveKnight(com) ? 4.0f : 1.0f;
 			knightMove = null;
 
 			yield return new WaitForSeconds(wait);
@@ -341,14 +378,14 @@ public class AI : Player
 
 		
 
-		if (lInstance != null) {
-			wait = movelBishop() ? 4.0f : 1.0f;
+		if (moves.Count >= 2) {
+			wait = makeMove(moves[1], out com) ? 4.0f : 1.0f;
 		}
 
 		yield return new WaitForSeconds(wait);
 
 		if (knightMove != null) {
-			wait = moveKnight(1) ? 4.0f : 1.0f;
+			wait = moveKnight(com) ? 4.0f : 1.0f;
 			knightMove = null;
 
 			yield return new WaitForSeconds(wait);
@@ -356,19 +393,20 @@ public class AI : Player
 
 		
 
-		if (rInstance != null) {
-            wait = moverBishop() ? 4.0f : 1.0f;
+		if (moves.Count >= 3) {
+            wait = makeMove(moves[2], out com) ? 4.0f : 1.0f;
         }
 
 		yield return new WaitForSeconds(wait);
 
 		if (knightMove != null) {
-			wait = moveKnight(2) ? 4.0f : 1.0f;
+			wait = moveKnight(com) ? 4.0f : 1.0f;
 			knightMove = null;
 
 			yield return new WaitForSeconds(wait);
 		}
 
+		moves.Clear();
 		
 
 		StartCoroutine(TakeFree());
@@ -406,5 +444,20 @@ public class AI : Player
 
 		GameManager.Instance.PassTurn();
 
+	}
+
+	public int PieceValue(ChessPiece piece) {
+		if (piece is Pawn)
+			return 1;
+		else if (piece is Rook)
+			return 5;
+		else if (piece is Knight)
+			return 5;
+		else if (piece is Bishop)
+			return 10;
+		else if (piece is Queen)
+			return 5;
+		else
+			return 20;
 	}
 }

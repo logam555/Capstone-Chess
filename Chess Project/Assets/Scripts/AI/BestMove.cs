@@ -65,19 +65,19 @@ public class BestMove
         return bestLocal(leader, free);
     }
 
-    private int PieceValue(ChessPiece piece) {
+    public int PieceValue(ChessPiece piece) {
         if (piece is Pawn)
             return 1;
         else if (piece is Rook)
-            return 3;
-        else if (piece is Knight)
-            return 3;
-        else if (piece is Bishop)
             return 5;
-        else if (piece is Queen)
-            return 2;
-        else
+        else if (piece is Knight)
+            return 5;
+        else if (piece is Bishop)
             return 10;
+        else if (piece is Queen)
+            return 5;
+        else
+            return 20;
     }
 
     //add Piece p into eval call
@@ -95,9 +95,9 @@ public class BestMove
                 float boardH = ModelManager.Instance.BoardTileHeuristicValueReturn(pos.x, pos.y, commander.IsWhite).z;
                 int score = -1; // board heuristics + scanner heruistics
                 if (pos == piece.Position) {
-                    score = (int)(((scan + 1) * boardH / 1.25f) / (float)PieceValue(piece));
+                    score = (int)(((scan + 1) * boardH / 1.25f) - (float)PieceValue(piece)/2.0f);
                 } else
-                    score = (int)(((scan + 1) * boardH) / (float)PieceValue(piece));
+                    score = (int)(((scan + 1) * boardH) - (float)PieceValue(piece)/2.0f);
                 moves.Add(new Moves(piece, pos, score));
             }
         }
@@ -132,7 +132,7 @@ public class BestMove
 
     public int[] bestLocal(Commander piece, bool free) //obtains best possible move for Bishop
     {
-        int[] move = new int[4];
+        int[] move = new int[5];
         Moves bestMove = new Moves();
         int bestScore;
         int counter = 0;
@@ -190,13 +190,14 @@ public class BestMove
         move[1] = bestMove.piece.Position.y;
         move[2] = bestMove.targetPos.x;
         move[3] = bestMove.targetPos.y;
+        move[4] = bestScore;
         Debug.Log(bestMove.score);
 
         return move;
     }
 
     public int[] bestLocalKnight(ChessPiece piece) {
-        int[] move = new int[4];
+        int[] move = new int[5];
         Moves bestMove = new Moves();
         int bestScore;
         int counter = 0;
@@ -254,6 +255,7 @@ public class BestMove
         move[1] = bestMove.piece.Position.y;
         move[2] = bestMove.targetPos.x;
         move[3] = bestMove.targetPos.y;
+        move[4] = bestScore;
         Debug.Log(bestMove.score);
 
         return move;

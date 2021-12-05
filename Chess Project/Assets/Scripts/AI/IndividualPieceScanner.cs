@@ -121,19 +121,19 @@ public class IndividualPieceScanner : MonoBehaviour
 
     }
 
-    private int PieceValue(ChessPiece piece) {
+    public int PieceValue(ChessPiece piece) {
         if (piece is Pawn)
             return 1;
         else if (piece is Rook)
             return 5;
         else if (piece is Knight)
-            return 3;
-        else if (piece is Bishop)
             return 5;
+        else if (piece is Bishop)
+            return 10;
         else if (piece is Queen)
             return 5;
         else if (piece is King)
-            return 10;
+            return 20;
         else
             return 0; ;
     }
