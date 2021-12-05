@@ -289,21 +289,25 @@ public class AI : Player
 
 	public bool moveKnight(int commander) {
 		Knight knight;
-		if (commander == 0) {
-			knight = (Knight)ChessBoard.Instance.KingBoard[kingMove[2], kingMove[3]];
-			if (knight != null)
-				knight.Moved = true;
-			knightMove = instance.getLocalKnight(knight);
-		} else if (commander == 1) {
-			knight = (Knight)ChessBoard.Instance.LBishopBoard[lBishopMove[2], lBishopMove[3]];
-			if (knight != null)
-				knight.Moved = true;
-			knightMove = instance.getLocalKnight(knight);
-		} else {
-			knight = (Knight)ChessBoard.Instance.RBishopBoard[rBishopMove[2], rBishopMove[3]];
-			if(knight != null) 
-				knight.Moved = true;
-			knightMove = instance.getLocalKnight(knight);
+		try {
+			if (commander == 0) {
+				knight = (Knight)ChessBoard.Instance.KingBoard[kingMove[2], kingMove[3]];
+				if (knight != null)
+					knight.Moved = true;
+				knightMove = instance.getLocalKnight(knight);
+			} else if (commander == 1) {
+				knight = (Knight)ChessBoard.Instance.LBishopBoard[lBishopMove[2], lBishopMove[3]];
+				if (knight != null)
+					knight.Moved = true;
+				knightMove = instance.getLocalKnight(knight);
+			} else {
+				knight = (Knight)ChessBoard.Instance.RBishopBoard[rBishopMove[2], rBishopMove[3]];
+				if (knight != null)
+					knight.Moved = true;
+				knightMove = instance.getLocalKnight(knight);
+			}
+		} catch (Exception e) { 
+			return false;
 		}
 		Vector2Int newPosition = new Vector2Int(0, 0);
 
