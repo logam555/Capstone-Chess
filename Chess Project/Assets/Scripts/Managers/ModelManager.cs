@@ -339,10 +339,11 @@ public class ModelManager : MonoBehaviour
             HighlightEnemies(enemies);
             HighlightCommander(commander);
         }
+
     }
 
     // Function to highlight the tile of the selected piece
-    private void HighlightSelected(Vector2Int position)
+    public void HighlightSelected(Vector2Int position)
     {
         HighlightTile(0, position.x, position.y);
     }
@@ -374,7 +375,7 @@ public class ModelManager : MonoBehaviour
     }
 
     // Utility function to highlight any tile with the selected prefab at the x and y grid position
-    private void HighlightTile(int index, int x, int y)
+    public void HighlightTile(int index, int x, int y)
     {
         GameObject highlight = Instantiate(highlightPrefabs[index]);
         highlights.Add(highlight);

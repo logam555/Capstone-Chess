@@ -467,6 +467,8 @@ class ChessBoard : MonoBehaviour {
         } else if (enemies.Contains(position)) {
             isAttacking = true;
             selectedPos = position;
+            ModelManager.Instance.HighlightTile(2,position.x,position.y);
+            ModelManager.Instance.HighlightSelected(SelectedPiece.Position);
             return true;
         } else if (IsFriendlyPieceAt(SelectedPiece.IsWhite, position, Board)) {
             ModelManager.Instance.RemoveHighlights();

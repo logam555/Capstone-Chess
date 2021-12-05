@@ -10,6 +10,8 @@ public class GameManager : MonoBehaviour
     public Player CurrentPlayer { get; set; }
 
     public bool IsGameOver { get; set; }
+    
+    public bool IsPlayerWin;
 
     [SerializeField]
     public Player user;
@@ -26,6 +28,7 @@ public class GameManager : MonoBehaviour
         IsGameOver = false;
         CurrentPlayer = user;
         aiRunning = false;
+        IsPlayerWin = false;
     }
 
     private void Start() {
@@ -78,6 +81,7 @@ public class GameManager : MonoBehaviour
         ChessBoard.Instance.SelectPiece(new Vector2Int(-1, -1));
         CurrentPlayer.ResetTurn();
         score.ChangeTurn(CurrentPlayer == user ? "P2" : "P1");
+        score.LoadingActive(CurrentPlayer== user ? true : false);
         CurrentPlayer = CurrentPlayer == user ? ai : user;
         aiRunning = false;
     }
@@ -92,6 +96,7 @@ public class GameManager : MonoBehaviour
     #region INTERACTION
     // Function to add captured pieces to current player
     public void CapturePiece(ChessPiece captured) {
+
         if (captured is Pawn) {
             CurrentPlayer.capturedPieces["Pawn"] += 1;
             if (CurrentPlayer == user)
@@ -138,9 +143,15 @@ public class GameManager : MonoBehaviour
         } else if (captured is King) {
             CurrentPlayer.capturedPieces["King"] += 1;
             if (CurrentPlayer == user)
+            {
                 score.AddImgPieces(ScoreManager.pieceType.goldking);
+                IsPlayerWin = true;
+            }
             else
+            {
                 score.AddImgPieces(ScoreManager.pieceType.sliverking);
+                IsPlayerWin = false;
+            }
             IsGameOver = true;
         }
     }
