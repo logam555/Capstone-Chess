@@ -60,5 +60,9 @@ public class Bishop : Commander {
     public override void Reset() {
         commandActions = 1;
         usedFreeMovement = false;
+        foreach (Subordinate subordinate in subordinates) {
+            if (subordinate is Knight)
+                ((Knight)subordinate).Moved = false;
+        }
     }
 }

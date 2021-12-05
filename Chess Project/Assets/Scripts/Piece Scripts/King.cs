@@ -57,5 +57,9 @@ public class King : Commander {
         commandActions = 1;
         usedFreeMovement = false;
         usedDelegation = false;
+        foreach (Subordinate subordinate in subordinates) {
+            if (subordinate is Knight)
+                ((Knight)subordinate).Moved = false;
+        }
     }
 }

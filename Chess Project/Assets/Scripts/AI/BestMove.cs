@@ -12,6 +12,7 @@ public class BestMove
     Dictionary<string, BoardTile> chessBoardGridCo;
     List<Commander> commanders;
     Commander enemyCommander;
+    System.Random rnd;
 
     public struct Moves {
         public ChessPiece piece;
@@ -33,6 +34,7 @@ public class BestMove
         commanders.Add((Commander)board[4, 0]);
         commanders.Add((Commander)board[2, 0]);
         commanders.Add((Commander)board[5, 0]);
+        rnd = new System.Random();
     }
 
     public int[] getMove(ChessPiece piece, bool isLeft, bool free)
@@ -93,7 +95,7 @@ public class BestMove
                 float boardH = ModelManager.Instance.BoardTileHeuristicValueReturn(pos.x, pos.y, commander.IsWhite).z;
                 int score = -1; // board heuristics + scanner heruistics
                 if (pos == piece.Position) {
-                    score = (int)((scan + 1) * boardH / 2.0f) - PieceValue(piece);
+                    score = (int)((scan + 1) * boardH / 1.25f) - PieceValue(piece);
                 } else
                     score = (int)((scan + 1) * boardH) - PieceValue(piece);
                 moves.Add(new Moves(piece, pos, score));
@@ -112,7 +114,7 @@ public class BestMove
             float boardH = ModelManager.Instance.BoardTileHeuristicValueReturn(pos.x, pos.y, commander.IsWhite).z;
             int score = -1; // board heuristics + scanner heruistics
             if (pos == commander.Position) {
-                score = (int)((scan + 1) * boardH / 2.0f) - PieceValue(commander);
+                score = (int)((scan + 1) * boardH / 1.25f) - PieceValue(commander);
             } else
                 score = (int)((scan + 1) * boardH) - PieceValue(commander);
             moves.Add(new Moves(commander, pos, score));
@@ -136,6 +138,7 @@ public class BestMove
         int counter = 0;
 
         List<Moves> moves = !free ? eval(piece, board) : evalFree(piece, board);
+        moves = moves.OrderBy(item => rnd.Next()).ToList();
 
         bestScore = int.MinValue;
 
@@ -170,7 +173,7 @@ public class BestMove
             ModelManager.Instance.BoardWideHeuristicTileCall(possibleMove.targetPos.x, possibleMove.targetPos.y, chessBoardGridCo);
 
             int j = possibleMove.score + minimax(1, piece, board, false, int.MinValue, int.MaxValue, free);
-            if (j >= bestScore) {
+            if (j > bestScore) {
                 bestScore = j;
                 bestMove = possibleMove;
             }
@@ -199,6 +202,7 @@ public class BestMove
         int counter = 0;
 
         List<Moves> moves = evalFree(piece, board);
+        moves = moves.OrderBy(item => rnd.Next()).ToList();
 
         bestScore = int.MinValue;
 
@@ -232,8 +236,8 @@ public class BestMove
             //board wide huer tile only update
             ModelManager.Instance.BoardWideHeuristicTileCall(possibleMove.targetPos.x, possibleMove.targetPos.y, chessBoardGridCo);
 
-            int j = possibleMove.score + minimax(1, piece, board, false, int.MinValue, int.MaxValue, true);
-            if (j >= bestScore) {
+            int j = possibleMove.score + minimax(3, piece, board, false, int.MinValue, int.MaxValue, true);
+            if (j > bestScore) {
                 bestScore = j;
                 bestMove = possibleMove;
             }

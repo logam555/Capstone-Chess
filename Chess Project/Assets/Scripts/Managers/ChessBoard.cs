@@ -355,6 +355,9 @@ class ChessBoard : MonoBehaviour {
             Commander leader = SelectedPiece is Subordinate ? ((Subordinate)SelectedPiece).Commander : (Commander)SelectedPiece;
             leader.commandActions -= 1;
 
+            if(SelectedPiece is Knight)
+                ((Knight)SelectedPiece).Moved = false;
+
             // Deselect the piece
             SelectPiece(new Vector2Int(-1, -1));
         }
