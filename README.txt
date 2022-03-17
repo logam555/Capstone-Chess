@@ -11,7 +11,10 @@ The model will follow the standard turn based rules of the game and will move th
 This was done for a Capstone Computer Science Project at Kennesaw State University, as such this project is not open to outside submissions.
 
 -Authors-
-Braden Stonehill, David Corredor, George Brunner, Hamza Khan, Logan Keck, Mitch Maxfield, and Tommy Oh
+Braden Stonehill, David Corredor, George Brunner, Hamza Khan, Logan Keck, Mitch Maxfield, and Tommy Oh 
+
+-Demo- 
+https://www.youtube.com/watch?v=C5E2GV40ef4
 
 -Dependencies-
 Unity Store - Chess Pieces & Board by Joe Censored Games 2
